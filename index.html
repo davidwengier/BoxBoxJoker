@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BoxBox Motors: World Tour</title>
+  <title>House of Wildcards</title>
   <style>
     :root {
       color-scheme: dark;
       font-family: Inter, system-ui, sans-serif;
-      background: #06080d;
+      background: #07080d;
       color: #f8fafc;
     }
 
@@ -20,9 +20,9 @@
       min-height: 100vh;
       margin: 0;
       background:
-        radial-gradient(circle at 15% 0%, rgb(37 99 235 / 25%), transparent 28rem),
-        radial-gradient(circle at 90% 20%, rgb(220 38 38 / 18%), transparent 30rem),
-        #06080d;
+        radial-gradient(circle at 12% 0%, rgb(126 34 206 / 24%), transparent 28rem),
+        radial-gradient(circle at 88% 18%, rgb(190 24 93 / 18%), transparent 30rem),
+        #07080d;
     }
 
     button {
@@ -30,7 +30,7 @@
     }
 
     .app {
-      width: min(90rem, 100%);
+      width: min(92rem, 100%);
       margin: auto;
       padding: 1rem;
     }
@@ -45,64 +45,65 @@
 
     .logo {
       margin: 0;
-      font-size: clamp(1.8rem, 5vw, 3.4rem);
+      font-family: Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.6rem);
       font-style: italic;
-      font-weight: 950;
-      letter-spacing: -0.07em;
-      line-height: 0.9;
-      text-transform: uppercase;
+      letter-spacing: -0.05em;
+      line-height: 0.95;
     }
 
     .logo span {
-      color: #ef4444;
+      color: #facc15;
     }
 
     .logo small {
       display: block;
-      margin-top: 0.55rem;
-      color: #94a3b8;
-      font-size: 0.68rem;
+      margin-top: 0.45rem;
+      color: #a78bfa;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 0.6rem;
       font-style: normal;
       letter-spacing: 0.28em;
+      text-transform: uppercase;
     }
 
     .stats {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
-      gap: 0.55rem;
+      gap: 0.5rem;
     }
 
     .stat {
       min-width: 7rem;
-      padding: 0.55rem 0.85rem;
-      border: 1px solid #293346;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid #353148;
       border-radius: 0.65rem;
-      background: rgb(15 20 31 / 90%);
+      background: rgb(16 16 25 / 92%);
       text-align: center;
     }
 
     .stat small {
       display: block;
-      color: #8b98ac;
-      font-size: 0.66rem;
+      color: #9290a2;
+      font-size: 0.64rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
     .stat strong {
       color: #facc15;
-      font-size: 1.1rem;
+      font-size: 1.08rem;
     }
 
     nav {
       display: flex;
-      gap: 0.45rem;
+      gap: 0.4rem;
       margin-bottom: 1rem;
       padding: 0.4rem;
-      border: 1px solid #283246;
+      border: 1px solid #302d3e;
       border-radius: 0.8rem;
-      background: #0d111b;
+      background: #0d0e15;
     }
 
     nav button {
@@ -111,18 +112,14 @@
       border: 0;
       border-radius: 0.55rem;
       background: transparent;
-      color: #8f9bad;
-      font-weight: 800;
+      color: #9794a5;
+      font-weight: 850;
       cursor: pointer;
       text-transform: uppercase;
     }
 
-    nav button:hover {
-      color: white;
-    }
-
     nav button.active {
-      background: #2563eb;
+      background: #7e22ce;
       color: white;
     }
 
@@ -136,316 +133,376 @@
 
     .hero {
       position: relative;
+      min-height: 17rem;
       overflow: hidden;
-      min-height: 18rem;
       padding: clamp(1.5rem, 5vw, 4rem);
-      border: 1px solid #2b3547;
+      border: 1px solid #423852;
       border-radius: 1rem;
       background:
-        linear-gradient(100deg, rgb(6 8 13 / 95%) 15%, rgb(6 8 13 / 28%)),
-        repeating-linear-gradient(115deg, transparent 0 3rem, rgb(255 255 255 / 3%) 3rem 6rem),
-        linear-gradient(140deg, #1d4ed8, #111827 55%, #991b1b);
+        linear-gradient(95deg, rgb(9 8 14 / 96%) 15%, rgb(9 8 14 / 30%)),
+        repeating-linear-gradient(120deg, transparent 0 3rem, rgb(255 255 255 / 3%) 3rem 6rem),
+        linear-gradient(140deg, #4c1d95, #181022 52%, #831843);
       box-shadow: 0 2rem 5rem rgb(0 0 0 / 35%);
     }
 
     .hero::after {
       position: absolute;
-      right: 5%;
-      bottom: -15%;
-      color: rgb(255 255 255 / 13%);
-      content: "🏎";
-      font-size: clamp(10rem, 30vw, 26rem);
+      right: 6%;
+      bottom: -38%;
+      color: rgb(255 255 255 / 10%);
+      content: "🃏";
+      font-size: clamp(12rem, 35vw, 28rem);
       line-height: 1;
-      transform: rotate(-7deg);
+      transform: rotate(12deg);
     }
 
     .hero-content {
       position: relative;
       z-index: 1;
-      max-width: 35rem;
+      max-width: 38rem;
     }
 
     .eyebrow {
-      color: #fca5a5;
+      color: #d8b4fe;
+      font-size: 0.8rem;
       font-weight: 900;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.17em;
       text-transform: uppercase;
     }
 
     .hero h2 {
-      margin: 0.4rem 0;
-      font-size: clamp(2.2rem, 7vw, 5rem);
+      margin: 0.45rem 0;
+      font-family: Georgia, serif;
+      font-size: clamp(2.3rem, 7vw, 5rem);
       font-style: italic;
-      letter-spacing: -0.07em;
+      letter-spacing: -0.06em;
       line-height: 0.95;
-      text-transform: uppercase;
     }
 
     .hero p {
-      max-width: 30rem;
-      color: #cbd5e1;
+      color: #d2cbd9;
       line-height: 1.55;
     }
 
-    .section-title {
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
       margin: 1.5rem 0 0.8rem;
-      font-size: 1.2rem;
-      text-transform: uppercase;
     }
 
-    .packs,
-    .garage-grid,
-    .tour-grid {
+    .section-head h2 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+    }
+
+    .section-head p {
+      margin: 0.25rem 0 0;
+      color: #9895a5;
+    }
+
+    .casino-floor,
+    .pack-grid,
+    .wildcard-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.85rem;
     }
 
-    .pack {
+    .table-card {
       position: relative;
-      min-height: 18rem;
+      min-height: 23rem;
       overflow: hidden;
-      padding: 1.2rem;
-      border: 1px solid #33405a;
+      padding: 1rem;
+      border: 1px solid #3a4353;
       border-radius: 0.9rem;
-      background: linear-gradient(145deg, #172033, #0d121e);
-      box-shadow: 0 1rem 2rem rgb(0 0 0 / 22%);
+      background:
+        radial-gradient(ellipse at 50% 45%, #14532d 0 42%, #0f2b20 43% 48%, transparent 49%),
+        linear-gradient(150deg, #171923, #0c0d13);
+      box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 24%);
     }
 
-    .pack::before {
-      position: absolute;
-      inset: -40% -20%;
-      background: linear-gradient(110deg, transparent 40%, rgb(255 255 255 / 10%) 50%, transparent 60%);
-      content: "";
-      transform: rotate(15deg);
+    .table-card.locked {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #12131a, #090a0f);
+      text-align: center;
     }
 
-    .pack.pro {
-      border-color: #9333ea;
-      background: linear-gradient(145deg, #3b0764, #111827);
-    }
-
-    .pack.elite {
-      border-color: #eab308;
-      background: linear-gradient(145deg, #713f12, #16130c);
-    }
-
-    .pack h3 {
-      position: relative;
+    .table-card h3 {
       margin: 0;
-      font-size: 1.5rem;
-      font-style: italic;
+      font-size: 1.1rem;
       text-transform: uppercase;
     }
 
-    .pack-art {
-      position: relative;
-      display: grid;
-      height: 8rem;
-      place-items: center;
-      font-size: 6rem;
-      filter: drop-shadow(0 0.8rem 0.6rem rgb(0 0 0 / 35%));
-      transform: rotate(-5deg);
+    .table-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+      color: #9da5b3;
+      font-size: 0.75rem;
     }
 
-    .pack p {
-      position: relative;
-      min-height: 2.6rem;
-      color: #aeb9ca;
-      font-size: 0.88rem;
+    .customer {
+      margin: 1rem auto 0.5rem;
+      text-align: center;
+    }
+
+    .customer-avatar {
+      display: grid;
+      width: 3.2rem;
+      height: 3.2rem;
+      margin: auto;
+      place-items: center;
+      border: 2px solid #64748b;
+      border-radius: 50%;
+      background: #1e293b;
+      font-size: 1.65rem;
+    }
+
+    .customer strong {
+      display: block;
+      margin-top: 0.3rem;
+    }
+
+    .hand {
+      display: flex;
+      justify-content: center;
+      min-height: 4.7rem;
+      margin: 0.7rem 0;
+    }
+
+    .mini-card {
+      display: grid;
+      width: 3.1rem;
+      height: 4.4rem;
+      margin-left: -0.45rem;
+      place-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.35rem;
+      background: #f8fafc;
+      color: #111827;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 0.4rem 0.5rem rgb(0 0 0 / 35%);
+      transform: rotate(var(--tilt));
+    }
+
+    .mini-card.red {
+      color: #dc2626;
+    }
+
+    .round-result {
+      min-height: 2.8rem;
+      padding: 0.45rem;
+      border-radius: 0.5rem;
+      background: rgb(3 8 7 / 70%);
+      color: #cbd5e1;
+      text-align: center;
+    }
+
+    .round-result strong {
+      color: #4ade80;
+    }
+
+    .equipped-row {
+      display: flex;
+      min-height: 3.3rem;
+      justify-content: center;
+      gap: 0.35rem;
+      margin: 0.7rem 0;
+    }
+
+    .wild-mini {
+      display: grid;
+      width: 2.7rem;
+      height: 3.3rem;
+      place-items: center;
+      border: 1px solid var(--rarity);
+      border-radius: 0.35rem;
+      background: color-mix(in srgb, var(--rarity) 22%, #111827);
+      font-size: 1.25rem;
+    }
+
+    .empty-slot {
+      border-style: dashed;
+      border-color: #4b5563;
+      background: rgb(15 23 42 / 55%);
+      color: #6b7280;
     }
 
     .primary,
-    .secondary {
-      position: relative;
+    .secondary,
+    .danger {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.72rem;
       border: 0;
       border-radius: 0.6rem;
       color: white;
-      font-weight: 900;
+      font-weight: 850;
       cursor: pointer;
     }
 
     .primary {
-      background: #dc2626;
+      background: #7e22ce;
     }
 
     .primary:hover {
-      background: #ef4444;
+      background: #9333ea;
     }
 
-    .primary:disabled {
-      background: #2b3342;
-      color: #6f7b8f;
+    .primary:disabled,
+    .secondary:disabled {
+      background: #2d2d39;
+      color: #777584;
       cursor: not-allowed;
     }
 
     .secondary {
-      background: #26354d;
+      background: #293449;
     }
 
     .secondary:hover {
-      background: #344967;
+      background: #394861;
     }
 
-    .garage-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
+    .danger {
+      border: 1px solid #5f3041;
+      background: transparent;
+      color: #fda4af;
     }
 
-    .garage-head h2 {
-      margin-bottom: 0.25rem;
-      font-size: clamp(1.8rem, 5vw, 3rem);
-    }
-
-    .garage-head p {
-      margin: 0;
-      color: #94a3b8;
-    }
-
-    .car-card {
+    .pack {
       position: relative;
+      min-height: 19rem;
       overflow: hidden;
-      min-height: 17rem;
+      padding: 1.15rem;
+      border: 1px solid #3e3a4e;
+      border-radius: 0.9rem;
+      background: linear-gradient(145deg, #1c1728, #0f1017);
+    }
+
+    .pack.premium {
+      border-color: #7e22ce;
+      background: linear-gradient(145deg, #3b0764, #11101a);
+    }
+
+    .pack.vault {
+      border-color: #ca8a04;
+      background: linear-gradient(145deg, #422006, #15120d);
+    }
+
+    .pack::before {
+      position: absolute;
+      inset: -30%;
+      background: linear-gradient(110deg, transparent 42%, rgb(255 255 255 / 9%) 50%, transparent 58%);
+      content: "";
+      transform: rotate(12deg);
+    }
+
+    .pack h3,
+    .pack p,
+    .pack button,
+    .pack-art {
+      position: relative;
+    }
+
+    .pack h3 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 1.45rem;
+      font-style: italic;
+    }
+
+    .pack-art {
+      display: grid;
+      height: 9rem;
+      place-items: center;
+      font-size: 6rem;
+      filter: drop-shadow(0 0.8rem 0.7rem rgb(0 0 0 / 40%));
+      transform: rotate(-6deg);
+    }
+
+    .pack p {
+      min-height: 2.8rem;
+      color: #aaa5b4;
+      font-size: 0.86rem;
+    }
+
+    .wildcard-card {
+      position: relative;
+      min-height: 18rem;
+      overflow: hidden;
       padding: 1rem;
-      border: 1px solid var(--rarity-color);
+      border: 1px solid var(--rarity);
       border-radius: 0.85rem;
       background:
-        linear-gradient(150deg, color-mix(in srgb, var(--rarity-color) 20%, #111827), #0b1019 65%);
-      cursor: pointer;
+        radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--rarity) 27%, transparent), transparent 48%),
+        #10111a;
       transition: 160ms ease;
     }
 
-    .car-card:hover {
+    .wildcard-card:hover {
       transform: translateY(-3px);
     }
 
-    .car-card.selected {
-      outline: 3px solid #f8fafc;
-      outline-offset: 2px;
-    }
-
-    .car-card.locked {
-      border-color: #293241;
-      background: #0c111a;
-      cursor: default;
+    .wildcard-card.locked {
+      border-color: #30313c;
       filter: grayscale(1);
-      opacity: 0.58;
+      opacity: 0.55;
     }
 
-    .rarity {
-      color: var(--rarity-color);
-      font-size: 0.7rem;
-      font-weight: 950;
+    .rarity-label {
+      color: var(--rarity);
+      font-size: 0.68rem;
+      font-weight: 900;
       letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
-    .car-card h3 {
-      margin: 0.2rem 0;
-      font-size: 1.3rem;
-      font-style: italic;
-      text-transform: uppercase;
-    }
-
-    .car-card .series {
-      color: #94a3b8;
-      font-size: 0.78rem;
-    }
-
-    .car-art {
+    .wild-art {
       display: grid;
       height: 6rem;
       place-items: center;
-      border-radius: 0.7rem;
-      background: radial-gradient(circle, var(--car-color), transparent 67%);
       font-size: 4.5rem;
-      filter: drop-shadow(0 0.7rem 0.4rem rgb(0 0 0 / 45%));
+      filter: drop-shadow(0 0.5rem 0.5rem rgb(0 0 0 / 40%));
     }
 
-    .locked .car-art {
-      background: transparent;
+    .wildcard-card h3 {
+      margin: 0.2rem 0;
+      font-family: Georgia, serif;
+      font-size: 1.35rem;
     }
 
-    .rating-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 0.75rem;
-      color: #b9c3d3;
-      font-size: 0.8rem;
+    .wildcard-card p {
+      color: #aba8b5;
+      font-size: 0.85rem;
+      line-height: 1.45;
     }
 
-    .rating-row strong {
-      color: white;
-      font-size: 1rem;
-    }
-
-    .rating-bar {
-      height: 0.38rem;
-      overflow: hidden;
-      margin-top: 0.25rem;
-      border-radius: 999px;
-      background: #263142;
-    }
-
-    .rating-bar div {
-      height: 100%;
-      background: var(--rarity-color);
-    }
-
-    .copies {
-      margin-top: 0.8rem;
+    .level {
+      position: absolute;
+      right: 0.8rem;
+      bottom: 0.8rem;
       color: #facc15;
       font-size: 0.78rem;
-      font-weight: 800;
+      font-weight: 850;
     }
 
-    .tour-card {
+    .album-summary {
+      margin-top: 1rem;
       padding: 1rem;
-      border: 1px solid #303b50;
-      border-radius: 0.85rem;
-      background: linear-gradient(145deg, #111827, #0a0f18);
+      border: 1px solid #343140;
+      border-radius: 0.8rem;
+      background: #101118;
+      color: #aaa6b4;
     }
 
-    .tour-card.locked {
-      opacity: 0.55;
-    }
-
-    .tour-card .track {
-      display: grid;
-      height: 7rem;
-      place-items: center;
-      margin-bottom: 0.8rem;
-      border-radius: 0.65rem;
-      background: linear-gradient(130deg, var(--track-a), var(--track-b));
-      font-size: 3.8rem;
-    }
-
-    .tour-card h3 {
-      margin: 0;
-      text-transform: uppercase;
-    }
-
-    .tour-card p {
-      min-height: 2.4rem;
-      color: #94a3b8;
-      font-size: 0.85rem;
-    }
-
-    .race-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.8rem;
-      font-size: 0.82rem;
-    }
-
-    .race-info strong {
-      display: block;
-      color: #4ade80;
+    .album-summary strong {
+      color: white;
     }
 
     .modal {
@@ -455,8 +512,8 @@
       display: none;
       place-items: center;
       padding: 1rem;
-      background: rgb(2 4 9 / 90%);
-      backdrop-filter: blur(0.7rem);
+      background: rgb(3 3 7 / 91%);
+      backdrop-filter: blur(0.65rem);
     }
 
     .modal.open {
@@ -464,49 +521,41 @@
     }
 
     .modal-box {
-      width: min(65rem, 100%);
+      width: min(70rem, 100%);
       max-height: 94vh;
       overflow: auto;
-      padding: 1.5rem;
-      border: 1px solid #42516c;
+      padding: 1.4rem;
+      border: 1px solid #4a425b;
       border-radius: 1rem;
-      background: #0c111b;
-      box-shadow: 0 2rem 8rem black;
+      background: #0e0f16;
+      box-shadow: 0 2rem 8rem #000;
       text-align: center;
     }
 
     .modal-box h2 {
       margin: 0 0 1rem;
-      font-size: clamp(1.7rem, 5vw, 3rem);
+      font-family: Georgia, serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
       font-style: italic;
-      text-transform: uppercase;
     }
 
-    .reveals {
+    .pack-reveals {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.8rem;
-      perspective: 75rem;
-    }
-
-    .reveal-slot {
-      min-height: 18rem;
-      transform-style: preserve-3d;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.65rem;
+      perspective: 70rem;
     }
 
     .reveal-card {
       position: relative;
-      width: 100%;
-      height: 100%;
-      min-height: 18rem;
-      border: 1px solid #38465c;
-      border-radius: 0.8rem;
+      min-height: 17rem;
+      border: 1px solid #4b4560;
+      border-radius: 0.7rem;
       background:
-        repeating-linear-gradient(45deg, transparent 0 1rem, rgb(255 255 255 / 4%) 1rem 2rem),
-        linear-gradient(145deg, #1d4ed8, #111827 55%, #991b1b);
-      transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
-      transform: rotateY(0);
+        repeating-linear-gradient(45deg, transparent 0 0.8rem, rgb(255 255 255 / 4%) 0.8rem 1.6rem),
+        linear-gradient(145deg, #581c87, #111827 60%, #831843);
       transform-style: preserve-3d;
+      transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
     }
 
     .reveal-card::before {
@@ -514,10 +563,9 @@
       inset: 0;
       display: grid;
       place-items: center;
-      content: "BB";
+      content: "♠";
+      font-family: Georgia, serif;
       font-size: 4rem;
-      font-style: italic;
-      font-weight: 950;
       backface-visibility: hidden;
     }
 
@@ -531,86 +579,87 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 1rem;
-      border: 2px solid var(--rarity-color);
+      padding: 0.75rem;
+      border: 2px solid var(--rarity);
       border-radius: inherit;
       background:
-        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--rarity-color) 30%, transparent), transparent 55%),
-        #101620;
+        radial-gradient(circle, color-mix(in srgb, var(--rarity) 25%, transparent), transparent 55%),
+        #11131b;
       backface-visibility: hidden;
       transform: rotateY(180deg);
     }
 
-    .reveal-face .car-art {
-      font-size: 5rem;
+    .reveal-face.normal {
+      border-color: #d1d5db;
+      background: #f8fafc;
+      color: #111827;
+    }
+
+    .normal-rank {
+      font-family: Georgia, serif;
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .normal-rank.red {
+      color: #dc2626;
+    }
+
+    .reveal-face .wild-art {
+      height: 5rem;
+      font-size: 4rem;
     }
 
     .reveal-face h3 {
-      margin: 0.5rem 0 0;
-      font-size: 1.4rem;
-      text-transform: uppercase;
+      margin: 0.25rem 0;
+      font-family: Georgia, serif;
+      font-size: 1.05rem;
     }
 
     .reveal-face p {
-      color: #a8b3c3;
+      margin: 0.2rem 0;
+      color: #aaa6b3;
+      font-size: 0.72rem;
     }
 
     .modal-action {
       width: min(22rem, 100%);
-      margin-top: 1.2rem;
+      margin-top: 1.1rem;
     }
 
-    .race-stage {
-      position: relative;
-      height: 18rem;
-      overflow: hidden;
-      border-radius: 0.8rem;
-      background:
-        linear-gradient(#172554 0 57%, #334155 57% 66%, #111827 66%);
+    .equip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.65rem;
+      text-align: left;
     }
 
-    .race-stage::after {
-      position: absolute;
-      right: 0;
-      bottom: 11%;
-      left: 0;
-      height: 0.4rem;
-      background: repeating-linear-gradient(90deg, white 0 2rem, transparent 2rem 4rem);
-      content: "";
-      opacity: 0.5;
+    .equip-option {
+      padding: 0.75rem;
+      border: 1px solid var(--rarity);
+      border-radius: 0.65rem;
+      background: #151721;
+      color: white;
+      cursor: pointer;
     }
 
-    .racer {
-      position: absolute;
-      left: 3%;
-      z-index: 1;
-      font-size: 4rem;
-      filter: drop-shadow(0 0.7rem 0.3rem rgb(0 0 0 / 50%));
-      transform: scaleX(-1);
-      transition: left 2.4s cubic-bezier(0.15, 0.65, 0.35, 1);
+    .equip-option.active {
+      outline: 3px solid white;
     }
 
-    .racer.player {
-      bottom: 24%;
+    .equip-option.unavailable {
+      opacity: 0.45;
     }
 
-    .racer.opponent {
-      bottom: 2%;
+    .equip-option strong,
+    .equip-option small {
+      display: block;
     }
 
-    .race-stage.running .racer.player {
-      left: var(--player-finish);
-    }
-
-    .race-stage.running .racer.opponent {
-      left: var(--opponent-finish);
-    }
-
-    #raceResult {
-      margin: 1rem 0 0;
-      font-size: 1.4rem;
-      font-weight: 900;
-      text-transform: uppercase;
+    .equip-option small {
+      margin-top: 0.3rem;
+      color: #aaa6b4;
     }
 
     #toast {
@@ -620,9 +669,9 @@
       z-index: 20;
       max-width: calc(100% - 2rem);
       padding: 0.75rem 1.1rem;
-      border: 1px solid #3d4d68;
+      border: 1px solid #4b425d;
       border-radius: 999px;
-      background: rgb(8 13 23 / 96%);
+      background: rgb(10 10 16 / 96%);
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, 1rem);
@@ -635,7 +684,23 @@
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
+      .casino-floor,
+      .pack-grid,
+      .wildcard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pack-reveals {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .equip-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
       header {
         align-items: flex-start;
         flex-direction: column;
@@ -645,32 +710,12 @@
         justify-content: flex-start;
       }
 
-      .packs,
-      .garage-grid,
-      .tour-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 540px) {
-      .packs,
-      .garage-grid,
-      .tour-grid,
-      .reveals {
+      .casino-floor,
+      .pack-grid,
+      .wildcard-grid,
+      .pack-reveals,
+      .equip-grid {
         grid-template-columns: 1fr;
-      }
-
-      .reveal-slot {
-        min-height: 14rem;
-      }
-
-      .reveal-card {
-        min-height: 14rem;
-      }
-
-      .garage-head {
-        align-items: flex-start;
-        flex-direction: column;
       }
     }
   </style>
@@ -678,190 +723,219 @@
 <body>
   <div class="app">
     <header>
-      <h1 class="logo">BoxBox <span>Motors</span><small>World Tour</small></h1>
+      <h1 class="logo">House of <span>Wildcards</span><small>Casino Collection</small></h1>
       <div class="stats">
-        <div class="stat"><small>Credits</small><strong id="credits">1,500</strong></div>
-        <div class="stat"><small>Trophies</small><strong id="trophies">0</strong></div>
-        <div class="stat"><small>Collection</small><strong id="collection">0 / 15</strong></div>
+        <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
+        <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
+        <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
       </div>
     </header>
 
     <nav>
-      <button class="active" data-screen="packs">Packs</button>
-      <button data-screen="garage">Garage</button>
-      <button data-screen="tour">World Tour</button>
+      <button class="active" data-screen="casino">Casino</button>
+      <button data-screen="packs">Card Packs</button>
+      <button data-screen="collection">Wildcards</button>
     </nav>
 
-    <section id="packs" class="screen active">
+    <section id="casino" class="screen active">
       <div class="hero">
         <div class="hero-content">
-          <div class="eyebrow">The next generation</div>
-          <h2>Collect. Tune. Race.</h2>
-          <p>Open car packs, build your dream garage, and race across the world. Every duplicate tunes your car and raises its performance rating.</p>
+          <div class="eyebrow">Tonight at the tables</div>
+          <h2>Make every hand unforgettable.</h2>
+          <p>Guests play automatically and pay for the experience. Equip collectible Wildcards to change the rules, create bigger hands, and turn a quiet card room into the hottest casino in town.</p>
         </div>
       </div>
 
-      <h2 class="section-title">Car packs</h2>
-      <div class="packs" id="packStore"></div>
+      <div class="section-head">
+        <div>
+          <h2>Casino floor</h2>
+          <p>Combine Wildcards to improve each table.</p>
+        </div>
+      </div>
+      <div id="casinoFloor" class="casino-floor"></div>
     </section>
 
-    <section id="garage" class="screen">
-      <div class="garage-head">
+    <section id="packs" class="screen">
+      <div class="section-head">
         <div>
-          <h2>Your garage</h2>
-          <p>Select a car to enter it in World Tour races.</p>
+          <h2>Card packs</h2>
+          <p>Most cards are ordinary. The lucky pulls are powerful Wildcards.</p>
         </div>
-        <div class="stat"><small>Selected car</small><strong id="selectedName">None</strong></div>
       </div>
-      <div class="garage-grid" id="garageGrid"></div>
+      <div id="packStore" class="pack-grid"></div>
     </section>
 
-    <section id="tour" class="screen">
-      <div class="garage-head">
+    <section id="collection" class="screen">
+      <div class="section-head">
         <div>
-          <h2>World Tour</h2>
-          <p>Win races, earn credits, and unlock new championships.</p>
+          <h2>Wildcard collection</h2>
+          <p>Duplicates increase a Wildcard's level and strengthen its effect.</p>
         </div>
-        <button class="secondary" style="width:auto;padding-inline:1.2rem" data-go-garage>Select car</button>
+        <button id="reset" class="danger" style="width:auto;padding-inline:1rem">Reset game</button>
       </div>
-      <div class="tour-grid" id="tourGrid"></div>
+      <div id="wildcardGrid" class="wildcard-grid"></div>
+      <div class="album-summary">
+        Ordinary card album: <strong id="normalAlbum">0 / 52</strong> discovered ·
+        <strong id="normalPulled">0</strong> ordinary cards pulled. They look nice, but provide no bonuses.
+      </div>
     </section>
   </div>
 
   <div id="packModal" class="modal">
     <div class="modal-box">
-      <h2 id="packTitle">Pack opening</h2>
-      <div class="reveals" id="reveals"></div>
-      <button id="revealButton" class="primary modal-action">Reveal first car</button>
+      <h2 id="packTitle">Opening pack</h2>
+      <div id="packReveals" class="pack-reveals"></div>
+      <button id="revealButton" class="primary modal-action">Reveal first card</button>
     </div>
   </div>
 
-  <div id="raceModal" class="modal">
+  <div id="equipModal" class="modal">
     <div class="modal-box">
-      <h2 id="raceTitle">Metro Sprint</h2>
-      <div id="raceStage" class="race-stage">
-        <div class="racer player">🏎️</div>
-        <div class="racer opponent">🏎️</div>
-      </div>
-      <p id="raceResult">Get ready...</p>
-      <button id="raceClose" class="primary modal-action" disabled>Racing...</button>
+      <h2 id="equipTitle">Equip Wildcards</h2>
+      <p id="equipStatus"></p>
+      <div id="equipGrid" class="equip-grid"></div>
+      <button id="equipClose" class="primary modal-action">Done</button>
     </div>
   </div>
 
   <div id="toast" role="status"></div>
 
   <script>
-    const rarityData = {
-      Common: { color: "#94a3b8", weight: 55 },
-      Uncommon: { color: "#4ade80", weight: 27 },
-      Rare: { color: "#38bdf8", weight: 12 },
+    const rarityInfo = {
+      Common: { color: "#94a3b8", weight: 52 },
+      Uncommon: { color: "#4ade80", weight: 28 },
+      Rare: { color: "#38bdf8", weight: 14 },
       Epic: { color: "#c084fc", weight: 5 },
       Legendary: { color: "#facc15", weight: 1 }
     };
 
-    const cars = [
-      { id: "metro", name: "Metro Zip", series: "Street", rarity: "Common", color: "#60a5fa", rating: 52, speed: 48, handling: 68 },
-      { id: "cinder", name: "Cinder S", series: "Street", rarity: "Common", color: "#f97316", rating: 54, speed: 56, handling: 58 },
-      { id: "brook", name: "Brookline", series: "Touring", rarity: "Common", color: "#a3e635", rating: 56, speed: 52, handling: 65 },
-      { id: "vanta", name: "Vanta GT", series: "Street", rarity: "Uncommon", color: "#475569", rating: 64, speed: 68, handling: 62 },
-      { id: "aero", name: "Aero RS", series: "Touring", rarity: "Uncommon", color: "#f8fafc", rating: 66, speed: 65, handling: 70 },
-      { id: "dust", name: "Dust Devil", series: "Rally", rarity: "Uncommon", color: "#d97706", rating: 68, speed: 62, handling: 75 },
-      { id: "neon", name: "Neon X", series: "Night", rarity: "Rare", color: "#22d3ee", rating: 76, speed: 80, handling: 74 },
-      { id: "summit", name: "Summit R", series: "Rally", rarity: "Rare", color: "#ef4444", rating: 78, speed: 74, handling: 84 },
-      { id: "monarch", name: "Monarch V8", series: "Muscle", rarity: "Rare", color: "#8b5cf6", rating: 80, speed: 88, handling: 67 },
-      { id: "tempest", name: "Tempest LM", series: "Endurance", rarity: "Epic", color: "#2563eb", rating: 89, speed: 92, handling: 86 },
-      { id: "phantom", name: "Phantom R", series: "Prototype", rarity: "Epic", color: "#e2e8f0", rating: 91, speed: 96, handling: 84 },
-      { id: "voltage", name: "Voltage E", series: "Electric", rarity: "Epic", color: "#10b981", rating: 93, speed: 91, handling: 94 },
-      { id: "nova", name: "Nova One", series: "Hypercar", rarity: "Legendary", color: "#facc15", rating: 103, speed: 108, handling: 98 },
-      { id: "zenith", name: "Zenith X", series: "Prototype", rarity: "Legendary", color: "#f472b6", rating: 106, speed: 110, handling: 102 },
-      { id: "boxbox", name: "BB-01 Legacy", series: "Heritage", rarity: "Legendary", color: "#ef4444", rating: 110, speed: 112, handling: 108 }
+    const wildcards = [
+      { id: "redVelvet", name: "Red Velvet", icon: "♥️", rarity: "Common", effect: "Hearts add $3 each.", effectType: "suit", suit: "♥", amount: 3 },
+      { id: "clubMember", name: "Club Member", icon: "♣️", rarity: "Common", effect: "Clubs add $3 each.", effectType: "suit", suit: "♣", amount: 3 },
+      { id: "faceTime", name: "Face Time", icon: "👑", rarity: "Common", effect: "Face cards add $4 each.", effectType: "faces", amount: 4 },
+      { id: "luckySeven", name: "Lucky Seven", icon: "7️⃣", rarity: "Uncommon", effect: "Any seven adds $18.", effectType: "rank", rank: 7, amount: 18 },
+      { id: "pairUp", name: "Pair Up", icon: "👯", rarity: "Uncommon", effect: "Pairs add $22.", effectType: "minimumTier", tier: 1, amount: 22 },
+      { id: "doubleTrouble", name: "Double Trouble", icon: "✌️", rarity: "Rare", effect: "Two Pair adds $55.", effectType: "exactHand", hand: "Two Pair", amount: 55 },
+      { id: "straightLine", name: "Straight Line", icon: "📏", rarity: "Rare", effect: "Straights add $85.", effectType: "exactHand", hand: "Straight", amount: 85 },
+      { id: "flushFund", name: "Flush Fund", icon: "🚿", rarity: "Rare", effect: "Flushes add $110.", effectType: "exactHand", hand: "Flush", amount: 110 },
+      { id: "fullHouseParty", name: "Full House Party", icon: "🏠", rarity: "Epic", effect: "Full Houses add $240.", effectType: "exactHand", hand: "Full House", amount: 240 },
+      { id: "goldenGuest", name: "Golden Guest", icon: "🌟", rarity: "Epic", effect: "Every fifth guest pays $120 extra.", effectType: "fifthGuest", amount: 120 },
+      { id: "highSociety", name: "High Society", icon: "🎩", rarity: "Legendary", effect: "Multiplies all table income.", effectType: "multiplier", amount: 0.35 },
+      { id: "houseFavorite", name: "House Favorite", icon: "🃏", rarity: "Legendary", effect: "Every hand adds $100.", effectType: "always", amount: 100 }
     ];
 
-    const packTypes = [
+    const tableDefinitions = [
+      { id: "corner", name: "Corner Table", unlockCost: 0, reputationNeeded: 0, slots: 2, roundTime: 6, fee: 8 },
+      { id: "velvet", name: "Velvet Room", unlockCost: 1200, reputationNeeded: 18, slots: 3, roundTime: 5, fee: 18 },
+      { id: "skyline", name: "Skyline Lounge", unlockCost: 6500, reputationNeeded: 80, slots: 4, roundTime: 4, fee: 45 }
+    ];
+
+    const packDefinitions = [
       {
         id: "starter",
-        name: "Starter Pack",
-        className: "",
+        name: "Opening Night Pack",
         icon: "🎁",
         cost: 0,
-        description: "Three free cars to begin your World Tour.",
-        minimumLastRarity: "Uncommon"
+        wildcardChance: 0.35,
+        guaranteed: "Common",
+        description: "Your first five cards, with one guaranteed Wildcard."
       },
       {
-        id: "street",
-        name: "Street Pack",
-        className: "",
-        icon: "📦",
-        cost: 500,
-        description: "Three cars with a chance of any rarity."
+        id: "standard",
+        name: "House Pack",
+        icon: "🂠",
+        cost: 180,
+        wildcardChance: 0.22,
+        description: "Five cards. Wildcards can appear at any rarity."
       },
       {
-        id: "pro",
-        name: "Pro Pack",
-        className: "pro",
-        icon: "💎",
-        cost: 2200,
-        description: "Three cars. The final car is Rare or better.",
-        minimumLastRarity: "Rare"
+        id: "premium",
+        name: "Velvet Pack",
+        icon: "💜",
+        className: "premium",
+        cost: 750,
+        wildcardChance: 0.5,
+        guaranteed: "Uncommon",
+        description: "Better Wildcard odds and one guaranteed Uncommon or better."
       },
       {
-        id: "elite",
-        name: "Elite Pack",
-        className: "elite",
-        icon: "🏆",
-        cost: 8500,
-        description: "Five cars with two guaranteed Epic or better.",
-        cardCount: 5,
-        elite: true
+        id: "vault",
+        name: "Golden Vault",
+        icon: "🔐",
+        className: "vault",
+        cost: 2800,
+        wildcardChance: 0.72,
+        guaranteed: "Rare",
+        description: "Five cards with two guaranteed Rare or better Wildcards.",
+        guaranteedCount: 2
       }
     ];
 
-    const races = [
-      { id: "metroRace", name: "Metro Sprint", icon: "🌆", requirement: 0, opponent: 54, reward: 450, trophyReward: 1, colors: ["#1d4ed8", "#581c87"] },
-      { id: "coastRace", name: "Coastal Run", icon: "🌊", requirement: 3, opponent: 65, reward: 800, trophyReward: 2, colors: ["#0369a1", "#0f766e"] },
-      { id: "alpineRace", name: "Alpine Rally", icon: "🏔️", requirement: 8, opponent: 76, reward: 1500, trophyReward: 3, colors: ["#475569", "#164e63"] },
-      { id: "desertRace", name: "Desert 500", icon: "🏜️", requirement: 15, opponent: 88, reward: 3000, trophyReward: 4, colors: ["#92400e", "#7f1d1d"] },
-      { id: "finalRace", name: "World Final", icon: "🌍", requirement: 25, opponent: 102, reward: 7500, trophyReward: 7, colors: ["#312e81", "#991b1b"] }
-    ];
+    const ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+    const suits = ["♠", "♥", "♦", "♣"];
+    const rankLabels = { 11: "J", 12: "Q", 13: "K", 14: "A" };
+    const customerNames = ["Mina", "Theo", "Jules", "Ari", "Nico", "Rae", "Kit", "Sam", "Luca", "Zoe"];
+    const customerIcons = ["😎", "🤠", "🤑", "🕶️", "🎩", "💎", "👑", "🥳"];
 
-    const creditsDisplay = document.querySelector("#credits");
-    const trophiesDisplay = document.querySelector("#trophies");
-    const collectionDisplay = document.querySelector("#collection");
-    const selectedName = document.querySelector("#selectedName");
+    const cashDisplay = document.querySelector("#cash");
+    const reputationDisplay = document.querySelector("#reputation");
+    const guestsDisplay = document.querySelector("#guests");
+    const casinoFloor = document.querySelector("#casinoFloor");
     const packStore = document.querySelector("#packStore");
-    const garageGrid = document.querySelector("#garageGrid");
-    const tourGrid = document.querySelector("#tourGrid");
+    const wildcardGrid = document.querySelector("#wildcardGrid");
+    const normalAlbumDisplay = document.querySelector("#normalAlbum");
+    const normalPulledDisplay = document.querySelector("#normalPulled");
     const packModal = document.querySelector("#packModal");
     const packTitle = document.querySelector("#packTitle");
-    const reveals = document.querySelector("#reveals");
+    const packReveals = document.querySelector("#packReveals");
     const revealButton = document.querySelector("#revealButton");
-    const raceModal = document.querySelector("#raceModal");
-    const raceStage = document.querySelector("#raceStage");
-    const raceTitle = document.querySelector("#raceTitle");
-    const raceResult = document.querySelector("#raceResult");
-    const raceClose = document.querySelector("#raceClose");
+    const equipModal = document.querySelector("#equipModal");
+    const equipTitle = document.querySelector("#equipTitle");
+    const equipStatus = document.querySelector("#equipStatus");
+    const equipGrid = document.querySelector("#equipGrid");
     const toast = document.querySelector("#toast");
 
-    let credits = 1500;
-    let trophies = 0;
-    let collection = {};
-    let selectedCar = null;
+    let cash = 300;
+    let reputation = 0;
+    let guestsServed = 0;
+    let wildcardCollection = {};
+    let normalCollection = {};
+    let normalCardsPulled = 0;
     let starterOpened = false;
+    let tables = tableDefinitions.map((table, index) => ({
+      unlocked: index === 0,
+      equipped: [],
+      timer: table.roundTime,
+      customer: null,
+      lastHand: [],
+      lastResult: "Waiting for the first guest..."
+    }));
     let currentPack = [];
     let revealIndex = 0;
+    let activeEquipTable = null;
     let toastTimer;
 
-    function formatNumber(value) {
-      return Math.floor(value).toLocaleString();
+    function formatMoney(value) {
+      if (value >= 1_000_000) {
+        return `$${(value / 1_000_000).toFixed(2)}M`;
+      }
+      if (value >= 10_000) {
+        return `$${(value / 1_000).toFixed(1)}K`;
+      }
+      return `$${Math.floor(value).toLocaleString()}`;
     }
 
     function rarityRank(rarity) {
-      return Object.keys(rarityData).indexOf(rarity);
+      return Object.keys(rarityInfo).indexOf(rarity);
     }
 
-    function effectiveRating(car) {
-      const copies = collection[car.id] || 0;
-      return car.rating + Math.min(15, Math.max(0, copies - 1) * 2);
+    function wildcardLevel(id) {
+      return wildcardCollection[id] || 0;
+    }
+
+    function scaledAmount(wildcard) {
+      const level = wildcardLevel(wildcard.id);
+      return wildcard.amount * (1 + Math.max(0, level - 1) * 0.25);
     }
 
     function showToast(text) {
@@ -871,249 +945,421 @@
       toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
-    function randomCar(minimumRarity = "Common") {
-      const minimumRank = rarityRank(minimumRarity);
-      const eligibleRarities = Object.entries(rarityData)
-        .filter(([rarity]) => rarityRank(rarity) >= minimumRank);
-      const totalWeight = eligibleRarities.reduce((total, [, data]) => total + data.weight, 0);
-      let roll = Math.random() * totalWeight;
-      let chosenRarity = eligibleRarities[0][0];
+    function randomNormalCard() {
+      const rank = ranks[Math.floor(Math.random() * ranks.length)];
+      const suit = suits[Math.floor(Math.random() * suits.length)];
+      return {
+        type: "normal",
+        rank,
+        suit,
+        label: rankLabels[rank] || String(rank),
+        id: `${rank}-${suit}`
+      };
+    }
 
-      for (const [rarity, data] of eligibleRarities) {
-        roll -= data.weight;
+    function randomWildcard(minimumRarity = "Common") {
+      const minimum = rarityRank(minimumRarity);
+      const rarityPool = Object.entries(rarityInfo).filter(([rarity]) => rarityRank(rarity) >= minimum);
+      const totalWeight = rarityPool.reduce((total, [, info]) => total + info.weight, 0);
+      let roll = Math.random() * totalWeight;
+      let chosenRarity = rarityPool[0][0];
+
+      for (const [rarity, info] of rarityPool) {
+        roll -= info.weight;
         if (roll <= 0) {
           chosenRarity = rarity;
           break;
         }
       }
 
-      const pool = cars.filter(car => car.rarity === chosenRarity);
-      return pool[Math.floor(Math.random() * pool.length)];
+      const pool = wildcards.filter(wildcard => wildcard.rarity === chosenRarity);
+      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
     }
 
-    function createPackCards(pack) {
-      const cardCount = pack.cardCount || 3;
-      return Array.from({ length: cardCount }, (_, index) => {
-        if (pack.elite && index >= cardCount - 2) {
-          return randomCar("Epic");
+    function createPack(pack) {
+      const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      return Array.from({ length: 5 }, (_, index) => {
+        if (index >= 5 - guaranteedCount) {
+          return randomWildcard(pack.guaranteed);
         }
-        if (index === cardCount - 1 && pack.minimumLastRarity) {
-          return randomCar(pack.minimumLastRarity);
+        return Math.random() < pack.wildcardChance ? randomWildcard() : randomNormalCard();
+      });
+    }
+
+    function addPackToCollection(cards) {
+      cards.forEach(card => {
+        if (card.type === "wildcard") {
+          const id = card.wildcard.id;
+          wildcardCollection[id] = (wildcardCollection[id] || 0) + 1;
+        } else {
+          normalCollection[card.id] = (normalCollection[card.id] || 0) + 1;
+          normalCardsPulled += 1;
         }
-        return randomCar();
       });
     }
 
     function openPack(packId) {
-      const pack = packTypes.find(item => item.id === packId);
-
+      const pack = packDefinitions.find(item => item.id === packId);
       if (pack.id === "starter" && starterOpened) {
         return;
       }
-      if (credits < pack.cost) {
-        showToast(`You need ${formatNumber(pack.cost - credits)} more credits.`);
+      if (cash < pack.cost) {
+        showToast(`You need ${formatMoney(pack.cost - cash)} more.`);
         return;
       }
 
-      credits -= pack.cost;
+      cash -= pack.cost;
       if (pack.id === "starter") {
         starterOpened = true;
       }
-
-      currentPack = createPackCards(pack);
-      currentPack.forEach(car => {
-        collection[car.id] = (collection[car.id] || 0) + 1;
-      });
-      if (!selectedCar) {
-        selectedCar = currentPack[0].id;
-      }
-
+      currentPack = createPack(pack);
+      addPackToCollection(currentPack);
       revealIndex = 0;
+
       packTitle.textContent = pack.name;
-      reveals.style.gridTemplateColumns = `repeat(${Math.min(currentPack.length, 3)}, minmax(0, 1fr))`;
-      reveals.innerHTML = currentPack.map(car => `
-        <div class="reveal-slot">
+      packReveals.innerHTML = currentPack.map(card => {
+        if (card.type === "normal") {
+          const isRed = card.suit === "♥" || card.suit === "♦";
+          return `
+            <div class="reveal-card">
+              <div class="reveal-face normal">
+                <div class="normal-rank ${isRed ? "red" : ""}">${card.label}${card.suit}</div>
+                <h3>Ordinary card</h3>
+                <p>No effect. Added to your album.</p>
+              </div>
+            </div>
+          `;
+        }
+
+        const wildcard = card.wildcard;
+        return `
           <div class="reveal-card">
-            <div
-              class="reveal-face"
-              style="--rarity-color:${rarityData[car.rarity].color};--car-color:${car.color}"
-            >
-              <div class="rarity">${car.rarity}</div>
-              <div class="car-art">🏎️</div>
-              <h3>${car.name}</h3>
-              <p>${car.series} · Rating ${effectiveRating(car)}</p>
+            <div class="reveal-face" style="--rarity:${rarityInfo[wildcard.rarity].color}">
+              <div class="rarity-label">${wildcard.rarity}</div>
+              <div class="wild-art">${wildcard.icon}</div>
+              <h3>${wildcard.name}</h3>
+              <p>${wildcard.effect}</p>
+              <p>Level ${wildcardLevel(wildcard.id)}</p>
             </div>
           </div>
-        </div>
-      `).join("");
-      revealButton.textContent = "Reveal first car";
+        `;
+      }).join("");
+
+      revealButton.textContent = "Reveal first card";
       packModal.classList.add("open");
       saveGame();
       render();
     }
 
-    function revealNext() {
-      const cards = reveals.querySelectorAll(".reveal-card");
+    function revealNextCard() {
+      const cards = packReveals.querySelectorAll(".reveal-card");
       if (revealIndex < cards.length) {
-        const car = currentPack[revealIndex];
         cards[revealIndex].classList.add("revealed");
         revealIndex += 1;
-
-        if (revealIndex < cards.length) {
-          revealButton.textContent = `Reveal car ${revealIndex + 1}`;
-        } else {
-          revealButton.textContent = "Add to garage";
-          const copies = collection[car.id];
-          if (copies > 1) {
-            showToast(`Duplicate ${car.name}: performance increased.`);
-          }
-        }
+        revealButton.textContent = revealIndex < cards.length
+          ? `Reveal card ${revealIndex + 1}`
+          : "Keep cards";
         return;
       }
 
       packModal.classList.remove("open");
-      showScreen("garage");
+      showScreen("collection");
     }
 
-    function selectCar(id) {
-      if (!collection[id]) {
+    function dealHand() {
+      const deck = [];
+      ranks.forEach(rank => suits.forEach(suit => deck.push({ rank, suit })));
+      for (let index = deck.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [deck[index], deck[swapIndex]] = [deck[swapIndex], deck[index]];
+      }
+      return deck.slice(0, 5);
+    }
+
+    function evaluateHand(hand) {
+      const counts = {};
+      hand.forEach(card => {
+        counts[card.rank] = (counts[card.rank] || 0) + 1;
+      });
+      const groups = Object.values(counts).sort((a, b) => b - a);
+      const uniqueRanks = [...new Set(hand.map(card => card.rank))].sort((a, b) => a - b);
+      const aceLow = uniqueRanks.join(",") === "2,3,4,5,14";
+      const straight = uniqueRanks.length === 5 && (
+        aceLow || uniqueRanks[4] - uniqueRanks[0] === 4
+      );
+      const flush = hand.every(card => card.suit === hand[0].suit);
+
+      if (straight && flush) return { name: "Straight Flush", tier: 8, payout: 320 };
+      if (groups[0] === 4) return { name: "Four of a Kind", tier: 7, payout: 190 };
+      if (groups[0] === 3 && groups[1] === 2) return { name: "Full House", tier: 6, payout: 110 };
+      if (flush) return { name: "Flush", tier: 5, payout: 70 };
+      if (straight) return { name: "Straight", tier: 4, payout: 52 };
+      if (groups[0] === 3) return { name: "Three of a Kind", tier: 3, payout: 34 };
+      if (groups[0] === 2 && groups[1] === 2) return { name: "Two Pair", tier: 2, payout: 22 };
+      if (groups[0] === 2) return { name: "Pair", tier: 1, payout: 11 };
+      return { name: "High Card", tier: 0, payout: 4 };
+    }
+
+    function wildcardBonus(wildcard, hand, result) {
+      const amount = scaledAmount(wildcard);
+      switch (wildcard.effectType) {
+        case "suit":
+          return hand.filter(card => card.suit === wildcard.suit).length * amount;
+        case "faces":
+          return hand.filter(card => card.rank >= 11).length * amount;
+        case "rank":
+          return hand.some(card => card.rank === wildcard.rank) ? amount : 0;
+        case "minimumTier":
+          return result.tier >= wildcard.tier ? amount : 0;
+        case "exactHand":
+          return result.name === wildcard.hand ? amount : 0;
+        case "fifthGuest":
+          return guestsServed % 5 === 0 ? amount : 0;
+        case "always":
+          return amount;
+        default:
+          return 0;
+      }
+    }
+
+    function playRound(tableIndex) {
+      const tableState = tables[tableIndex];
+      const definition = tableDefinitions[tableIndex];
+      const hand = dealHand();
+      const result = evaluateHand(hand);
+      const equippedWildcards = tableState.equipped
+        .map(id => wildcards.find(wildcard => wildcard.id === id))
+        .filter(Boolean);
+
+      guestsServed += 1;
+      let earnings = definition.fee + result.payout;
+      let multiplier = 1;
+      equippedWildcards.forEach(wildcard => {
+        if (wildcard.effectType === "multiplier") {
+          multiplier += scaledAmount(wildcard);
+        } else {
+          earnings += wildcardBonus(wildcard, hand, result);
+        }
+      });
+      earnings = Math.floor(earnings * multiplier);
+
+      cash += earnings;
+      reputation += 1 + result.tier;
+      tableState.lastHand = hand;
+      tableState.customer = {
+        name: customerNames[Math.floor(Math.random() * customerNames.length)],
+        icon: customerIcons[Math.floor(Math.random() * customerIcons.length)]
+      };
+      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>`;
+      saveGame();
+    }
+
+    function unlockTable(index) {
+      const definition = tableDefinitions[index];
+      if (reputation < definition.reputationNeeded) {
+        showToast(`You need ${definition.reputationNeeded - reputation} more reputation.`);
         return;
       }
-      selectedCar = id;
-      showToast(`${cars.find(car => car.id === id).name} selected.`);
+      if (cash < definition.unlockCost) {
+        showToast(`You need ${formatMoney(definition.unlockCost - cash)} more.`);
+        return;
+      }
+
+      cash -= definition.unlockCost;
+      tables[index].unlocked = true;
+      tables[index].timer = definition.roundTime;
+      showToast(`${definition.name} is now open.`);
       saveGame();
       render();
     }
 
-    function startRace(raceId) {
-      const race = races.find(item => item.id === raceId);
-      const car = cars.find(item => item.id === selectedCar);
-
-      if (!car) {
-        showToast("Select a car from your garage first.");
-        showScreen("garage");
-        return;
-      }
-      if (trophies < race.requirement) {
-        return;
-      }
-
-      const playerScore = effectiveRating(car) + Math.random() * 24;
-      const opponentScore = race.opponent + Math.random() * 24;
-      const won = playerScore >= opponentScore;
-      const playerFinish = won ? 87 : 72 + Math.random() * 8;
-      const opponentFinish = won ? 72 + Math.random() * 8 : 87;
-
-      raceTitle.textContent = race.name;
-      raceResult.textContent = `${car.name} is on the grid...`;
-      raceClose.textContent = "Racing...";
-      raceClose.disabled = true;
-      raceStage.classList.remove("running");
-      raceStage.style.setProperty("--player-finish", `${playerFinish}%`);
-      raceStage.style.setProperty("--opponent-finish", `${opponentFinish}%`);
-      raceModal.classList.add("open");
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => raceStage.classList.add("running"));
-      });
-
-      setTimeout(() => {
-        if (won) {
-          credits += race.reward;
-          trophies += race.trophyReward;
-          raceResult.textContent = `Victory! +${formatNumber(race.reward)} credits · +${race.trophyReward} trophies`;
-        } else {
-          const consolation = Math.floor(race.reward * 0.2);
-          credits += consolation;
-          raceResult.textContent = `Finished second. +${formatNumber(consolation)} credits`;
+    function wildcardUsage(id, excludingTable = -1) {
+      return tables.reduce((total, table, index) => {
+        if (index === excludingTable) {
+          return total;
         }
-        raceClose.textContent = "Continue";
-        raceClose.disabled = false;
-        saveGame();
-        render();
-      }, 2600);
+        return total + table.equipped.filter(equippedId => equippedId === id).length;
+      }, 0);
     }
 
-    function carCard(car) {
-      const copies = collection[car.id] || 0;
-      const owned = copies > 0;
-      const rating = effectiveRating(car);
-      return `
-        <article
-          class="car-card ${owned ? "" : "locked"} ${selectedCar === car.id ? "selected" : ""}"
-          data-car="${car.id}"
-          style="--rarity-color:${owned ? rarityData[car.rarity].color : "#334155"};--car-color:${owned ? car.color : "#1e293b"}"
-        >
-          <div class="rarity">${owned ? car.rarity : "Undiscovered"}</div>
-          <h3>${owned ? car.name : "Unknown car"}</h3>
-          <div class="series">${owned ? car.series : "Open packs to discover"}</div>
-          <div class="car-art">${owned ? "🏎️" : "?"}</div>
-          <div class="rating-row"><span>Performance</span><strong>${owned ? rating : "—"}</strong></div>
-          <div class="rating-bar"><div style="width:${owned ? Math.min(100, rating / 1.15) : 0}%"></div></div>
-          <div class="rating-row"><span>Speed ${owned ? car.speed : "—"}</span><span>Handling ${owned ? car.handling : "—"}</span></div>
-          <div class="copies">${owned ? `${copies} owned · ${Math.max(0, copies - 1) * 2} tuning bonus` : ""}</div>
-        </article>
-      `;
+    function openEquipModal(index) {
+      activeEquipTable = index;
+      equipTitle.textContent = tableDefinitions[index].name;
+      renderEquipOptions();
+      equipModal.classList.add("open");
+    }
+
+    function toggleWildcard(id) {
+      const table = tables[activeEquipTable];
+      const definition = tableDefinitions[activeEquipTable];
+      const existingIndex = table.equipped.indexOf(id);
+
+      if (existingIndex >= 0) {
+        table.equipped.splice(existingIndex, 1);
+      } else {
+        if (table.equipped.length >= definition.slots) {
+          showToast("Every Wildcard slot is full.");
+          return;
+        }
+        if (wildcardUsage(id, activeEquipTable) >= wildcardLevel(id)) {
+          showToast("That Wildcard is already being used at another table.");
+          return;
+        }
+        table.equipped.push(id);
+      }
+
+      saveGame();
+      renderEquipOptions();
+      renderCasino();
+    }
+
+    function renderEquipOptions() {
+      const table = tables[activeEquipTable];
+      const definition = tableDefinitions[activeEquipTable];
+      const owned = wildcards.filter(wildcard => wildcardLevel(wildcard.id) > 0);
+      equipStatus.textContent = `${table.equipped.length} / ${definition.slots} slots used`;
+
+      if (owned.length === 0) {
+        equipGrid.innerHTML = "<p>Open card packs to find your first Wildcard.</p>";
+        return;
+      }
+
+      equipGrid.innerHTML = owned.map(wildcard => {
+        const active = table.equipped.includes(wildcard.id);
+        const unavailable = !active && wildcardUsage(wildcard.id, activeEquipTable) >= wildcardLevel(wildcard.id);
+        return `
+          <button
+            class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""}"
+            data-equip="${wildcard.id}"
+            style="--rarity:${rarityInfo[wildcard.rarity].color}"
+          >
+            <strong>${wildcard.icon} ${wildcard.name}</strong>
+            <small>${wildcard.effect}</small>
+            <small>Level ${wildcardLevel(wildcard.id)}</small>
+          </button>
+        `;
+      }).join("");
+
+      equipGrid.querySelectorAll("[data-equip]").forEach(button => {
+        button.addEventListener("click", () => toggleWildcard(button.dataset.equip));
+      });
+    }
+
+    function renderHand(hand) {
+      if (!hand.length) {
+        return "";
+      }
+      return hand.map((card, index) => {
+        const label = rankLabels[card.rank] || card.rank;
+        const red = card.suit === "♥" || card.suit === "♦";
+        return `<div class="mini-card ${red ? "red" : ""}" style="--tilt:${(index - 2) * 3}deg">${label}${card.suit}</div>`;
+      }).join("");
+    }
+
+    function renderCasino() {
+      casinoFloor.innerHTML = tableDefinitions.map((definition, index) => {
+        const table = tables[index];
+        if (!table.unlocked) {
+          return `
+            <article class="table-card locked">
+              <div>
+                <div style="font-size:3rem">🔒</div>
+                <h3>${definition.name}</h3>
+                <p style="color:#9995a4">Requires ${definition.reputationNeeded} reputation</p>
+                <button class="primary" data-unlock="${index}">
+                  Open table · ${formatMoney(definition.unlockCost)}
+                </button>
+              </div>
+            </article>
+          `;
+        }
+
+        const equipped = table.equipped.map(id => {
+          const wildcard = wildcards.find(item => item.id === id);
+          return `<div class="wild-mini" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${wildcard.icon}</div>`;
+        }).join("");
+        const emptySlots = Array.from(
+          { length: definition.slots - table.equipped.length },
+          () => '<div class="wild-mini empty-slot">+</div>'
+        ).join("");
+
+        return `
+          <article class="table-card">
+            <h3>${definition.name}</h3>
+            <div class="table-meta">
+              <span>Next hand in ${table.timer}s</span>
+              <span>${definition.slots} Wildcard slots</span>
+            </div>
+            <div class="customer">
+              <div class="customer-avatar">${table.customer?.icon || "🪑"}</div>
+              <strong>${table.customer?.name || "Waiting for a guest"}</strong>
+            </div>
+            <div class="hand">${renderHand(table.lastHand)}</div>
+            <div class="round-result">${table.lastResult}</div>
+            <div class="equipped-row">${equipped}${emptySlots}</div>
+            <button class="secondary" data-manage="${index}">Manage Wildcards</button>
+          </article>
+        `;
+      }).join("");
+
+      casinoFloor.querySelectorAll("[data-unlock]").forEach(button => {
+        button.addEventListener("click", () => unlockTable(Number(button.dataset.unlock)));
+      });
+      casinoFloor.querySelectorAll("[data-manage]").forEach(button => {
+        button.addEventListener("click", () => openEquipModal(Number(button.dataset.manage)));
+      });
     }
 
     function renderPacks() {
-      packStore.innerHTML = packTypes.map(pack => {
-        const usedStarter = pack.id === "starter" && starterOpened;
+      packStore.innerHTML = packDefinitions.map(pack => {
+        const claimed = pack.id === "starter" && starterOpened;
         return `
-          <article class="pack ${pack.className}">
+          <article class="pack ${pack.className || ""}">
             <h3>${pack.name}</h3>
             <div class="pack-art">${pack.icon}</div>
             <p>${pack.description}</p>
-            <button class="primary" data-pack="${pack.id}" ${usedStarter ? "disabled" : ""}>
-              ${usedStarter ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatNumber(pack.cost)} credits`}
+            <button class="primary" data-pack="${pack.id}" ${claimed ? "disabled" : ""}>
+              ${claimed ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatMoney(pack.cost)}`}
             </button>
           </article>
         `;
       }).join("");
 
-      document.querySelectorAll("[data-pack]").forEach(button => {
+      packStore.querySelectorAll("[data-pack]").forEach(button => {
         button.addEventListener("click", () => openPack(button.dataset.pack));
       });
     }
 
-    function renderGarage() {
-      garageGrid.innerHTML = cars.map(carCard).join("");
-      garageGrid.querySelectorAll("[data-car]").forEach(card => {
-        card.addEventListener("click", () => selectCar(card.dataset.car));
-      });
-      const selected = cars.find(car => car.id === selectedCar);
-      selectedName.textContent = selected ? `${selected.name} · ${effectiveRating(selected)}` : "None";
-    }
-
-    function renderTour() {
-      tourGrid.innerHTML = races.map(race => {
-        const unlocked = trophies >= race.requirement;
+    function renderCollection() {
+      wildcardGrid.innerHTML = wildcards.map(wildcard => {
+        const level = wildcardLevel(wildcard.id);
+        const owned = level > 0;
         return `
-          <article class="tour-card ${unlocked ? "" : "locked"}">
-            <div class="track" style="--track-a:${race.colors[0]};--track-b:${race.colors[1]}">${unlocked ? race.icon : "🔒"}</div>
-            <h3>${race.name}</h3>
-            <p>${unlocked ? `Recommended rating: ${race.opponent}` : `Requires ${race.requirement} trophies`}</p>
-            <div class="race-info">
-              <span>Reward<strong>${formatNumber(race.reward)} credits</strong></span>
-              <span>Trophies<strong>+${race.trophyReward}</strong></span>
-            </div>
-            <button class="primary" data-race="${race.id}" ${unlocked ? "" : "disabled"}>Enter race</button>
+          <article class="wildcard-card ${owned ? "" : "locked"}" style="--rarity:${owned ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
+            <div class="rarity-label">${owned ? wildcard.rarity : "Undiscovered"}</div>
+            <div class="wild-art">${owned ? wildcard.icon : "?"}</div>
+            <h3>${owned ? wildcard.name : "Unknown Wildcard"}</h3>
+            <p>${owned ? wildcard.effect : "Find this card inside a pack."}</p>
+            <div class="level">${owned ? `Level ${level}` : ""}</div>
           </article>
         `;
       }).join("");
 
-      document.querySelectorAll("[data-race]").forEach(button => {
-        button.addEventListener("click", () => startRace(button.dataset.race));
-      });
+      normalAlbumDisplay.textContent = `${Object.keys(normalCollection).length} / 52`;
+      normalPulledDisplay.textContent = normalCardsPulled.toLocaleString();
+    }
+
+    function renderStats() {
+      cashDisplay.textContent = formatMoney(cash);
+      reputationDisplay.textContent = Math.floor(reputation).toLocaleString();
+      guestsDisplay.textContent = guestsServed.toLocaleString();
     }
 
     function render() {
-      creditsDisplay.textContent = formatNumber(credits);
-      trophiesDisplay.textContent = formatNumber(trophies);
-      collectionDisplay.textContent = `${Object.keys(collection).filter(id => collection[id] > 0).length} / ${cars.length}`;
+      renderStats();
+      renderCasino();
       renderPacks();
-      renderGarage();
-      renderTour();
+      renderCollection();
     }
 
     function showScreen(screenId) {
@@ -1127,45 +1373,90 @@
     }
 
     function saveGame() {
-      localStorage.setItem("boxBoxWorldTourSave", JSON.stringify({
-        credits,
-        trophies,
-        collection,
-        selectedCar,
-        starterOpened
+      localStorage.setItem("houseOfWildcardsSave", JSON.stringify({
+        cash,
+        reputation,
+        guestsServed,
+        wildcardCollection,
+        normalCollection,
+        normalCardsPulled,
+        starterOpened,
+        tables: tables.map(table => ({
+          unlocked: table.unlocked,
+          equipped: table.equipped
+        }))
       }));
     }
 
     function loadGame() {
-      const saved = localStorage.getItem("boxBoxWorldTourSave");
+      const saved = localStorage.getItem("houseOfWildcardsSave");
       if (!saved) {
         return;
       }
 
       try {
         const state = JSON.parse(saved);
-        credits = Number.isFinite(state.credits) ? state.credits : credits;
-        trophies = Number.isFinite(state.trophies) ? state.trophies : trophies;
-        collection = state.collection && typeof state.collection === "object" ? state.collection : {};
-        selectedCar = typeof state.selectedCar === "string" ? state.selectedCar : null;
+        cash = Number.isFinite(state.cash) ? state.cash : cash;
+        reputation = Number.isFinite(state.reputation) ? state.reputation : reputation;
+        guestsServed = Number.isFinite(state.guestsServed) ? state.guestsServed : guestsServed;
+        wildcardCollection = state.wildcardCollection && typeof state.wildcardCollection === "object"
+          ? state.wildcardCollection
+          : {};
+        normalCollection = state.normalCollection && typeof state.normalCollection === "object"
+          ? state.normalCollection
+          : {};
+        normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
+        if (Array.isArray(state.tables)) {
+          state.tables.forEach((savedTable, index) => {
+            if (!tables[index]) {
+              return;
+            }
+            tables[index].unlocked = Boolean(savedTable.unlocked);
+            tables[index].equipped = Array.isArray(savedTable.equipped)
+              ? savedTable.equipped.filter(id => wildcards.some(wildcard => wildcard.id === id))
+              : [];
+          });
+          tables[0].unlocked = true;
+        }
       } catch {
-        localStorage.removeItem("boxBoxWorldTourSave");
+        localStorage.removeItem("houseOfWildcardsSave");
       }
     }
 
     document.querySelectorAll("nav button").forEach(button => {
       button.addEventListener("click", () => showScreen(button.dataset.screen));
     });
-    document.querySelector("[data-go-garage]").addEventListener("click", () => showScreen("garage"));
-    revealButton.addEventListener("click", revealNext);
-    raceClose.addEventListener("click", () => {
-      raceModal.classList.remove("open");
-      raceStage.classList.remove("running");
+    revealButton.addEventListener("click", revealNextCard);
+    document.querySelector("#equipClose").addEventListener("click", () => {
+      equipModal.classList.remove("open");
+      activeEquipTable = null;
+    });
+    document.querySelector("#reset").addEventListener("click", () => {
+      if (!confirm("Delete your casino and collection and start again?")) {
+        return;
+      }
+      localStorage.removeItem("houseOfWildcardsSave");
+      location.reload();
     });
 
     loadGame();
     render();
+
+    setInterval(() => {
+      tables.forEach((table, index) => {
+        if (!table.unlocked) {
+          return;
+        }
+        table.timer -= 1;
+        if (table.timer <= 0) {
+          playRound(index);
+          table.timer = tableDefinitions[index].roundTime;
+        }
+      });
+      renderStats();
+      renderCasino();
+    }, 1000);
   </script>
 </body>
 </html>
