@@ -403,6 +403,18 @@
       background: linear-gradient(145deg, #422006, #15120d);
     }
 
+    .pack.mythic {
+      border-color: #ef4444;
+      background: linear-gradient(145deg, #7f1d1d, #180d10);
+    }
+
+    .pack.limited {
+      border-color: transparent;
+      background:
+        linear-gradient(#15121d, #15121d) padding-box,
+        linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box;
+    }
+
     .pack::before {
       position: absolute;
       inset: -30%;
@@ -575,6 +587,20 @@
       opacity: 0.55;
     }
 
+    .rarity-limited {
+      border-color: transparent !important;
+      background:
+        radial-gradient(circle at 50% 40%, rgb(255 255 255 / 12%), transparent 48%) padding-box,
+        #10111a padding-box,
+        linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box !important;
+    }
+
+    .rarity-limited .rarity-label {
+      background: linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #c084fc);
+      background-clip: text;
+      color: transparent;
+    }
+
     .rarity-label {
       color: var(--rarity);
       font-size: 0.68rem;
@@ -589,6 +615,13 @@
       place-items: center;
       font-size: 4.5rem;
       filter: drop-shadow(0 0.5rem 0.5rem rgb(0 0 0 / 40%));
+    }
+
+    .wild-art img {
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 0.65rem;
+      object-fit: cover;
     }
 
     .wildcard-card h3 {
@@ -623,6 +656,33 @@
 
     .album-summary strong {
       color: white;
+    }
+
+    .luck-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #40354b;
+      border-radius: 0.85rem;
+      background: linear-gradient(120deg, #211429, #111218);
+    }
+
+    .luck-panel h3 {
+      margin: 0;
+    }
+
+    .luck-panel p {
+      margin: 0.25rem 0 0;
+      color: #a1a1aa;
+      font-size: 0.84rem;
+    }
+
+    .luck-panel button {
+      width: auto;
+      min-width: 12rem;
     }
 
     .collection-progress {
@@ -910,6 +970,15 @@
         flex-direction: column;
       }
 
+      .luck-panel {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .luck-panel button {
+        width: 100%;
+      }
+
       .auto-sell-toggle {
         width: 100%;
       }
@@ -964,6 +1033,13 @@
           <h2>Card packs</h2>
           <p>Most cards are ordinary. The lucky pulls are powerful Wildcards.</p>
         </div>
+      </div>
+      <div class="luck-panel">
+        <div>
+          <h3>🍀 Luck level <span id="luckLevel">0</span></h3>
+          <p>Raises Rare, Epic, Legendary, and Mythic odds. Ordinary, Common, Uncommon, and Limited odds never change.</p>
+        </div>
+        <button id="luckUpgrade" class="primary">Upgrade luck</button>
       </div>
       <div class="auto-sell">
         <div class="auto-sell-head">
@@ -1023,7 +1099,10 @@
       Uncommon: { color: "#4ade80", weight: 28 },
       Rare: { color: "#38bdf8", weight: 14 },
       Epic: { color: "#c084fc", weight: 5 },
-      Legendary: { color: "#facc15", weight: 1 }
+      Legendary: { color: "#facc15", weight: 1 },
+      Mythic: { color: "#ef4444", weight: 0.3 },
+      Limited: { color: "#f472b6", weight: 0.08 },
+      Secret: { color: "#ffffff", weight: 0, packable: false }
     };
     const saleValues = {
       Ordinary: 8,
@@ -1031,7 +1110,9 @@
       Uncommon: 75,
       Rare: 180,
       Epic: 500,
-      Legendary: 1500
+      Legendary: 1500,
+      Mythic: 5000,
+      Limited: 15000
     };
 
     const wildcards = [
@@ -1046,7 +1127,64 @@
       { id: "fullHouseParty", name: "Full House Party", icon: "🏠", rarity: "Epic", effect: "Full Houses add $240.", effectType: "exactHand", hand: "Full House", amount: 240 },
       { id: "goldenGuest", name: "Golden Guest", icon: "🌟", rarity: "Epic", effect: "Every fifth guest pays $120 extra.", effectType: "fifthGuest", amount: 120 },
       { id: "highSociety", name: "High Society", icon: "🎩", rarity: "Legendary", effect: "Multiplies all table income.", effectType: "multiplier", amount: 0.35 },
-      { id: "houseFavorite", name: "House Favorite", icon: "🃏", rarity: "Legendary", effect: "Every hand adds $100.", effectType: "always", amount: 100 }
+      { id: "houseFavorite", name: "House Favorite", icon: "🃏", rarity: "Legendary", effect: "Every hand adds $100.", effectType: "always", amount: 100 },
+      {
+        id: "crimsonCrown",
+        name: "Crimson Crown",
+        icon: "👹",
+        rarity: "Mythic",
+        effect: "Every hand adds $220 and all income is multiplied by 1.5.",
+        effects: [
+          { effectType: "always", amount: 220 },
+          { effectType: "multiplier", amount: 0.5 }
+        ]
+      },
+      {
+        id: "bloodMoon",
+        name: "Blood Moon",
+        icon: "🌑",
+        rarity: "Mythic",
+        effect: "Hearts add $25 each and Flushes add $350.",
+        effects: [
+          { effectType: "suit", suit: "♥", amount: 25 },
+          { effectType: "exactHand", hand: "Flush", amount: 350 }
+        ]
+      },
+      {
+        id: "prismParade",
+        name: "Prism Parade",
+        icon: "🌈",
+        rarity: "Limited",
+        effect: "Every hand adds $300 and all income is multiplied by 1.7.",
+        effects: [
+          { effectType: "always", amount: 300 },
+          { effectType: "multiplier", amount: 0.7 }
+        ]
+      },
+      {
+        id: "infiniteVIP",
+        name: "Infinite VIP",
+        icon: "💫",
+        rarity: "Limited",
+        effect: "Pairs or better add $100 and every fifth guest adds $500.",
+        effects: [
+          { effectType: "minimumTier", tier: 1, amount: 100 },
+          { effectType: "fifthGuest", amount: 500 }
+        ]
+      },
+      {
+        id: "dug",
+        name: "Dug, the Infinite",
+        icon: "🐶",
+        image: "https://wengier.com/InfiniteGummies/Dug.png",
+        rarity: "Secret",
+        packable: false,
+        effect: "Every hand adds $1,000 and all income is doubled.",
+        effects: [
+          { effectType: "always", amount: 1000 },
+          { effectType: "multiplier", amount: 1 }
+        ]
+      }
     ];
 
     const tableDefinitions = [
@@ -1093,6 +1231,41 @@
         guaranteed: "Rare",
         description: "Five cards with two guaranteed Rare or better Wildcards.",
         guaranteedCount: 2
+      },
+      {
+        id: "lucky",
+        name: "Lucky Seven Pack",
+        icon: "🍀",
+        className: "premium",
+        cost: 5200,
+        wildcardChance: 0.82,
+        guaranteed: "Epic",
+        description: "Seven cards with two guaranteed Epic or better Wildcards.",
+        guaranteedCount: 2,
+        cardCount: 7
+      },
+      {
+        id: "mythic",
+        name: "Crimson Mythic Pack",
+        icon: "🔥",
+        className: "mythic",
+        cost: 18000,
+        wildcardChance: 0.94,
+        guaranteed: "Legendary",
+        description: "Seven premium cards with three Legendary or better slots.",
+        guaranteedCount: 3,
+        cardCount: 7
+      },
+      {
+        id: "limited",
+        name: "Rainbow Limited Pack",
+        icon: "🌈",
+        className: "limited",
+        cost: 75000,
+        wildcardChance: 1,
+        exactGuaranteed: "Limited",
+        description: "Five Wildcards with one guaranteed Limited card.",
+        guaranteedCount: 1
       }
     ];
 
@@ -1114,6 +1287,8 @@
     const ordinaryGrid = document.querySelector("#ordinaryGrid");
     const autoSellToggle = document.querySelector("#autoSellToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
+    const luckLevelDisplay = document.querySelector("#luckLevel");
+    const luckUpgradeButton = document.querySelector("#luckUpgrade");
     const packModal = document.querySelector("#packModal");
     const packTitle = document.querySelector("#packTitle");
     const packReveals = document.querySelector("#packReveals");
@@ -1131,6 +1306,7 @@
     let normalCollection = {};
     let normalCardsPulled = 0;
     let starterOpened = false;
+    let luckLevel = 0;
     let autoSellEnabled = false;
     let autoSellRarities = {
       Ordinary: true,
@@ -1138,7 +1314,9 @@
       Uncommon: false,
       Rare: false,
       Epic: false,
-      Legendary: false
+      Legendary: false,
+      Mythic: false,
+      Limited: false
     };
     let tables = tableDefinitions.map((table, index) => ({
       unlocked: index === 0,
@@ -1167,11 +1345,21 @@
       return Object.keys(rarityInfo).indexOf(rarity);
     }
 
+    function effectiveRarityWeight(rarity, info) {
+      const luckBoosted = ["Rare", "Epic", "Legendary", "Mythic"].includes(rarity);
+      return info.weight * (luckBoosted ? 1 + luckLevel * 0.35 : 1);
+    }
+
     function rarityPercentages(minimumRarity = "Common") {
       const minimum = rarityRank(minimumRarity);
-      const entries = Object.entries(rarityInfo).filter(([rarity]) => rarityRank(rarity) >= minimum);
-      const totalWeight = entries.reduce((total, [, info]) => total + info.weight, 0);
-      return Object.fromEntries(entries.map(([rarity, info]) => [rarity, info.weight / totalWeight * 100]));
+      const entries = Object.entries(rarityInfo).filter(([rarity, info]) =>
+        info.packable !== false && rarityRank(rarity) >= minimum
+      );
+      const totalWeight = entries.reduce((total, [rarity, info]) => total + effectiveRarityWeight(rarity, info), 0);
+      return Object.fromEntries(entries.map(([rarity, info]) => [
+        rarity,
+        effectiveRarityWeight(rarity, info) / totalWeight * 100
+      ]));
     }
 
     function formatOdds(value) {
@@ -1198,6 +1386,13 @@
         return `<div class="odds" aria-label="Card rarity odds">${odds}</div><div class="guarantee">Odds shown per card</div>`;
       }
 
+      if (pack.exactGuaranteed) {
+        return `
+          <div class="odds" aria-label="Regular card rarity odds">${odds}</div>
+          <div class="guarantee">${guaranteedCount} guaranteed ${pack.exactGuaranteed} slot</div>
+        `;
+      }
+
       const guaranteedOdds = rarityPercentages(pack.guaranteed);
       const guaranteeText = Object.entries(guaranteedOdds)
         .map(([rarity, percentage]) => `${rarity} ${formatOdds(percentage)}`)
@@ -1215,9 +1410,20 @@
       return wildcardCollection[id] || 0;
     }
 
-    function scaledAmount(wildcard) {
+    function scaledAmount(wildcard, effect = wildcard) {
       const level = wildcardLevel(wildcard.id);
-      return wildcard.amount * (1 + Math.max(0, level - 1) * 0.25);
+      return effect.amount * (1 + Math.max(0, level - 1) * 0.25);
+    }
+
+    function wildcardEffects(wildcard) {
+      return wildcard.effects || [wildcard];
+    }
+
+    function wildcardArt(wildcard, className = "wild-art") {
+      if (wildcard.image) {
+        return `<div class="${className}"><img src="${wildcard.image}" alt="${wildcard.name}"></div>`;
+      }
+      return `<div class="${className}">${wildcard.icon}</div>`;
     }
 
     function showToast(text) {
@@ -1241,27 +1447,41 @@
 
     function randomWildcard(minimumRarity = "Common") {
       const minimum = rarityRank(minimumRarity);
-      const rarityPool = Object.entries(rarityInfo).filter(([rarity]) => rarityRank(rarity) >= minimum);
-      const totalWeight = rarityPool.reduce((total, [, info]) => total + info.weight, 0);
+      const rarityPool = Object.entries(rarityInfo).filter(([rarity, info]) =>
+        info.packable !== false && rarityRank(rarity) >= minimum
+      );
+      const totalWeight = rarityPool.reduce(
+        (total, [rarity, info]) => total + effectiveRarityWeight(rarity, info),
+        0
+      );
       let roll = Math.random() * totalWeight;
       let chosenRarity = rarityPool[0][0];
 
       for (const [rarity, info] of rarityPool) {
-        roll -= info.weight;
+        roll -= effectiveRarityWeight(rarity, info);
         if (roll <= 0) {
           chosenRarity = rarity;
           break;
         }
       }
 
-      const pool = wildcards.filter(wildcard => wildcard.rarity === chosenRarity);
+      const pool = wildcards.filter(wildcard => wildcard.packable !== false && wildcard.rarity === chosenRarity);
+      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
+    }
+
+    function exactRarityWildcard(rarity) {
+      const pool = wildcards.filter(wildcard => wildcard.packable !== false && wildcard.rarity === rarity);
       return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
     }
 
     function createPack(pack) {
       const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
-      return Array.from({ length: 5 }, (_, index) => {
-        if (index >= 5 - guaranteedCount) {
+      const cardCount = pack.cardCount || 5;
+      return Array.from({ length: cardCount }, (_, index) => {
+        if (index >= cardCount - guaranteedCount) {
+          if (pack.exactGuaranteed) {
+            return exactRarityWildcard(pack.exactGuaranteed);
+          }
           return randomWildcard(pack.guaranteed);
         }
         return Math.random() < pack.wildcardChance ? randomWildcard() : randomNormalCard();
@@ -1291,6 +1511,31 @@
           }
         }
       });
+      unlockSecretCardIfComplete();
+    }
+
+    function ordinaryCardCatalog() {
+      return suits.flatMap(suit => ranks.map(rank => ({
+        id: `${rank}-${suit}`,
+        label: rankLabels[rank] || String(rank),
+        suit
+      })));
+    }
+
+    function unlockSecretCardIfComplete() {
+      if (wildcardLevel("dug") > 0) {
+        return;
+      }
+
+      const ordinaryComplete = ordinaryCardCatalog().every(card => normalCollection[card.id] > 0);
+      const packCardsComplete = wildcards
+        .filter(wildcard => wildcard.packable !== false)
+        .every(wildcard => wildcardLevel(wildcard.id) > 0);
+      if (ordinaryComplete && packCardsComplete) {
+        wildcardCollection.dug = 1;
+        saveGame();
+        showToast("Collection complete! Dug, the Infinite has joined your casino.");
+      }
     }
 
     function openPack(packId) {
@@ -1329,9 +1574,9 @@
         const wildcard = card.wildcard;
         return `
           <div class="reveal-card">
-            <div class="reveal-face" style="--rarity:${rarityInfo[wildcard.rarity].color}">
+            <div class="reveal-face ${wildcard.rarity === "Limited" ? "rarity-limited" : ""}" style="--rarity:${rarityInfo[wildcard.rarity].color}">
               <div class="rarity-label">${wildcard.rarity}</div>
-              <div class="wild-art">${wildcard.icon}</div>
+              ${wildcardArt(wildcard)}
               <h3>${wildcard.name}</h3>
               <p>${wildcard.effect}</p>
               <p>${card.autoSold ? `Duplicate auto-sold for ${formatMoney(card.autoSold)}.` : `Level ${wildcardLevel(wildcard.id)}`}</p>
@@ -1395,19 +1640,19 @@
       return { name: "High Card", tier: 0, payout: 4 };
     }
 
-    function wildcardBonus(wildcard, hand, result) {
-      const amount = scaledAmount(wildcard);
-      switch (wildcard.effectType) {
+    function wildcardBonus(wildcard, effect, hand, result) {
+      const amount = scaledAmount(wildcard, effect);
+      switch (effect.effectType) {
         case "suit":
-          return hand.filter(card => card.suit === wildcard.suit).length * amount;
+          return hand.filter(card => card.suit === effect.suit).length * amount;
         case "faces":
           return hand.filter(card => card.rank >= 11).length * amount;
         case "rank":
-          return hand.some(card => card.rank === wildcard.rank) ? amount : 0;
+          return hand.some(card => card.rank === effect.rank) ? amount : 0;
         case "minimumTier":
-          return result.tier >= wildcard.tier ? amount : 0;
+          return result.tier >= effect.tier ? amount : 0;
         case "exactHand":
-          return result.name === wildcard.hand ? amount : 0;
+          return result.name === effect.hand ? amount : 0;
         case "fifthGuest":
           return guestsServed % 5 === 0 ? amount : 0;
         case "always":
@@ -1430,11 +1675,13 @@
       let earnings = definition.fee + result.payout;
       let multiplier = 1;
       equippedWildcards.forEach(wildcard => {
-        if (wildcard.effectType === "multiplier") {
-          multiplier += scaledAmount(wildcard);
-        } else {
-          earnings += wildcardBonus(wildcard, hand, result);
-        }
+        wildcardEffects(wildcard).forEach(effect => {
+          if (effect.effectType === "multiplier") {
+            multiplier += scaledAmount(wildcard, effect);
+          } else {
+            earnings += wildcardBonus(wildcard, effect, hand, result);
+          }
+        });
       });
       earnings = Math.floor(earnings * multiplier);
 
@@ -1524,7 +1771,7 @@
         const unavailable = !active && wildcardUsage(wildcard.id, activeEquipTable) >= wildcardLevel(wildcard.id);
         return `
           <button
-            class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""}"
+            class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""} ${wildcard.rarity === "Limited" ? "rarity-limited" : ""}"
             data-equip="${wildcard.id}"
             style="--rarity:${rarityInfo[wildcard.rarity].color}"
           >
@@ -1628,6 +1875,15 @@
       });
     }
 
+    function luckUpgradeCost() {
+      return Math.floor(2500 * Math.pow(2.4, luckLevel));
+    }
+
+    function renderLuck() {
+      luckLevelDisplay.textContent = luckLevel;
+      luckUpgradeButton.textContent = `Upgrade luck · ${formatMoney(luckUpgradeCost())}`;
+    }
+
     function renderPacks() {
       packStore.innerHTML = packDefinitions.map(pack => {
         const claimed = pack.id === "starter" && starterOpened;
@@ -1654,22 +1910,18 @@
         const level = wildcardLevel(wildcard.id);
         const owned = level > 0;
         return `
-          <article class="wildcard-card ${owned ? "" : "locked"}" style="--rarity:${owned ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
+          <article class="wildcard-card ${owned ? "" : "locked"} ${wildcard.rarity === "Limited" && owned ? "rarity-limited" : ""}" style="--rarity:${owned ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
             ${owned ? '<span class="collection-check">✓</span>' : ""}
-            <div class="rarity-label">${owned ? wildcard.rarity : "Undiscovered"}</div>
-            <div class="wild-art">${owned ? wildcard.icon : "?"}</div>
-            <h3>${owned ? wildcard.name : "Unknown Wildcard"}</h3>
-            <p>${owned ? wildcard.effect : "Find this card inside a pack."}</p>
+            <div class="rarity-label">${owned ? wildcard.rarity : wildcard.packable === false ? "Secret" : "Undiscovered"}</div>
+            ${owned ? wildcardArt(wildcard) : '<div class="wild-art">?</div>'}
+            <h3>${owned ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Wildcard"}</h3>
+            <p>${owned ? wildcard.effect : wildcard.packable === false ? "Complete every other card to unlock this secret." : "Find this card inside a pack."}</p>
             <div class="level">${owned ? `Level ${level}` : ""}</div>
           </article>
         `;
       }).join("");
 
-      const allOrdinaryCards = suits.flatMap(suit => ranks.map(rank => ({
-        id: `${rank}-${suit}`,
-        label: rankLabels[rank] || String(rank),
-        suit
-      })));
+      const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => normalCollection[card.id] > 0).length;
       const wildcardsDiscovered = wildcards.filter(wildcard => wildcardLevel(wildcard.id) > 0).length;
 
@@ -1698,6 +1950,7 @@
     function render() {
       renderStats();
       renderCasino();
+      renderLuck();
       renderAutoSell();
       renderPacks();
       renderCollection();
@@ -1722,6 +1975,7 @@
         normalCollection,
         normalCardsPulled,
         starterOpened,
+        luckLevel,
         autoSellEnabled,
         autoSellRarities,
         tables: tables.map(table => ({
@@ -1750,6 +2004,7 @@
           : {};
         normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
+        luckLevel = Number.isFinite(state.luckLevel) ? Math.max(0, Math.floor(state.luckLevel)) : 0;
         autoSellEnabled = Boolean(state.autoSellEnabled);
         if (state.autoSellRarities && typeof state.autoSellRarities === "object") {
           Object.keys(autoSellRarities).forEach(rarity => {
@@ -1782,6 +2037,18 @@
       renderAutoSell();
       showToast(`Duplicate auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
     });
+    luckUpgradeButton.addEventListener("click", () => {
+      const cost = luckUpgradeCost();
+      if (cash < cost) {
+        showToast(`You need ${formatMoney(cost - cash)} more for the luck upgrade.`);
+        return;
+      }
+      cash -= cost;
+      luckLevel += 1;
+      saveGame();
+      render();
+      showToast(`Luck upgraded to level ${luckLevel}.`);
+    });
     revealButton.addEventListener("click", revealNextCard);
     document.querySelector("#equipClose").addEventListener("click", () => {
       equipModal.classList.remove("open");
@@ -1796,6 +2063,7 @@
     });
 
     loadGame();
+    unlockSecretCardIfComplete();
     render();
 
     setInterval(() => {
