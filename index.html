@@ -440,6 +440,70 @@
       font-size: 0.86rem;
     }
 
+    .auto-sell {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #34343f;
+      border-radius: 0.85rem;
+      background: #111218;
+    }
+
+    .auto-sell-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .auto-sell h3 {
+      margin: 0;
+    }
+
+    .auto-sell p {
+      margin: 0.25rem 0 0;
+      color: #a1a1aa;
+      font-size: 0.84rem;
+    }
+
+    .auto-sell-toggle {
+      width: auto;
+      min-width: 8rem;
+      padding-inline: 1rem;
+    }
+
+    .auto-sell-toggle.on {
+      background: #16a34a;
+    }
+
+    .auto-options {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+
+    .auto-option {
+      padding: 0.55rem 0.35rem;
+      border: 1px solid #34343f;
+      border-radius: 0.5rem;
+      background: #191a22;
+      color: #888894;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .auto-option strong {
+      display: block;
+      color: #b6b6c0;
+      font-size: 0.7rem;
+    }
+
+    .auto-option.active {
+      border-color: #e879f9;
+      background: #3b123f;
+      color: white;
+    }
+
     .odds {
       position: relative;
       display: grid;
@@ -485,6 +549,20 @@
         radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--rarity) 27%, transparent), transparent 48%),
         #10111a;
       transition: 160ms ease;
+    }
+
+    .collection-check {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      display: grid;
+      width: 1.7rem;
+      height: 1.7rem;
+      place-items: center;
+      border-radius: 50%;
+      background: #16a34a;
+      color: white;
+      font-weight: 900;
     }
 
     .wildcard-card:hover {
@@ -545,6 +623,59 @@
 
     .album-summary strong {
       color: white;
+    }
+
+    .collection-progress {
+      margin-bottom: 1rem;
+      padding: 0.85rem 1rem;
+      border: 1px solid #34343f;
+      border-radius: 0.75rem;
+      background: #111218;
+      color: #a1a1aa;
+    }
+
+    .collection-progress strong {
+      color: #f4f4f5;
+    }
+
+    .ordinary-grid {
+      display: grid;
+      grid-template-columns: repeat(13, minmax(0, 1fr));
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+
+    .album-card {
+      position: relative;
+      display: grid;
+      min-height: 5.5rem;
+      place-items: center;
+      border: 1px solid #3f3f46;
+      border-radius: 0.4rem;
+      background: #18181b;
+      color: #52525b;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .album-card.owned {
+      border-color: #d4d4d8;
+      background: #fafafa;
+      color: #18181b;
+    }
+
+    .album-card.red.owned {
+      color: #dc2626;
+    }
+
+    .album-card .collection-check {
+      top: 0.2rem;
+      right: 0.2rem;
+      width: 1rem;
+      height: 1rem;
+      font-family: Inter, system-ui, sans-serif;
+      font-size: 0.6rem;
     }
 
     .modal {
@@ -740,6 +871,14 @@
       .equip-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .auto-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .ordinary-grid {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 600px) {
@@ -765,6 +904,19 @@
       .equip-grid {
         grid-template-columns: 1fr;
       }
+
+      .auto-sell-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .auto-sell-toggle {
+        width: 100%;
+      }
+
+      .ordinary-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
     }
   </style>
 </head>
@@ -785,7 +937,7 @@
     <nav>
       <button class="active" data-screen="casino">Casino</button>
       <button data-screen="packs">Card Packs</button>
-      <button data-screen="collection">Wildcards</button>
+      <button data-screen="collection">Collection</button>
     </nav>
 
     <section id="casino" class="screen active">
@@ -813,21 +965,36 @@
           <p>Most cards are ordinary. The lucky pulls are powerful Wildcards.</p>
         </div>
       </div>
+      <div class="auto-sell">
+        <div class="auto-sell-head">
+          <div>
+            <h3>Auto-sell duplicates</h3>
+            <p>Your first copy is always kept and checked off in the collection.</p>
+          </div>
+          <button id="autoSellToggle" class="primary auto-sell-toggle">Auto-sell: Off</button>
+        </div>
+        <div id="autoSellOptions" class="auto-options"></div>
+      </div>
       <div id="packStore" class="pack-grid"></div>
     </section>
 
     <section id="collection" class="screen">
       <div class="section-head">
         <div>
-          <h2>Wildcard collection</h2>
-          <p>Duplicates increase a Wildcard's level and strengthen its effect.</p>
+          <h2>Card collection</h2>
+          <p>Discover every ordinary card and Wildcard available in packs.</p>
         </div>
       </div>
+      <div class="collection-progress">
+        Total collection: <strong id="collectionTotal">0 / 64</strong>
+      </div>
+      <h3>Wildcards</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
       <div class="album-summary">
         Ordinary card album: <strong id="normalAlbum">0 / 52</strong> discovered ·
         <strong id="normalPulled">0</strong> ordinary cards pulled. They look nice, but provide no bonuses.
       </div>
+      <div id="ordinaryGrid" class="ordinary-grid"></div>
     </section>
   </div>
 
@@ -857,6 +1024,14 @@
       Rare: { color: "#38bdf8", weight: 14 },
       Epic: { color: "#c084fc", weight: 5 },
       Legendary: { color: "#facc15", weight: 1 }
+    };
+    const saleValues = {
+      Ordinary: 8,
+      Common: 30,
+      Uncommon: 75,
+      Rare: 180,
+      Epic: 500,
+      Legendary: 1500
     };
 
     const wildcards = [
@@ -935,6 +1110,10 @@
     const wildcardGrid = document.querySelector("#wildcardGrid");
     const normalAlbumDisplay = document.querySelector("#normalAlbum");
     const normalPulledDisplay = document.querySelector("#normalPulled");
+    const collectionTotalDisplay = document.querySelector("#collectionTotal");
+    const ordinaryGrid = document.querySelector("#ordinaryGrid");
+    const autoSellToggle = document.querySelector("#autoSellToggle");
+    const autoSellOptions = document.querySelector("#autoSellOptions");
     const packModal = document.querySelector("#packModal");
     const packTitle = document.querySelector("#packTitle");
     const packReveals = document.querySelector("#packReveals");
@@ -952,6 +1131,15 @@
     let normalCollection = {};
     let normalCardsPulled = 0;
     let starterOpened = false;
+    let autoSellEnabled = false;
+    let autoSellRarities = {
+      Ordinary: true,
+      Common: false,
+      Uncommon: false,
+      Rare: false,
+      Epic: false,
+      Legendary: false
+    };
     let tables = tableDefinitions.map((table, index) => ({
       unlocked: index === 0,
       equipped: [],
@@ -1084,10 +1272,23 @@
       cards.forEach(card => {
         if (card.type === "wildcard") {
           const id = card.wildcard.id;
-          wildcardCollection[id] = (wildcardCollection[id] || 0) + 1;
+          const rarity = card.wildcard.rarity;
+          const duplicate = wildcardLevel(id) > 0;
+          if (duplicate && autoSellEnabled && autoSellRarities[rarity]) {
+            card.autoSold = saleValues[rarity];
+            cash += card.autoSold;
+          } else {
+            wildcardCollection[id] = wildcardLevel(id) + 1;
+          }
         } else {
-          normalCollection[card.id] = (normalCollection[card.id] || 0) + 1;
           normalCardsPulled += 1;
+          const duplicate = (normalCollection[card.id] || 0) > 0;
+          if (duplicate && autoSellEnabled && autoSellRarities.Ordinary) {
+            card.autoSold = saleValues.Ordinary;
+            cash += card.autoSold;
+          } else {
+            normalCollection[card.id] = (normalCollection[card.id] || 0) + 1;
+          }
         }
       });
     }
@@ -1119,7 +1320,7 @@
               <div class="reveal-face normal">
                 <div class="normal-rank ${isRed ? "red" : ""}">${card.label}${card.suit}</div>
                 <h3>Ordinary card</h3>
-                <p>No effect. Added to your album.</p>
+                <p>${card.autoSold ? `Duplicate auto-sold for ${formatMoney(card.autoSold)}.` : "No effect. Added to your album."}</p>
               </div>
             </div>
           `;
@@ -1133,7 +1334,7 @@
               <div class="wild-art">${wildcard.icon}</div>
               <h3>${wildcard.name}</h3>
               <p>${wildcard.effect}</p>
-              <p>Level ${wildcardLevel(wildcard.id)}</p>
+              <p>${card.autoSold ? `Duplicate auto-sold for ${formatMoney(card.autoSold)}.` : `Level ${wildcardLevel(wildcard.id)}`}</p>
             </div>
           </div>
         `;
@@ -1404,6 +1605,29 @@
       });
     }
 
+    function renderAutoSell() {
+      autoSellToggle.textContent = `Auto-sell: ${autoSellEnabled ? "On" : "Off"}`;
+      autoSellToggle.classList.toggle("on", autoSellEnabled);
+      autoSellOptions.innerHTML = Object.entries(saleValues).map(([rarity, value]) => `
+        <button
+          class="auto-option ${autoSellRarities[rarity] ? "active" : ""}"
+          data-auto-rarity="${rarity}"
+        >
+          ${rarity}
+          <strong>${formatMoney(value)} each</strong>
+        </button>
+      `).join("");
+
+      autoSellOptions.querySelectorAll("[data-auto-rarity]").forEach(button => {
+        button.addEventListener("click", () => {
+          const rarity = button.dataset.autoRarity;
+          autoSellRarities[rarity] = !autoSellRarities[rarity];
+          saveGame();
+          renderAutoSell();
+        });
+      });
+    }
+
     function renderPacks() {
       packStore.innerHTML = packDefinitions.map(pack => {
         const claimed = pack.id === "starter" && starterOpened;
@@ -1431,6 +1655,7 @@
         const owned = level > 0;
         return `
           <article class="wildcard-card ${owned ? "" : "locked"}" style="--rarity:${owned ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
+            ${owned ? '<span class="collection-check">✓</span>' : ""}
             <div class="rarity-label">${owned ? wildcard.rarity : "Undiscovered"}</div>
             <div class="wild-art">${owned ? wildcard.icon : "?"}</div>
             <h3>${owned ? wildcard.name : "Unknown Wildcard"}</h3>
@@ -1440,7 +1665,27 @@
         `;
       }).join("");
 
-      normalAlbumDisplay.textContent = `${Object.keys(normalCollection).length} / 52`;
+      const allOrdinaryCards = suits.flatMap(suit => ranks.map(rank => ({
+        id: `${rank}-${suit}`,
+        label: rankLabels[rank] || String(rank),
+        suit
+      })));
+      const ordinaryDiscovered = allOrdinaryCards.filter(card => normalCollection[card.id] > 0).length;
+      const wildcardsDiscovered = wildcards.filter(wildcard => wildcardLevel(wildcard.id) > 0).length;
+
+      ordinaryGrid.innerHTML = allOrdinaryCards.map(card => {
+        const owned = normalCollection[card.id] > 0;
+        const red = card.suit === "♥" || card.suit === "♦";
+        return `
+          <div class="album-card ${owned ? "owned" : ""} ${red ? "red" : ""}" title="${owned ? `${card.label}${card.suit} collected` : `${card.label}${card.suit} missing`}">
+            ${owned ? '<span class="collection-check">✓</span>' : ""}
+            ${owned ? `${card.label}${card.suit}` : "?"}
+          </div>
+        `;
+      }).join("");
+
+      collectionTotalDisplay.textContent = `${ordinaryDiscovered + wildcardsDiscovered} / ${allOrdinaryCards.length + wildcards.length}`;
+      normalAlbumDisplay.textContent = `${ordinaryDiscovered} / ${allOrdinaryCards.length}`;
       normalPulledDisplay.textContent = normalCardsPulled.toLocaleString();
     }
 
@@ -1453,6 +1698,7 @@
     function render() {
       renderStats();
       renderCasino();
+      renderAutoSell();
       renderPacks();
       renderCollection();
     }
@@ -1476,6 +1722,8 @@
         normalCollection,
         normalCardsPulled,
         starterOpened,
+        autoSellEnabled,
+        autoSellRarities,
         tables: tables.map(table => ({
           unlocked: table.unlocked,
           equipped: table.equipped
@@ -1502,6 +1750,12 @@
           : {};
         normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
+        autoSellEnabled = Boolean(state.autoSellEnabled);
+        if (state.autoSellRarities && typeof state.autoSellRarities === "object") {
+          Object.keys(autoSellRarities).forEach(rarity => {
+            autoSellRarities[rarity] = Boolean(state.autoSellRarities[rarity]);
+          });
+        }
         if (Array.isArray(state.tables)) {
           state.tables.forEach((savedTable, index) => {
             if (!tables[index]) {
@@ -1521,6 +1775,12 @@
 
     document.querySelectorAll("nav button").forEach(button => {
       button.addEventListener("click", () => showScreen(button.dataset.screen));
+    });
+    autoSellToggle.addEventListener("click", () => {
+      autoSellEnabled = !autoSellEnabled;
+      saveGame();
+      renderAutoSell();
+      showToast(`Duplicate auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
     });
     revealButton.addEventListener("click", revealNextCard);
     document.querySelector("#equipClose").addEventListener("click", () => {
