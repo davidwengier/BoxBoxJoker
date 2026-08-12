@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Max Game</title>
+  <title>Max Factory</title>
   <style>
     :root {
       color-scheme: dark;
-      font-family: system-ui, sans-serif;
-      background: #111827;
-      color: #f9fafb;
+      font-family: Inter, system-ui, sans-serif;
+      background: #08111f;
+      color: #f8fafc;
     }
 
     * {
@@ -19,155 +19,696 @@
     body {
       min-height: 100vh;
       margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 1rem;
+      background:
+        radial-gradient(circle at 20% 10%, #17345d 0, transparent 28rem),
+        linear-gradient(145deg, #0b1729, #050a12);
     }
 
-    main {
-      width: min(42rem, 100%);
-      text-align: center;
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: min(94rem, 100%);
+      margin: auto;
+      padding: 1.25rem;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
     h1 {
-      margin-bottom: 0.25rem;
-      font-size: clamp(2rem, 8vw, 4rem);
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 3.4rem);
+      letter-spacing: -0.06em;
     }
 
-    p {
-      color: #cbd5e1;
+    h1 span {
+      color: #38bdf8;
     }
 
-    .status {
+    .stats {
       display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin: 1.5rem 0;
-      font-size: 1.25rem;
-      font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.6rem;
     }
 
-    #arena {
-      position: relative;
-      height: min(60vh, 28rem);
-      overflow: hidden;
-      border: 2px solid #475569;
+    .stat {
+      min-width: 7rem;
+      padding: 0.6rem 0.9rem;
+      border: 1px solid #29405f;
+      border-radius: 0.75rem;
+      background: rgb(15 31 54 / 85%);
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      color: #facc15;
+      font-size: 1.2rem;
+    }
+
+    .game {
+      display: grid;
+      grid-template-columns: minmax(12rem, 17rem) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .panel {
+      padding: 1rem;
+      border: 1px solid #29405f;
       border-radius: 1rem;
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 35%);
+      background: rgb(10 23 41 / 92%);
+      box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 25%);
     }
 
-    #target {
+    .panel h2 {
+      margin: 0 0 0.8rem;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .tools {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .tool,
+    .action {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #334d6e;
+      border-radius: 0.7rem;
+      background: #12243d;
+      color: #f8fafc;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .tool:hover,
+    .action:hover {
+      border-color: #38bdf8;
+      background: #173152;
+    }
+
+    .tool.selected {
+      border-color: #38bdf8;
+      outline: 2px solid rgb(56 189 248 / 30%);
+      background: #164060;
+    }
+
+    .tool strong {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tool small {
+      display: block;
+      margin-top: 0.25rem;
+      color: #a9b7cb;
+    }
+
+    .key {
+      display: inline-grid;
+      min-width: 1.6rem;
+      height: 1.6rem;
+      place-items: center;
+      border: 1px solid #526781;
+      border-radius: 0.3rem;
+      background: #0b1729;
+      color: #e2e8f0;
+      font-size: 0.75rem;
+    }
+
+    .direction {
+      margin: 1rem 0;
+      padding: 0.8rem;
+      border-radius: 0.7rem;
+      background: #091729;
+      color: #cbd5e1;
+      text-align: center;
+    }
+
+    #directionArrow {
+      display: block;
+      margin-top: 0.2rem;
+      color: #38bdf8;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .action {
+      margin-top: 0.55rem;
+      text-align: center;
+    }
+
+    .danger {
+      color: #fda4af;
+    }
+
+    .help {
+      margin: 1rem 0 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .board-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid #29405f;
+      border-radius: 1rem;
+      background: #10223a;
+      box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 30%);
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    #message {
       position: absolute;
-      width: 4rem;
-      height: 4rem;
-      border: 0;
-      border-radius: 50%;
-      background: #f43f5e;
-      box-shadow: 0 0 1.5rem rgb(244 63 94 / 70%);
-      cursor: pointer;
-      transition: transform 80ms ease;
-    }
-
-    #target:hover {
-      transform: scale(1.08);
-    }
-
-    #target:disabled {
-      display: none;
-    }
-
-    #start {
-      margin-top: 1.25rem;
-      padding: 0.75rem 1.5rem;
-      border: 0;
+      left: 50%;
+      bottom: 1rem;
+      max-width: calc(100% - 2rem);
+      padding: 0.65rem 1rem;
       border-radius: 999px;
-      background: #22c55e;
-      color: #052e16;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
+      background: rgb(3 10 19 / 88%);
+      color: #e2e8f0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 0.5rem);
+      transition: 160ms ease;
+      white-space: nowrap;
     }
 
-    #start:disabled {
-      opacity: 0.5;
-      cursor: wait;
+    #message.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .stats {
+        justify-content: flex-start;
+      }
+
+      .game {
+        grid-template-columns: 1fr;
+      }
+
+      .tools {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .direction {
+        margin-bottom: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Max Game</h1>
-    <p>Click the target as many times as you can before time runs out.</p>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Max <span>Factory</span></h1>
+        <div style="color:#94a3b8">Build. Connect. Automate. Expand.</div>
+      </div>
+      <div class="stats">
+        <div class="stat">Cash<strong id="cash">$120</strong></div>
+        <div class="stat">Ore sold<strong id="sold">0</strong></div>
+        <div class="stat">Value / ore<strong id="value">$6</strong></div>
+      </div>
+    </header>
 
-    <div class="status" aria-live="polite">
-      <span>Score: <span id="score">0</span></span>
-      <span>Time: <span id="time">20</span>s</span>
+    <div class="game">
+      <aside class="panel">
+        <h2>Build menu</h2>
+        <div class="tools">
+          <button class="tool selected" data-tool="extractor">
+            <strong><span>⛏ Extractor</span><span>$30</span></strong>
+            <small>Place directly on an ore deposit.</small>
+          </button>
+          <button class="tool" data-tool="belt">
+            <strong><span>➜ Conveyor</span><span>$5</span></strong>
+            <small>Moves ore in the arrow direction.</small>
+          </button>
+          <button class="tool" data-tool="seller">
+            <strong><span>🏭 Seller</span><span>$45</span></strong>
+            <small>Turns arriving ore into cash.</small>
+          </button>
+          <button class="tool" data-tool="erase">
+            <strong><span>✕ Bulldozer</span><span>Refund</span></strong>
+            <small>Remove a building for half its cost.</small>
+          </button>
+        </div>
+
+        <div class="direction">
+          Direction <span class="key">R</span>
+          <strong id="directionArrow">→</strong>
+        </div>
+
+        <button id="upgrade" class="action">Upgrade ore value — $150</button>
+        <button id="reset" class="action danger">Reset factory</button>
+
+        <p class="help">
+          Put an extractor on a glowing ore deposit, then connect its arrow to a seller using
+          conveyors. Press <span class="key">R</span> or right-click to rotate before building.
+        </p>
+      </aside>
+
+      <main class="board-wrap">
+        <canvas id="board" width="960" height="640" aria-label="Factory building grid"></canvas>
+        <div id="message" role="status"></div>
+      </main>
     </div>
-
-    <div id="arena">
-      <button id="target" type="button" aria-label="Target" disabled></button>
-    </div>
-
-    <button id="start" type="button">Start game</button>
-  </main>
+  </div>
 
   <script>
-    const arena = document.querySelector("#arena");
-    const target = document.querySelector("#target");
-    const startButton = document.querySelector("#start");
-    const scoreDisplay = document.querySelector("#score");
-    const timeDisplay = document.querySelector("#time");
+    const canvas = document.querySelector("#board");
+    const context = canvas.getContext("2d");
+    const cashDisplay = document.querySelector("#cash");
+    const soldDisplay = document.querySelector("#sold");
+    const valueDisplay = document.querySelector("#value");
+    const directionArrow = document.querySelector("#directionArrow");
+    const message = document.querySelector("#message");
+    const upgradeButton = document.querySelector("#upgrade");
 
-    let score = 0;
-    let timeRemaining = 20;
-    let timer;
+    const columns = 12;
+    const rows = 8;
+    const tileSize = canvas.width / columns;
+    const directions = [
+      { x: 1, y: 0, arrow: "→" },
+      { x: 0, y: 1, arrow: "↓" },
+      { x: -1, y: 0, arrow: "←" },
+      { x: 0, y: -1, arrow: "↑" }
+    ];
+    const costs = { extractor: 30, belt: 5, seller: 45 };
+    const deposits = [
+      { x: 1, y: 1 },
+      { x: 2, y: 6 },
+      { x: 5, y: 3 },
+      { x: 8, y: 1 },
+      { x: 10, y: 6 }
+    ];
 
-    function moveTarget() {
-      const maxX = arena.clientWidth - target.offsetWidth;
-      const maxY = arena.clientHeight - target.offsetHeight;
-      target.style.left = `${Math.random() * maxX}px`;
-      target.style.top = `${Math.random() * maxY}px`;
+    let cash = 120;
+    let sold = 0;
+    let oreValue = 6;
+    let upgradeLevel = 0;
+    let selectedTool = "extractor";
+    let selectedDirection = 0;
+    let tick = 0;
+    let buildings = {};
+    let items = [];
+    let messageTimer;
+
+    function key(x, y) {
+      return `${x},${y}`;
     }
 
-    function finishGame() {
-      clearInterval(timer);
-      target.disabled = true;
-      startButton.disabled = false;
-      startButton.textContent = `Play again - score: ${score}`;
+    function isDeposit(x, y) {
+      return deposits.some(deposit => deposit.x === x && deposit.y === y);
     }
 
-    function startGame() {
-      score = 0;
-      timeRemaining = 20;
-      scoreDisplay.textContent = score;
-      timeDisplay.textContent = timeRemaining;
-      startButton.disabled = true;
-      target.disabled = false;
-      moveTarget();
+    function showMessage(text) {
+      message.textContent = text;
+      message.classList.add("show");
+      clearTimeout(messageTimer);
+      messageTimer = setTimeout(() => message.classList.remove("show"), 1700);
+    }
 
-      timer = setInterval(() => {
-        timeRemaining -= 1;
-        timeDisplay.textContent = timeRemaining;
+    function updateUi() {
+      cashDisplay.textContent = `$${cash}`;
+      soldDisplay.textContent = sold;
+      valueDisplay.textContent = `$${oreValue}`;
+      directionArrow.textContent = directions[selectedDirection].arrow;
+      const upgradeCost = 150 * (upgradeLevel + 1);
+      upgradeButton.textContent = `Upgrade ore value — $${upgradeCost}`;
+      saveGame();
+    }
 
-        if (timeRemaining === 0) {
-          finishGame();
+    function rotate() {
+      selectedDirection = (selectedDirection + 1) % directions.length;
+      updateUi();
+    }
+
+    function selectTool(tool) {
+      selectedTool = tool;
+      document.querySelectorAll(".tool").forEach(button => {
+        button.classList.toggle("selected", button.dataset.tool === tool);
+      });
+    }
+
+    function build(x, y) {
+      const tileKey = key(x, y);
+      const existing = buildings[tileKey];
+
+      if (selectedTool === "erase") {
+        if (!existing) {
+          showMessage("There is nothing to remove here.");
+          return;
         }
-      }, 1000);
+
+        cash += Math.floor(costs[existing.type] / 2);
+        delete buildings[tileKey];
+        items = items.filter(item => item.x !== x || item.y !== y);
+        showMessage("Building removed. Half the cost was refunded.");
+        updateUi();
+        return;
+      }
+
+      if (existing) {
+        showMessage("That tile is already occupied.");
+        return;
+      }
+
+      if (selectedTool === "extractor" && !isDeposit(x, y)) {
+        showMessage("Extractors must be placed on glowing ore deposits.");
+        return;
+      }
+
+      if (selectedTool !== "extractor" && isDeposit(x, y)) {
+        showMessage("Only an extractor can be placed on an ore deposit.");
+        return;
+      }
+
+      const cost = costs[selectedTool];
+      if (cash < cost) {
+        showMessage(`You need $${cost - cash} more.`);
+        return;
+      }
+
+      cash -= cost;
+      buildings[tileKey] = {
+        type: selectedTool,
+        direction: selectedTool === "seller" ? 0 : selectedDirection
+      };
+      showMessage(`${selectedTool[0].toUpperCase()}${selectedTool.slice(1)} built.`);
+      updateUi();
     }
 
-    target.addEventListener("click", () => {
-      score += 1;
-      scoreDisplay.textContent = score;
-      moveTarget();
+    function hasItem(x, y) {
+      return items.some(item => item.x === x && item.y === y);
+    }
+
+    function runFactory() {
+      tick += 1;
+
+      if (tick % 4 === 0) {
+        Object.entries(buildings).forEach(([position, building]) => {
+          if (building.type !== "extractor") {
+            return;
+          }
+
+          const [x, y] = position.split(",").map(Number);
+          if (!hasItem(x, y)) {
+            items.push({ x, y });
+          }
+        });
+      }
+
+      const occupied = new Set(items.map(item => key(item.x, item.y)));
+      const nextItems = [];
+
+      items.forEach(item => {
+        const building = buildings[key(item.x, item.y)];
+        if (!building || building.type === "seller") {
+          return;
+        }
+
+        occupied.delete(key(item.x, item.y));
+        const direction = directions[building.direction];
+        const nextX = item.x + direction.x;
+        const nextY = item.y + direction.y;
+        const destination = buildings[key(nextX, nextY)];
+        const destinationKey = key(nextX, nextY);
+
+        if (
+          nextX < 0 || nextX >= columns || nextY < 0 || nextY >= rows ||
+          !destination || destination.type === "extractor" ||
+          occupied.has(destinationKey)
+        ) {
+          occupied.add(key(item.x, item.y));
+          nextItems.push(item);
+          return;
+        }
+
+        if (destination.type === "seller") {
+          cash += oreValue;
+          sold += 1;
+          return;
+        }
+
+        occupied.add(destinationKey);
+        nextItems.push({ x: nextX, y: nextY });
+      });
+
+      items = nextItems;
+      updateUi();
+      draw();
+    }
+
+    function roundedRect(x, y, width, height, radius) {
+      context.beginPath();
+      context.roundRect(x, y, width, height, radius);
+    }
+
+    function drawArrow(centerX, centerY, directionIndex, color, scale = 1) {
+      const direction = directions[directionIndex];
+      context.save();
+      context.translate(centerX, centerY);
+      context.rotate(Math.atan2(direction.y, direction.x));
+      context.strokeStyle = color;
+      context.fillStyle = color;
+      context.lineWidth = 6 * scale;
+      context.lineCap = "round";
+      context.beginPath();
+      context.moveTo(-20 * scale, 0);
+      context.lineTo(18 * scale, 0);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(20 * scale, 0);
+      context.lineTo(7 * scale, -10 * scale);
+      context.lineTo(7 * scale, 10 * scale);
+      context.closePath();
+      context.fill();
+      context.restore();
+    }
+
+    function drawDeposit(deposit) {
+      const centerX = deposit.x * tileSize + tileSize / 2;
+      const centerY = deposit.y * tileSize + tileSize / 2;
+      const pulse = 3 + Math.sin(performance.now() / 350) * 2;
+
+      context.save();
+      context.shadowColor = "#38bdf8";
+      context.shadowBlur = 16 + pulse;
+      context.fillStyle = "#38bdf8";
+      context.beginPath();
+      context.moveTo(centerX, centerY - 23);
+      context.lineTo(centerX + 24, centerY - 6);
+      context.lineTo(centerX + 15, centerY + 22);
+      context.lineTo(centerX - 18, centerY + 20);
+      context.lineTo(centerX - 25, centerY - 7);
+      context.closePath();
+      context.fill();
+      context.fillStyle = "#bae6fd";
+      context.beginPath();
+      context.arc(centerX - 6, centerY - 7, 7, 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+
+    function drawBuilding(x, y, building) {
+      const left = x * tileSize;
+      const top = y * tileSize;
+      const centerX = left + tileSize / 2;
+      const centerY = top + tileSize / 2;
+
+      if (building.type === "belt") {
+        roundedRect(left + 9, top + 22, tileSize - 18, tileSize - 44, 10);
+        context.fillStyle = "#334155";
+        context.fill();
+        context.strokeStyle = "#64748b";
+        context.lineWidth = 3;
+        context.stroke();
+        drawArrow(centerX, centerY, building.direction, "#e2e8f0", 0.8);
+      }
+
+      if (building.type === "extractor") {
+        roundedRect(left + 12, top + 12, tileSize - 24, tileSize - 24, 12);
+        context.fillStyle = "#ca8a04";
+        context.fill();
+        context.strokeStyle = "#fde047";
+        context.lineWidth = 4;
+        context.stroke();
+        context.fillStyle = "#422006";
+        context.font = "bold 28px system-ui";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText("⛏", centerX, centerY - 5);
+        drawArrow(centerX, centerY + 20, building.direction, "#fff7cc", 0.42);
+      }
+
+      if (building.type === "seller") {
+        roundedRect(left + 9, top + 9, tileSize - 18, tileSize - 18, 12);
+        context.fillStyle = "#166534";
+        context.fill();
+        context.strokeStyle = "#4ade80";
+        context.lineWidth = 4;
+        context.stroke();
+        context.fillStyle = "#dcfce7";
+        context.font = "bold 34px system-ui";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText("$", centerX, centerY);
+      }
+    }
+
+    function drawItem(item) {
+      const centerX = item.x * tileSize + tileSize / 2;
+      const centerY = item.y * tileSize + tileSize / 2;
+      context.save();
+      context.shadowColor = "#f97316";
+      context.shadowBlur = 12;
+      context.fillStyle = "#fb923c";
+      context.beginPath();
+      context.arc(centerX, centerY, 11, 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+
+    function draw() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < rows; y += 1) {
+        for (let x = 0; x < columns; x += 1) {
+          context.fillStyle = (x + y) % 2 === 0 ? "#10243d" : "#0e2036";
+          context.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          context.strokeStyle = "#203a59";
+          context.lineWidth = 1;
+          context.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
+        }
+      }
+
+      deposits.forEach(drawDeposit);
+      Object.entries(buildings).forEach(([position, building]) => {
+        const [x, y] = position.split(",").map(Number);
+        drawBuilding(x, y, building);
+      });
+      items.forEach(drawItem);
+    }
+
+    function saveGame() {
+      localStorage.setItem("maxFactorySave", JSON.stringify({
+        cash,
+        sold,
+        oreValue,
+        upgradeLevel,
+        buildings
+      }));
+    }
+
+    function loadGame() {
+      const saved = localStorage.getItem("maxFactorySave");
+      if (!saved) {
+        return;
+      }
+
+      try {
+        const state = JSON.parse(saved);
+        cash = Number.isFinite(state.cash) ? state.cash : cash;
+        sold = Number.isFinite(state.sold) ? state.sold : sold;
+        oreValue = Number.isFinite(state.oreValue) ? state.oreValue : oreValue;
+        upgradeLevel = Number.isFinite(state.upgradeLevel) ? state.upgradeLevel : upgradeLevel;
+        buildings = state.buildings && typeof state.buildings === "object" ? state.buildings : {};
+      } catch {
+        localStorage.removeItem("maxFactorySave");
+      }
+    }
+
+    canvas.addEventListener("pointerdown", event => {
+      const bounds = canvas.getBoundingClientRect();
+      const x = Math.floor((event.clientX - bounds.left) * canvas.width / bounds.width / tileSize);
+      const y = Math.floor((event.clientY - bounds.top) * canvas.height / bounds.height / tileSize);
+      build(x, y);
+      draw();
     });
 
-    startButton.addEventListener("click", startGame);
-    window.addEventListener("resize", () => {
-      if (!target.disabled) {
-        moveTarget();
+    canvas.addEventListener("contextmenu", event => {
+      event.preventDefault();
+      rotate();
+    });
+
+    document.querySelectorAll(".tool").forEach(button => {
+      button.addEventListener("click", () => selectTool(button.dataset.tool));
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key.toLowerCase() === "r") {
+        rotate();
       }
     });
+
+    upgradeButton.addEventListener("click", () => {
+      const cost = 150 * (upgradeLevel + 1);
+      if (cash < cost) {
+        showMessage(`You need $${cost - cash} more for this upgrade.`);
+        return;
+      }
+
+      cash -= cost;
+      upgradeLevel += 1;
+      oreValue += 3;
+      showMessage(`Ore is now worth $${oreValue}.`);
+      updateUi();
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      if (!confirm("Reset all factory progress and start over?")) {
+        return;
+      }
+
+      localStorage.removeItem("maxFactorySave");
+      cash = 120;
+      sold = 0;
+      oreValue = 6;
+      upgradeLevel = 0;
+      buildings = {};
+      items = [];
+      updateUi();
+      draw();
+      showMessage("Factory reset.");
+    });
+
+    loadGame();
+    updateUi();
+    draw();
+    setInterval(runFactory, 500);
+
+    function animateDeposits() {
+      draw();
+      requestAnimationFrame(animateDeposits);
+    }
+
+    requestAnimationFrame(animateDeposits);
   </script>
 </body>
 </html>
