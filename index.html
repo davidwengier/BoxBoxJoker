@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Max City Tycoon</title>
+  <title>BoxBox Motors: World Tour</title>
   <style>
     :root {
       color-scheme: dark;
       font-family: Inter, system-ui, sans-serif;
-      background: #080d19;
+      background: #06080d;
       color: #f8fafc;
     }
 
@@ -20,9 +20,9 @@
       min-height: 100vh;
       margin: 0;
       background:
-        radial-gradient(circle at 10% 5%, rgb(37 99 235 / 30%), transparent 30rem),
-        radial-gradient(circle at 90% 30%, rgb(147 51 234 / 18%), transparent 34rem),
-        #080d19;
+        radial-gradient(circle at 15% 0%, rgb(37 99 235 / 25%), transparent 28rem),
+        radial-gradient(circle at 90% 20%, rgb(220 38 38 / 18%), transparent 30rem),
+        #06080d;
     }
 
     button {
@@ -30,9 +30,9 @@
     }
 
     .app {
-      width: min(88rem, 100%);
+      width: min(90rem, 100%);
       margin: auto;
-      padding: 1.25rem;
+      padding: 1rem;
     }
 
     header {
@@ -40,322 +40,589 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      margin-bottom: 1rem;
+      padding: 0.5rem 0 1rem;
     }
 
-    h1 {
+    .logo {
       margin: 0;
-      font-size: clamp(2rem, 6vw, 3.8rem);
-      letter-spacing: -0.06em;
+      font-size: clamp(1.8rem, 5vw, 3.4rem);
+      font-style: italic;
+      font-weight: 950;
+      letter-spacing: -0.07em;
+      line-height: 0.9;
+      text-transform: uppercase;
     }
 
-    h1 span {
-      color: #60a5fa;
+    .logo span {
+      color: #ef4444;
     }
 
-    .subtitle {
+    .logo small {
+      display: block;
+      margin-top: 0.55rem;
       color: #94a3b8;
+      font-size: 0.68rem;
+      font-style: normal;
+      letter-spacing: 0.28em;
     }
 
     .stats {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
-      gap: 0.6rem;
+      gap: 0.55rem;
     }
 
     .stat {
-      min-width: 8rem;
-      padding: 0.65rem 1rem;
-      border: 1px solid #2a3c5c;
-      border-radius: 0.8rem;
-      background: rgb(13 24 44 / 90%);
+      min-width: 7rem;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid #293346;
+      border-radius: 0.65rem;
+      background: rgb(15 20 31 / 90%);
       text-align: center;
     }
 
     .stat small {
       display: block;
-      color: #94a3b8;
+      color: #8b98ac;
+      font-size: 0.66rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
     }
 
     .stat strong {
-      display: block;
-      margin-top: 0.15rem;
       color: #facc15;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 20rem;
-      gap: 1rem;
+    nav {
+      display: flex;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+      padding: 0.4rem;
+      border: 1px solid #283246;
+      border-radius: 0.8rem;
+      background: #0d111b;
     }
 
-    .panel {
-      border: 1px solid #263957;
+    nav button {
+      flex: 1;
+      padding: 0.75rem;
+      border: 0;
+      border-radius: 0.55rem;
+      background: transparent;
+      color: #8f9bad;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    nav button:hover {
+      color: white;
+    }
+
+    nav button.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 18rem;
+      padding: clamp(1.5rem, 5vw, 4rem);
+      border: 1px solid #2b3547;
       border-radius: 1rem;
-      background: rgb(11 20 37 / 92%);
-      box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 28%);
+      background:
+        linear-gradient(100deg, rgb(6 8 13 / 95%) 15%, rgb(6 8 13 / 28%)),
+        repeating-linear-gradient(115deg, transparent 0 3rem, rgb(255 255 255 / 3%) 3rem 6rem),
+        linear-gradient(140deg, #1d4ed8, #111827 55%, #991b1b);
+      box-shadow: 0 2rem 5rem rgb(0 0 0 / 35%);
     }
 
-    .city {
+    .hero::after {
+      position: absolute;
+      right: 5%;
+      bottom: -15%;
+      color: rgb(255 255 255 / 13%);
+      content: "🏎";
+      font-size: clamp(10rem, 30vw, 26rem);
+      line-height: 1;
+      transform: rotate(-7deg);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 35rem;
+    }
+
+    .eyebrow {
+      color: #fca5a5;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 0.4rem 0;
+      font-size: clamp(2.2rem, 7vw, 5rem);
+      font-style: italic;
+      letter-spacing: -0.07em;
+      line-height: 0.95;
+      text-transform: uppercase;
+    }
+
+    .hero p {
+      max-width: 30rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+
+    .section-title {
+      margin: 1.5rem 0 0.8rem;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .packs,
+    .garage-grid,
+    .tour-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .pack {
       position: relative;
       min-height: 18rem;
       overflow: hidden;
-      margin-bottom: 1rem;
-      padding: 1.25rem;
-      background:
-        linear-gradient(#15294d 0 58%, #172f27 58% 72%, #18202d 72%);
+      padding: 1.2rem;
+      border: 1px solid #33405a;
+      border-radius: 0.9rem;
+      background: linear-gradient(145deg, #172033, #0d121e);
+      box-shadow: 0 1rem 2rem rgb(0 0 0 / 22%);
     }
 
-    .city::before {
+    .pack::before {
       position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle, #dbeafe 0 1px, transparent 1.5px),
-        linear-gradient(90deg, transparent 48%, #475569 48% 52%, transparent 52%);
-      background-position: 0 0, 0 78%;
-      background-size: 4rem 4rem, 100% 3rem;
+      inset: -40% -20%;
+      background: linear-gradient(110deg, transparent 40%, rgb(255 255 255 / 10%) 50%, transparent 60%);
       content: "";
-      opacity: 0.45;
+      transform: rotate(15deg);
     }
 
-    .skyline {
-      position: absolute;
-      inset: auto 1rem 22% 1rem;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      gap: 0.5rem;
-      height: 70%;
+    .pack.pro {
+      border-color: #9333ea;
+      background: linear-gradient(145deg, #3b0764, #111827);
     }
 
-    .building {
+    .pack.elite {
+      border-color: #eab308;
+      background: linear-gradient(145deg, #713f12, #16130c);
+    }
+
+    .pack h3 {
       position: relative;
-      display: grid;
-      width: 13%;
-      min-width: 3.3rem;
-      place-items: center;
-      border: 3px solid rgb(255 255 255 / 18%);
-      border-bottom: 0;
-      border-radius: 0.45rem 0.45rem 0 0;
-      background: #283750;
-      box-shadow: inset 0 0 0 0.35rem rgb(0 0 0 / 14%);
-      filter: grayscale(1) brightness(0.55);
-      transform-origin: bottom;
-      transition: 300ms ease;
-    }
-
-    .building.owned {
-      filter: none;
-      animation: grow 350ms ease-out;
-    }
-
-    .building span {
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      filter: drop-shadow(0 0.2rem 0.2rem rgb(0 0 0 / 30%));
-    }
-
-    .building::after {
-      position: absolute;
-      right: 15%;
-      bottom: 16%;
-      left: 15%;
-      height: 12%;
-      border-radius: 0.2rem;
-      background: repeating-linear-gradient(90deg, #fde68a 0 12%, transparent 12% 24%);
-      content: "";
-      opacity: 0;
-    }
-
-    .building.owned::after {
-      opacity: 1;
-    }
-
-    .city-label {
-      position: relative;
-      z-index: 1;
-      display: inline-block;
-      padding: 0.5rem 0.8rem;
-      border-radius: 0.6rem;
-      background: rgb(3 9 19 / 72%);
-      color: #dbeafe;
-    }
-
-    @keyframes grow {
-      from {
-        transform: scaleY(0.15);
-      }
-    }
-
-    .businesses {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.8rem;
-      padding: 1rem;
-    }
-
-    .business {
-      position: relative;
-      overflow: hidden;
-      padding: 1rem;
-      border: 1px solid #304567;
-      border-radius: 0.85rem;
-      background: #101d33;
-      transition: 160ms ease;
-    }
-
-    .business:hover {
-      border-color: #4d6d9c;
-      transform: translateY(-2px);
-    }
-
-    .business.locked {
-      opacity: 0.62;
-    }
-
-    .business-top {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .icon {
-      display: grid;
-      width: 3.2rem;
-      height: 3.2rem;
-      flex: 0 0 auto;
-      place-items: center;
-      border-radius: 0.75rem;
-      background: #1f3455;
-      font-size: 1.7rem;
-    }
-
-    .business h2 {
       margin: 0;
-      font-size: 1.05rem;
+      font-size: 1.5rem;
+      font-style: italic;
+      text-transform: uppercase;
     }
 
-    .business p {
-      margin: 0.2rem 0 0;
-      color: #94a3b8;
-      font-size: 0.85rem;
+    .pack-art {
+      position: relative;
+      display: grid;
+      height: 8rem;
+      place-items: center;
+      font-size: 6rem;
+      filter: drop-shadow(0 0.8rem 0.6rem rgb(0 0 0 / 35%));
+      transform: rotate(-5deg);
     }
 
-    .business-details {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin: 0.9rem 0;
-      color: #cbd5e1;
-      font-size: 0.85rem;
+    .pack p {
+      position: relative;
+      min-height: 2.6rem;
+      color: #aeb9ca;
+      font-size: 0.88rem;
     }
 
-    .business-details strong {
-      display: block;
-      color: #4ade80;
-      font-size: 1rem;
-    }
-
-    .business button,
-    .side-button {
+    .primary,
+    .secondary {
+      position: relative;
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.75rem;
       border: 0;
-      border-radius: 0.65rem;
-      background: #2563eb;
+      border-radius: 0.6rem;
       color: white;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
     }
 
-    .business button:hover,
-    .side-button:hover {
-      background: #3b82f6;
+    .primary {
+      background: #dc2626;
     }
 
-    .business button:disabled {
-      background: #26364f;
-      color: #71829b;
+    .primary:hover {
+      background: #ef4444;
+    }
+
+    .primary:disabled {
+      background: #2b3342;
+      color: #6f7b8f;
       cursor: not-allowed;
     }
 
-    .side {
-      display: grid;
-      align-content: start;
+    .secondary {
+      background: #26354d;
+    }
+
+    .secondary:hover {
+      background: #344967;
+    }
+
+    .garage-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
       gap: 1rem;
+      margin-bottom: 1rem;
     }
 
-    .side section {
+    .garage-head h2 {
+      margin-bottom: 0.25rem;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+    }
+
+    .garage-head p {
+      margin: 0;
+      color: #94a3b8;
+    }
+
+    .car-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 17rem;
       padding: 1rem;
+      border: 1px solid var(--rarity-color);
+      border-radius: 0.85rem;
+      background:
+        linear-gradient(150deg, color-mix(in srgb, var(--rarity-color) 20%, #111827), #0b1019 65%);
+      cursor: pointer;
+      transition: 160ms ease;
     }
 
-    .side h2 {
-      margin: 0 0 0.7rem;
-      color: #dbeafe;
+    .car-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .car-card.selected {
+      outline: 3px solid #f8fafc;
+      outline-offset: 2px;
+    }
+
+    .car-card.locked {
+      border-color: #293241;
+      background: #0c111a;
+      cursor: default;
+      filter: grayscale(1);
+      opacity: 0.58;
+    }
+
+    .rarity {
+      color: var(--rarity-color);
+      font-size: 0.7rem;
+      font-weight: 950;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .car-card h3 {
+      margin: 0.2rem 0;
+      font-size: 1.3rem;
+      font-style: italic;
+      text-transform: uppercase;
+    }
+
+    .car-card .series {
+      color: #94a3b8;
+      font-size: 0.78rem;
+    }
+
+    .car-art {
+      display: grid;
+      height: 6rem;
+      place-items: center;
+      border-radius: 0.7rem;
+      background: radial-gradient(circle, var(--car-color), transparent 67%);
+      font-size: 4.5rem;
+      filter: drop-shadow(0 0.7rem 0.4rem rgb(0 0 0 / 45%));
+    }
+
+    .locked .car-art {
+      background: transparent;
+    }
+
+    .rating-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      color: #b9c3d3;
+      font-size: 0.8rem;
+    }
+
+    .rating-row strong {
+      color: white;
       font-size: 1rem;
     }
 
-    .progress {
-      height: 0.7rem;
+    .rating-bar {
+      height: 0.38rem;
       overflow: hidden;
-      margin: 0.7rem 0;
+      margin-top: 0.25rem;
       border-radius: 999px;
-      background: #1e293b;
+      background: #263142;
     }
 
-    .progress div {
-      width: 0;
+    .rating-bar div {
       height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #2563eb, #a855f7);
-      transition: width 300ms ease;
+      background: var(--rarity-color);
     }
 
-    .side p {
-      margin: 0.4rem 0;
+    .copies {
+      margin-top: 0.8rem;
+      color: #facc15;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .tour-card {
+      padding: 1rem;
+      border: 1px solid #303b50;
+      border-radius: 0.85rem;
+      background: linear-gradient(145deg, #111827, #0a0f18);
+    }
+
+    .tour-card.locked {
+      opacity: 0.55;
+    }
+
+    .tour-card .track {
+      display: grid;
+      height: 7rem;
+      place-items: center;
+      margin-bottom: 0.8rem;
+      border-radius: 0.65rem;
+      background: linear-gradient(130deg, var(--track-a), var(--track-b));
+      font-size: 3.8rem;
+    }
+
+    .tour-card h3 {
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .tour-card p {
+      min-height: 2.4rem;
       color: #94a3b8;
-      font-size: 0.86rem;
-      line-height: 1.45;
+      font-size: 0.85rem;
     }
 
-    .side-button {
-      margin-top: 0.75rem;
-      background: #7c3aed;
+    .race-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      font-size: 0.82rem;
     }
 
-    .side-button:hover {
-      background: #8b5cf6;
+    .race-info strong {
+      display: block;
+      color: #4ade80;
     }
 
-    .side-button:disabled {
-      background: #2d2344;
-      color: #76688f;
-      cursor: not-allowed;
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      place-items: center;
+      padding: 1rem;
+      background: rgb(2 4 9 / 90%);
+      backdrop-filter: blur(0.7rem);
     }
 
-    .danger {
-      border: 1px solid #59303d;
-      background: transparent;
-      color: #fda4af;
+    .modal.open {
+      display: grid;
     }
 
-    .danger:hover {
-      background: #3c1823;
+    .modal-box {
+      width: min(65rem, 100%);
+      max-height: 94vh;
+      overflow: auto;
+      padding: 1.5rem;
+      border: 1px solid #42516c;
+      border-radius: 1rem;
+      background: #0c111b;
+      box-shadow: 0 2rem 8rem black;
+      text-align: center;
+    }
+
+    .modal-box h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      font-style: italic;
+      text-transform: uppercase;
+    }
+
+    .reveals {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      perspective: 75rem;
+    }
+
+    .reveal-slot {
+      min-height: 18rem;
+      transform-style: preserve-3d;
+    }
+
+    .reveal-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 18rem;
+      border: 1px solid #38465c;
+      border-radius: 0.8rem;
+      background:
+        repeating-linear-gradient(45deg, transparent 0 1rem, rgb(255 255 255 / 4%) 1rem 2rem),
+        linear-gradient(145deg, #1d4ed8, #111827 55%, #991b1b);
+      transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      transform: rotateY(0);
+      transform-style: preserve-3d;
+    }
+
+    .reveal-card::before {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      content: "BB";
+      font-size: 4rem;
+      font-style: italic;
+      font-weight: 950;
+      backface-visibility: hidden;
+    }
+
+    .reveal-card.revealed {
+      transform: rotateY(180deg);
+    }
+
+    .reveal-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 1rem;
+      border: 2px solid var(--rarity-color);
+      border-radius: inherit;
+      background:
+        radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--rarity-color) 30%, transparent), transparent 55%),
+        #101620;
+      backface-visibility: hidden;
+      transform: rotateY(180deg);
+    }
+
+    .reveal-face .car-art {
+      font-size: 5rem;
+    }
+
+    .reveal-face h3 {
+      margin: 0.5rem 0 0;
+      font-size: 1.4rem;
+      text-transform: uppercase;
+    }
+
+    .reveal-face p {
+      color: #a8b3c3;
+    }
+
+    .modal-action {
+      width: min(22rem, 100%);
+      margin-top: 1.2rem;
+    }
+
+    .race-stage {
+      position: relative;
+      height: 18rem;
+      overflow: hidden;
+      border-radius: 0.8rem;
+      background:
+        linear-gradient(#172554 0 57%, #334155 57% 66%, #111827 66%);
+    }
+
+    .race-stage::after {
+      position: absolute;
+      right: 0;
+      bottom: 11%;
+      left: 0;
+      height: 0.4rem;
+      background: repeating-linear-gradient(90deg, white 0 2rem, transparent 2rem 4rem);
+      content: "";
+      opacity: 0.5;
+    }
+
+    .racer {
+      position: absolute;
+      left: 3%;
+      z-index: 1;
+      font-size: 4rem;
+      filter: drop-shadow(0 0.7rem 0.3rem rgb(0 0 0 / 50%));
+      transform: scaleX(-1);
+      transition: left 2.4s cubic-bezier(0.15, 0.65, 0.35, 1);
+    }
+
+    .racer.player {
+      bottom: 24%;
+    }
+
+    .racer.opponent {
+      bottom: 2%;
+    }
+
+    .race-stage.running .racer.player {
+      left: var(--player-finish);
+    }
+
+    .race-stage.running .racer.opponent {
+      left: var(--opponent-finish);
+    }
+
+    #raceResult {
+      margin: 1rem 0 0;
+      font-size: 1.4rem;
+      font-weight: 900;
+      text-transform: uppercase;
     }
 
     #toast {
       position: fixed;
       left: 50%;
       bottom: 1.5rem;
-      z-index: 5;
+      z-index: 20;
       max-width: calc(100% - 2rem);
       padding: 0.75rem 1.1rem;
-      border: 1px solid #36547d;
+      border: 1px solid #3d4d68;
       border-radius: 999px;
-      background: rgb(7 15 28 / 94%);
+      background: rgb(8 13 23 / 96%);
       opacity: 0;
       pointer-events: none;
       transform: translate(-50%, 1rem);
@@ -368,7 +635,7 @@
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 800px) {
       header {
         align-items: flex-start;
         flex-direction: column;
@@ -378,27 +645,32 @@
         justify-content: flex-start;
       }
 
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .side {
-        grid-template-columns: repeat(2, 1fr);
+      .packs,
+      .garage-grid,
+      .tour-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
-    @media (max-width: 580px) {
-      .businesses,
-      .side {
+    @media (max-width: 540px) {
+      .packs,
+      .garage-grid,
+      .tour-grid,
+      .reveals {
         grid-template-columns: 1fr;
       }
 
-      .city {
+      .reveal-slot {
         min-height: 14rem;
       }
 
-      .building {
-        min-width: 2.4rem;
+      .reveal-card {
+        min-height: 14rem;
+      }
+
+      .garage-head {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
   </style>
@@ -406,186 +678,190 @@
 <body>
   <div class="app">
     <header>
-      <div>
-        <h1>Max City <span>Tycoon</span></h1>
-        <div class="subtitle">Start small. Build an empire.</div>
-      </div>
+      <h1 class="logo">BoxBox <span>Motors</span><small>World Tour</small></h1>
       <div class="stats">
-        <div class="stat"><small>Cash</small><strong id="cash">$250</strong></div>
-        <div class="stat"><small>Income</small><strong id="income">$0/sec</strong></div>
-        <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
+        <div class="stat"><small>Credits</small><strong id="credits">1,500</strong></div>
+        <div class="stat"><small>Trophies</small><strong id="trophies">0</strong></div>
+        <div class="stat"><small>Collection</small><strong id="collection">0 / 15</strong></div>
       </div>
     </header>
 
-    <div class="layout">
-      <main>
-        <section class="city panel">
-          <div class="city-label" id="cityLabel">A quiet street with big potential</div>
-          <div class="skyline" id="skyline"></div>
-        </section>
+    <nav>
+      <button class="active" data-screen="packs">Packs</button>
+      <button data-screen="garage">Garage</button>
+      <button data-screen="tour">World Tour</button>
+    </nav>
 
-        <section class="businesses panel" id="businesses"></section>
-      </main>
+    <section id="packs" class="screen active">
+      <div class="hero">
+        <div class="hero-content">
+          <div class="eyebrow">The next generation</div>
+          <h2>Collect. Tune. Race.</h2>
+          <p>Open car packs, build your dream garage, and race across the world. Every duplicate tunes your car and raises its performance rating.</p>
+        </div>
+      </div>
 
-      <aside class="side">
-        <section class="panel">
-          <h2>City progress</h2>
-          <p id="nextGoal">Buy your first business.</p>
-          <div class="progress"><div id="progressBar"></div></div>
-          <p><strong id="ownedCount">0 / 6</strong> businesses operating</p>
-        </section>
+      <h2 class="section-title">Car packs</h2>
+      <div class="packs" id="packStore"></div>
+    </section>
 
-        <section class="panel">
-          <h2>Advertising</h2>
-          <p>Double all business income for 30 seconds.</p>
-          <button id="advertise" class="side-button">Run campaign — $100</button>
-          <p id="adStatus">No campaign running</p>
-        </section>
+    <section id="garage" class="screen">
+      <div class="garage-head">
+        <div>
+          <h2>Your garage</h2>
+          <p>Select a car to enter it in World Tour races.</p>
+        </div>
+        <div class="stat"><small>Selected car</small><strong id="selectedName">None</strong></div>
+      </div>
+      <div class="garage-grid" id="garageGrid"></div>
+    </section>
 
-        <section class="panel">
-          <h2>How to play</h2>
-          <p>Buy businesses to earn money automatically. Upgrade them to increase their income and unlock larger opportunities.</p>
-          <p>Your progress saves automatically, including up to two hours of offline earnings.</p>
-        </section>
+    <section id="tour" class="screen">
+      <div class="garage-head">
+        <div>
+          <h2>World Tour</h2>
+          <p>Win races, earn credits, and unlock new championships.</p>
+        </div>
+        <button class="secondary" style="width:auto;padding-inline:1.2rem" data-go-garage>Select car</button>
+      </div>
+      <div class="tour-grid" id="tourGrid"></div>
+    </section>
+  </div>
 
-        <section class="panel">
-          <h2>New beginning</h2>
-          <p>Erase the city and start again from $250.</p>
-          <button id="reset" class="side-button danger">Reset game</button>
-        </section>
-      </aside>
+  <div id="packModal" class="modal">
+    <div class="modal-box">
+      <h2 id="packTitle">Pack opening</h2>
+      <div class="reveals" id="reveals"></div>
+      <button id="revealButton" class="primary modal-action">Reveal first car</button>
+    </div>
+  </div>
+
+  <div id="raceModal" class="modal">
+    <div class="modal-box">
+      <h2 id="raceTitle">Metro Sprint</h2>
+      <div id="raceStage" class="race-stage">
+        <div class="racer player">🏎️</div>
+        <div class="racer opponent">🏎️</div>
+      </div>
+      <p id="raceResult">Get ready...</p>
+      <button id="raceClose" class="primary modal-action" disabled>Racing...</button>
     </div>
   </div>
 
   <div id="toast" role="status"></div>
 
   <script>
-    const businessTypes = [
+    const rarityData = {
+      Common: { color: "#94a3b8", weight: 55 },
+      Uncommon: { color: "#4ade80", weight: 27 },
+      Rare: { color: "#38bdf8", weight: 12 },
+      Epic: { color: "#c084fc", weight: 5 },
+      Legendary: { color: "#facc15", weight: 1 }
+    };
+
+    const cars = [
+      { id: "metro", name: "Metro Zip", series: "Street", rarity: "Common", color: "#60a5fa", rating: 52, speed: 48, handling: 68 },
+      { id: "cinder", name: "Cinder S", series: "Street", rarity: "Common", color: "#f97316", rating: 54, speed: 56, handling: 58 },
+      { id: "brook", name: "Brookline", series: "Touring", rarity: "Common", color: "#a3e635", rating: 56, speed: 52, handling: 65 },
+      { id: "vanta", name: "Vanta GT", series: "Street", rarity: "Uncommon", color: "#475569", rating: 64, speed: 68, handling: 62 },
+      { id: "aero", name: "Aero RS", series: "Touring", rarity: "Uncommon", color: "#f8fafc", rating: 66, speed: 65, handling: 70 },
+      { id: "dust", name: "Dust Devil", series: "Rally", rarity: "Uncommon", color: "#d97706", rating: 68, speed: 62, handling: 75 },
+      { id: "neon", name: "Neon X", series: "Night", rarity: "Rare", color: "#22d3ee", rating: 76, speed: 80, handling: 74 },
+      { id: "summit", name: "Summit R", series: "Rally", rarity: "Rare", color: "#ef4444", rating: 78, speed: 74, handling: 84 },
+      { id: "monarch", name: "Monarch V8", series: "Muscle", rarity: "Rare", color: "#8b5cf6", rating: 80, speed: 88, handling: 67 },
+      { id: "tempest", name: "Tempest LM", series: "Endurance", rarity: "Epic", color: "#2563eb", rating: 89, speed: 92, handling: 86 },
+      { id: "phantom", name: "Phantom R", series: "Prototype", rarity: "Epic", color: "#e2e8f0", rating: 91, speed: 96, handling: 84 },
+      { id: "voltage", name: "Voltage E", series: "Electric", rarity: "Epic", color: "#10b981", rating: 93, speed: 91, handling: 94 },
+      { id: "nova", name: "Nova One", series: "Hypercar", rarity: "Legendary", color: "#facc15", rating: 103, speed: 108, handling: 98 },
+      { id: "zenith", name: "Zenith X", series: "Prototype", rarity: "Legendary", color: "#f472b6", rating: 106, speed: 110, handling: 102 },
+      { id: "boxbox", name: "BB-01 Legacy", series: "Heritage", rarity: "Legendary", color: "#ef4444", rating: 110, speed: 112, handling: 108 }
+    ];
+
+    const packTypes = [
       {
-        id: "lemonade",
-        name: "Lemonade Stand",
-        icon: "🍋",
-        description: "A tiny stand with a loyal crowd.",
-        purchaseCost: 50,
-        baseIncome: 2,
-        color: "#d97706",
-        height: 28
+        id: "starter",
+        name: "Starter Pack",
+        className: "",
+        icon: "🎁",
+        cost: 0,
+        description: "Three free cars to begin your World Tour.",
+        minimumLastRarity: "Uncommon"
       },
       {
-        id: "foodTruck",
-        name: "Food Truck",
-        icon: "🚚",
-        description: "Fast food for busy city workers.",
-        purchaseCost: 300,
-        baseIncome: 12,
-        color: "#dc2626",
-        height: 36
+        id: "street",
+        name: "Street Pack",
+        className: "",
+        icon: "📦",
+        cost: 500,
+        description: "Three cars with a chance of any rarity."
       },
       {
-        id: "arcade",
-        name: "Game Arcade",
-        icon: "🕹️",
-        description: "Bright lights and endless high scores.",
-        purchaseCost: 1500,
-        baseIncome: 55,
-        color: "#7c3aed",
-        height: 48
+        id: "pro",
+        name: "Pro Pack",
+        className: "pro",
+        icon: "💎",
+        cost: 2200,
+        description: "Three cars. The final car is Rare or better.",
+        minimumLastRarity: "Rare"
       },
       {
-        id: "cinema",
-        name: "Grand Cinema",
-        icon: "🎬",
-        description: "Blockbusters fill every theatre.",
-        purchaseCost: 7500,
-        baseIncome: 260,
-        color: "#0369a1",
-        height: 58
-      },
-      {
-        id: "hotel",
-        name: "Skyline Hotel",
-        icon: "🏨",
-        description: "Luxury rooms above the city lights.",
-        purchaseCost: 40000,
-        baseIncome: 1250,
-        color: "#0f766e",
-        height: 72
-      },
-      {
-        id: "park",
-        name: "Theme Park",
-        icon: "🎡",
-        description: "The city's ultimate destination.",
-        purchaseCost: 200000,
-        baseIncome: 6500,
-        color: "#be185d",
-        height: 88
+        id: "elite",
+        name: "Elite Pack",
+        className: "elite",
+        icon: "🏆",
+        cost: 8500,
+        description: "Five cars with two guaranteed Epic or better.",
+        cardCount: 5,
+        elite: true
       }
     ];
 
-    const cashDisplay = document.querySelector("#cash");
-    const incomeDisplay = document.querySelector("#income");
-    const reputationDisplay = document.querySelector("#reputation");
-    const businessesElement = document.querySelector("#businesses");
-    const skyline = document.querySelector("#skyline");
-    const cityLabel = document.querySelector("#cityLabel");
-    const ownedCount = document.querySelector("#ownedCount");
-    const nextGoal = document.querySelector("#nextGoal");
-    const progressBar = document.querySelector("#progressBar");
-    const advertiseButton = document.querySelector("#advertise");
-    const adStatus = document.querySelector("#adStatus");
+    const races = [
+      { id: "metroRace", name: "Metro Sprint", icon: "🌆", requirement: 0, opponent: 54, reward: 450, trophyReward: 1, colors: ["#1d4ed8", "#581c87"] },
+      { id: "coastRace", name: "Coastal Run", icon: "🌊", requirement: 3, opponent: 65, reward: 800, trophyReward: 2, colors: ["#0369a1", "#0f766e"] },
+      { id: "alpineRace", name: "Alpine Rally", icon: "🏔️", requirement: 8, opponent: 76, reward: 1500, trophyReward: 3, colors: ["#475569", "#164e63"] },
+      { id: "desertRace", name: "Desert 500", icon: "🏜️", requirement: 15, opponent: 88, reward: 3000, trophyReward: 4, colors: ["#92400e", "#7f1d1d"] },
+      { id: "finalRace", name: "World Final", icon: "🌍", requirement: 25, opponent: 102, reward: 7500, trophyReward: 7, colors: ["#312e81", "#991b1b"] }
+    ];
+
+    const creditsDisplay = document.querySelector("#credits");
+    const trophiesDisplay = document.querySelector("#trophies");
+    const collectionDisplay = document.querySelector("#collection");
+    const selectedName = document.querySelector("#selectedName");
+    const packStore = document.querySelector("#packStore");
+    const garageGrid = document.querySelector("#garageGrid");
+    const tourGrid = document.querySelector("#tourGrid");
+    const packModal = document.querySelector("#packModal");
+    const packTitle = document.querySelector("#packTitle");
+    const reveals = document.querySelector("#reveals");
+    const revealButton = document.querySelector("#revealButton");
+    const raceModal = document.querySelector("#raceModal");
+    const raceStage = document.querySelector("#raceStage");
+    const raceTitle = document.querySelector("#raceTitle");
+    const raceResult = document.querySelector("#raceResult");
+    const raceClose = document.querySelector("#raceClose");
     const toast = document.querySelector("#toast");
 
-    let cash = 250;
-    let businesses = {};
-    let adTimeRemaining = 0;
+    let credits = 1500;
+    let trophies = 0;
+    let collection = {};
+    let selectedCar = null;
+    let starterOpened = false;
+    let currentPack = [];
+    let revealIndex = 0;
     let toastTimer;
 
-    function formatMoney(value) {
-      if (value >= 1_000_000_000) {
-        return `$${(value / 1_000_000_000).toFixed(2)}B`;
-      }
-      if (value >= 1_000_000) {
-        return `$${(value / 1_000_000).toFixed(2)}M`;
-      }
-      if (value >= 10_000) {
-        return `$${(value / 1_000).toFixed(1)}K`;
-      }
-      return `$${Math.floor(value).toLocaleString()}`;
+    function formatNumber(value) {
+      return Math.floor(value).toLocaleString();
     }
 
-    function upgradeCost(type, level) {
-      return Math.floor(type.purchaseCost * 0.65 * Math.pow(1.65, level - 1));
+    function rarityRank(rarity) {
+      return Object.keys(rarityData).indexOf(rarity);
     }
 
-    function businessIncome(type, level) {
-      return type.baseIncome * level * Math.pow(1.08, Math.max(0, level - 1));
-    }
-
-    function normalIncome() {
-      return businessTypes.reduce((total, type) => {
-        const level = businesses[type.id] || 0;
-        return total + businessIncome(type, level);
-      }, 0);
-    }
-
-    function totalIncome() {
-      return normalIncome() * (adTimeRemaining > 0 ? 2 : 1);
-    }
-
-    function reputation() {
-      return businessTypes.reduce((total, type) => {
-        const level = businesses[type.id] || 0;
-        return total + level * level * 5;
-      }, 0);
-    }
-
-    function ownedBusinesses() {
-      return businessTypes.filter(type => (businesses[type.id] || 0) > 0).length;
-    }
-
-    function isUnlocked(index) {
-      return index === 0 || (businesses[businessTypes[index - 1].id] || 0) >= 1;
+    function effectiveRating(car) {
+      const copies = collection[car.id] || 0;
+      return car.rating + Math.min(15, Math.max(0, copies - 1) * 2);
     }
 
     function showToast(text) {
@@ -595,199 +871,301 @@
       toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
-    function buyOrUpgrade(id) {
-      const type = businessTypes.find(item => item.id === id);
-      const level = businesses[id] || 0;
-      const cost = level === 0 ? type.purchaseCost : upgradeCost(type, level);
+    function randomCar(minimumRarity = "Common") {
+      const minimumRank = rarityRank(minimumRarity);
+      const eligibleRarities = Object.entries(rarityData)
+        .filter(([rarity]) => rarityRank(rarity) >= minimumRank);
+      const totalWeight = eligibleRarities.reduce((total, [, data]) => total + data.weight, 0);
+      let roll = Math.random() * totalWeight;
+      let chosenRarity = eligibleRarities[0][0];
 
-      if (cash < cost) {
-        showToast(`You need ${formatMoney(cost - cash)} more.`);
+      for (const [rarity, data] of eligibleRarities) {
+        roll -= data.weight;
+        if (roll <= 0) {
+          chosenRarity = rarity;
+          break;
+        }
+      }
+
+      const pool = cars.filter(car => car.rarity === chosenRarity);
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function createPackCards(pack) {
+      const cardCount = pack.cardCount || 3;
+      return Array.from({ length: cardCount }, (_, index) => {
+        if (pack.elite && index >= cardCount - 2) {
+          return randomCar("Epic");
+        }
+        if (index === cardCount - 1 && pack.minimumLastRarity) {
+          return randomCar(pack.minimumLastRarity);
+        }
+        return randomCar();
+      });
+    }
+
+    function openPack(packId) {
+      const pack = packTypes.find(item => item.id === packId);
+
+      if (pack.id === "starter" && starterOpened) {
+        return;
+      }
+      if (credits < pack.cost) {
+        showToast(`You need ${formatNumber(pack.cost - credits)} more credits.`);
         return;
       }
 
-      cash -= cost;
-      businesses[id] = level + 1;
-      showToast(level === 0 ? `${type.name} opened!` : `${type.name} upgraded to level ${level + 1}.`);
-      render();
+      credits -= pack.cost;
+      if (pack.id === "starter") {
+        starterOpened = true;
+      }
+
+      currentPack = createPackCards(pack);
+      currentPack.forEach(car => {
+        collection[car.id] = (collection[car.id] || 0) + 1;
+      });
+      if (!selectedCar) {
+        selectedCar = currentPack[0].id;
+      }
+
+      revealIndex = 0;
+      packTitle.textContent = pack.name;
+      reveals.style.gridTemplateColumns = `repeat(${Math.min(currentPack.length, 3)}, minmax(0, 1fr))`;
+      reveals.innerHTML = currentPack.map(car => `
+        <div class="reveal-slot">
+          <div class="reveal-card">
+            <div
+              class="reveal-face"
+              style="--rarity-color:${rarityData[car.rarity].color};--car-color:${car.color}"
+            >
+              <div class="rarity">${car.rarity}</div>
+              <div class="car-art">🏎️</div>
+              <h3>${car.name}</h3>
+              <p>${car.series} · Rating ${effectiveRating(car)}</p>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      revealButton.textContent = "Reveal first car";
+      packModal.classList.add("open");
       saveGame();
+      render();
     }
 
-    function renderBusinesses() {
-      businessesElement.innerHTML = businessTypes.map((type, index) => {
-        const level = businesses[type.id] || 0;
-        const unlocked = isUnlocked(index);
-        const cost = level === 0 ? type.purchaseCost : upgradeCost(type, level);
-        const income = businessIncome(type, level);
-        const buttonText = level === 0 ? `Buy — ${formatMoney(cost)}` : `Upgrade — ${formatMoney(cost)}`;
+    function revealNext() {
+      const cards = reveals.querySelectorAll(".reveal-card");
+      if (revealIndex < cards.length) {
+        const car = currentPack[revealIndex];
+        cards[revealIndex].classList.add("revealed");
+        revealIndex += 1;
 
+        if (revealIndex < cards.length) {
+          revealButton.textContent = `Reveal car ${revealIndex + 1}`;
+        } else {
+          revealButton.textContent = "Add to garage";
+          const copies = collection[car.id];
+          if (copies > 1) {
+            showToast(`Duplicate ${car.name}: performance increased.`);
+          }
+        }
+        return;
+      }
+
+      packModal.classList.remove("open");
+      showScreen("garage");
+    }
+
+    function selectCar(id) {
+      if (!collection[id]) {
+        return;
+      }
+      selectedCar = id;
+      showToast(`${cars.find(car => car.id === id).name} selected.`);
+      saveGame();
+      render();
+    }
+
+    function startRace(raceId) {
+      const race = races.find(item => item.id === raceId);
+      const car = cars.find(item => item.id === selectedCar);
+
+      if (!car) {
+        showToast("Select a car from your garage first.");
+        showScreen("garage");
+        return;
+      }
+      if (trophies < race.requirement) {
+        return;
+      }
+
+      const playerScore = effectiveRating(car) + Math.random() * 24;
+      const opponentScore = race.opponent + Math.random() * 24;
+      const won = playerScore >= opponentScore;
+      const playerFinish = won ? 87 : 72 + Math.random() * 8;
+      const opponentFinish = won ? 72 + Math.random() * 8 : 87;
+
+      raceTitle.textContent = race.name;
+      raceResult.textContent = `${car.name} is on the grid...`;
+      raceClose.textContent = "Racing...";
+      raceClose.disabled = true;
+      raceStage.classList.remove("running");
+      raceStage.style.setProperty("--player-finish", `${playerFinish}%`);
+      raceStage.style.setProperty("--opponent-finish", `${opponentFinish}%`);
+      raceModal.classList.add("open");
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => raceStage.classList.add("running"));
+      });
+
+      setTimeout(() => {
+        if (won) {
+          credits += race.reward;
+          trophies += race.trophyReward;
+          raceResult.textContent = `Victory! +${formatNumber(race.reward)} credits · +${race.trophyReward} trophies`;
+        } else {
+          const consolation = Math.floor(race.reward * 0.2);
+          credits += consolation;
+          raceResult.textContent = `Finished second. +${formatNumber(consolation)} credits`;
+        }
+        raceClose.textContent = "Continue";
+        raceClose.disabled = false;
+        saveGame();
+        render();
+      }, 2600);
+    }
+
+    function carCard(car) {
+      const copies = collection[car.id] || 0;
+      const owned = copies > 0;
+      const rating = effectiveRating(car);
+      return `
+        <article
+          class="car-card ${owned ? "" : "locked"} ${selectedCar === car.id ? "selected" : ""}"
+          data-car="${car.id}"
+          style="--rarity-color:${owned ? rarityData[car.rarity].color : "#334155"};--car-color:${owned ? car.color : "#1e293b"}"
+        >
+          <div class="rarity">${owned ? car.rarity : "Undiscovered"}</div>
+          <h3>${owned ? car.name : "Unknown car"}</h3>
+          <div class="series">${owned ? car.series : "Open packs to discover"}</div>
+          <div class="car-art">${owned ? "🏎️" : "?"}</div>
+          <div class="rating-row"><span>Performance</span><strong>${owned ? rating : "—"}</strong></div>
+          <div class="rating-bar"><div style="width:${owned ? Math.min(100, rating / 1.15) : 0}%"></div></div>
+          <div class="rating-row"><span>Speed ${owned ? car.speed : "—"}</span><span>Handling ${owned ? car.handling : "—"}</span></div>
+          <div class="copies">${owned ? `${copies} owned · ${Math.max(0, copies - 1) * 2} tuning bonus` : ""}</div>
+        </article>
+      `;
+    }
+
+    function renderPacks() {
+      packStore.innerHTML = packTypes.map(pack => {
+        const usedStarter = pack.id === "starter" && starterOpened;
         return `
-          <article class="business ${unlocked ? "" : "locked"}">
-            <div class="business-top">
-              <div class="icon">${unlocked ? type.icon : "🔒"}</div>
-              <div>
-                <h2>${type.name}</h2>
-                <p>${unlocked ? type.description : `Own the ${businessTypes[index - 1].name} to unlock.`}</p>
-              </div>
-            </div>
-            <div class="business-details">
-              <span>Level<strong>${level}</strong></span>
-              <span>Income<strong>${formatMoney(income)}/sec</strong></span>
-            </div>
-            <button data-business="${type.id}" ${unlocked ? "" : "disabled"}>${buttonText}</button>
+          <article class="pack ${pack.className}">
+            <h3>${pack.name}</h3>
+            <div class="pack-art">${pack.icon}</div>
+            <p>${pack.description}</p>
+            <button class="primary" data-pack="${pack.id}" ${usedStarter ? "disabled" : ""}>
+              ${usedStarter ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatNumber(pack.cost)} credits`}
+            </button>
           </article>
         `;
       }).join("");
 
-      document.querySelectorAll("[data-business]").forEach(button => {
-        button.addEventListener("click", () => buyOrUpgrade(button.dataset.business));
+      document.querySelectorAll("[data-pack]").forEach(button => {
+        button.addEventListener("click", () => openPack(button.dataset.pack));
       });
     }
 
-    function renderSkyline() {
-      skyline.innerHTML = businessTypes.map(type => {
-        const level = businesses[type.id] || 0;
-        const extraHeight = Math.min(level * 2, 12);
-        return `
-          <div
-            class="building ${level > 0 ? "owned" : ""}"
-            style="height:${type.height + extraHeight}%;background:${level > 0 ? type.color : "#283750"}"
-            title="${type.name} — Level ${level}"
-          >
-            <span>${type.icon}</span>
-          </div>
-        `;
-      }).join("");
+    function renderGarage() {
+      garageGrid.innerHTML = cars.map(carCard).join("");
+      garageGrid.querySelectorAll("[data-car]").forEach(card => {
+        card.addEventListener("click", () => selectCar(card.dataset.car));
+      });
+      const selected = cars.find(car => car.id === selectedCar);
+      selectedName.textContent = selected ? `${selected.name} · ${effectiveRating(selected)}` : "None";
     }
 
-    function renderProgress() {
-      const count = ownedBusinesses();
-      const cityNames = [
-        "A quiet street with big potential",
-        "A promising little business district",
-        "The town is beginning to buzz",
-        "A growing city of opportunity",
-        "A regional business powerhouse",
-        "A world-famous city skyline",
-        "The ultimate tycoon empire"
-      ];
+    function renderTour() {
+      tourGrid.innerHTML = races.map(race => {
+        const unlocked = trophies >= race.requirement;
+        return `
+          <article class="tour-card ${unlocked ? "" : "locked"}">
+            <div class="track" style="--track-a:${race.colors[0]};--track-b:${race.colors[1]}">${unlocked ? race.icon : "🔒"}</div>
+            <h3>${race.name}</h3>
+            <p>${unlocked ? `Recommended rating: ${race.opponent}` : `Requires ${race.requirement} trophies`}</p>
+            <div class="race-info">
+              <span>Reward<strong>${formatNumber(race.reward)} credits</strong></span>
+              <span>Trophies<strong>+${race.trophyReward}</strong></span>
+            </div>
+            <button class="primary" data-race="${race.id}" ${unlocked ? "" : "disabled"}>Enter race</button>
+          </article>
+        `;
+      }).join("");
 
-      ownedCount.textContent = `${count} / ${businessTypes.length}`;
-      cityLabel.textContent = cityNames[count];
-      progressBar.style.width = `${count / businessTypes.length * 100}%`;
-
-      if (count === businessTypes.length) {
-        nextGoal.textContent = "Every district is open. Keep upgrading your empire!";
-      } else {
-        nextGoal.textContent = `Next: open the ${businessTypes[count].name}.`;
-      }
+      document.querySelectorAll("[data-race]").forEach(button => {
+        button.addEventListener("click", () => startRace(button.dataset.race));
+      });
     }
 
     function render() {
-      cashDisplay.textContent = formatMoney(cash);
-      incomeDisplay.textContent = `${formatMoney(totalIncome())}/sec`;
-      reputationDisplay.textContent = Math.floor(reputation()).toLocaleString();
+      creditsDisplay.textContent = formatNumber(credits);
+      trophiesDisplay.textContent = formatNumber(trophies);
+      collectionDisplay.textContent = `${Object.keys(collection).filter(id => collection[id] > 0).length} / ${cars.length}`;
+      renderPacks();
+      renderGarage();
+      renderTour();
+    }
 
-      const adCost = 100 + ownedBusinesses() * 250;
-      advertiseButton.textContent = adTimeRemaining > 0
-        ? "Campaign active"
-        : `Run campaign — ${formatMoney(adCost)}`;
-      advertiseButton.disabled = adTimeRemaining > 0;
-      adStatus.textContent = adTimeRemaining > 0
-        ? `${Math.ceil(adTimeRemaining)} seconds of double income remaining`
-        : "No campaign running";
-
-      renderBusinesses();
-      renderSkyline();
-      renderProgress();
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.toggle("active", screen.id === screenId);
+      });
+      document.querySelectorAll("nav button").forEach(button => {
+        button.classList.toggle("active", button.dataset.screen === screenId);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function saveGame() {
-      localStorage.setItem("maxCityTycoonSave", JSON.stringify({
-        cash,
-        businesses,
-        adTimeRemaining,
-        savedAt: Date.now()
+      localStorage.setItem("boxBoxWorldTourSave", JSON.stringify({
+        credits,
+        trophies,
+        collection,
+        selectedCar,
+        starterOpened
       }));
     }
 
     function loadGame() {
-      const saved = localStorage.getItem("maxCityTycoonSave");
+      const saved = localStorage.getItem("boxBoxWorldTourSave");
       if (!saved) {
         return;
       }
 
       try {
         const state = JSON.parse(saved);
-        cash = Number.isFinite(state.cash) ? state.cash : cash;
-        businesses = state.businesses && typeof state.businesses === "object"
-          ? state.businesses
-          : {};
-        adTimeRemaining = Number.isFinite(state.adTimeRemaining)
-          ? Math.max(0, state.adTimeRemaining)
-          : 0;
-
-        if (Number.isFinite(state.savedAt)) {
-          const secondsAway = Math.min(7200, Math.max(0, (Date.now() - state.savedAt) / 1000));
-          const advertisedSeconds = Math.min(secondsAway, adTimeRemaining);
-          const offlineEarnings = normalIncome() * (secondsAway + advertisedSeconds);
-          adTimeRemaining = Math.max(0, adTimeRemaining - secondsAway);
-          if (offlineEarnings >= 1) {
-            cash += offlineEarnings;
-            setTimeout(() => showToast(`Welcome back! You earned ${formatMoney(offlineEarnings)} offline.`), 300);
-          }
-        }
+        credits = Number.isFinite(state.credits) ? state.credits : credits;
+        trophies = Number.isFinite(state.trophies) ? state.trophies : trophies;
+        collection = state.collection && typeof state.collection === "object" ? state.collection : {};
+        selectedCar = typeof state.selectedCar === "string" ? state.selectedCar : null;
+        starterOpened = Boolean(state.starterOpened);
       } catch {
-        localStorage.removeItem("maxCityTycoonSave");
+        localStorage.removeItem("boxBoxWorldTourSave");
       }
     }
 
-    advertiseButton.addEventListener("click", () => {
-      const cost = 100 + ownedBusinesses() * 250;
-      if (cash < cost) {
-        showToast(`You need ${formatMoney(cost - cash)} more.`);
-        return;
-      }
-
-      cash -= cost;
-      adTimeRemaining = 30;
-      showToast("Campaign started! Income doubled.");
-      render();
-      saveGame();
+    document.querySelectorAll("nav button").forEach(button => {
+      button.addEventListener("click", () => showScreen(button.dataset.screen));
     });
-
-    document.querySelector("#reset").addEventListener("click", () => {
-      if (!confirm("Delete all tycoon progress and start over?")) {
-        return;
-      }
-
-      localStorage.removeItem("maxCityTycoonSave");
-      cash = 250;
-      businesses = {};
-      adTimeRemaining = 0;
-      render();
-      saveGame();
-      showToast("Your new city is ready.");
+    document.querySelector("[data-go-garage]").addEventListener("click", () => showScreen("garage"));
+    revealButton.addEventListener("click", revealNext);
+    raceClose.addEventListener("click", () => {
+      raceModal.classList.remove("open");
+      raceStage.classList.remove("running");
     });
 
     loadGame();
     render();
-
-    setInterval(() => {
-      cash += totalIncome() / 10;
-      adTimeRemaining = Math.max(0, adTimeRemaining - 0.1);
-      cashDisplay.textContent = formatMoney(cash);
-      incomeDisplay.textContent = `${formatMoney(totalIncome())}/sec`;
-      adStatus.textContent = adTimeRemaining > 0
-        ? `${Math.ceil(adTimeRemaining)} seconds of double income remaining`
-        : "No campaign running";
-
-      if (adTimeRemaining === 0 && advertiseButton.disabled) {
-        render();
-      }
-    }, 100);
-
-    setInterval(saveGame, 5000);
-    window.addEventListener("beforeunload", saveGame);
   </script>
 </body>
 </html>
