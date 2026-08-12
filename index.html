@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Max Factory</title>
+  <title>Max City Tycoon</title>
   <style>
     :root {
       color-scheme: dark;
       font-family: Inter, system-ui, sans-serif;
-      background: #08111f;
+      background: #080d19;
       color: #f8fafc;
     }
 
@@ -20,8 +20,9 @@
       min-height: 100vh;
       margin: 0;
       background:
-        radial-gradient(circle at 20% 10%, #17345d 0, transparent 28rem),
-        linear-gradient(145deg, #0b1729, #050a12);
+        radial-gradient(circle at 10% 5%, rgb(37 99 235 / 30%), transparent 30rem),
+        radial-gradient(circle at 90% 30%, rgb(147 51 234 / 18%), transparent 34rem),
+        #080d19;
     }
 
     button {
@@ -29,7 +30,7 @@
     }
 
     .app {
-      width: min(94rem, 100%);
+      width: min(88rem, 100%);
       margin: auto;
       padding: 1.25rem;
     }
@@ -44,12 +45,16 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(1.8rem, 5vw, 3.4rem);
+      font-size: clamp(2rem, 6vw, 3.8rem);
       letter-spacing: -0.06em;
     }
 
     h1 span {
-      color: #38bdf8;
+      color: #60a5fa;
+    }
+
+    .subtitle {
+      color: #94a3b8;
     }
 
     .stats {
@@ -60,166 +65,310 @@
     }
 
     .stat {
-      min-width: 7rem;
-      padding: 0.6rem 0.9rem;
-      border: 1px solid #29405f;
-      border-radius: 0.75rem;
-      background: rgb(15 31 54 / 85%);
+      min-width: 8rem;
+      padding: 0.65rem 1rem;
+      border: 1px solid #2a3c5c;
+      border-radius: 0.8rem;
+      background: rgb(13 24 44 / 90%);
       text-align: center;
+    }
+
+    .stat small {
+      display: block;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
 
     .stat strong {
       display: block;
+      margin-top: 0.15rem;
       color: #facc15;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
     }
 
-    .game {
+    .layout {
       display: grid;
-      grid-template-columns: minmax(12rem, 17rem) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) 20rem;
       gap: 1rem;
     }
 
     .panel {
-      padding: 1rem;
-      border: 1px solid #29405f;
+      border: 1px solid #263957;
       border-radius: 1rem;
-      background: rgb(10 23 41 / 92%);
-      box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 25%);
+      background: rgb(11 20 37 / 92%);
+      box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 28%);
     }
 
-    .panel h2 {
-      margin: 0 0 0.8rem;
-      font-size: 0.8rem;
-      color: #94a3b8;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+    .city {
+      position: relative;
+      min-height: 18rem;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      padding: 1.25rem;
+      background:
+        linear-gradient(#15294d 0 58%, #172f27 58% 72%, #18202d 72%);
     }
 
-    .tools {
+    .city::before {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle, #dbeafe 0 1px, transparent 1.5px),
+        linear-gradient(90deg, transparent 48%, #475569 48% 52%, transparent 52%);
+      background-position: 0 0, 0 78%;
+      background-size: 4rem 4rem, 100% 3rem;
+      content: "";
+      opacity: 0.45;
+    }
+
+    .skyline {
+      position: absolute;
+      inset: auto 1rem 22% 1rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      gap: 0.5rem;
+      height: 70%;
+    }
+
+    .building {
+      position: relative;
       display: grid;
-      gap: 0.55rem;
+      width: 13%;
+      min-width: 3.3rem;
+      place-items: center;
+      border: 3px solid rgb(255 255 255 / 18%);
+      border-bottom: 0;
+      border-radius: 0.45rem 0.45rem 0 0;
+      background: #283750;
+      box-shadow: inset 0 0 0 0.35rem rgb(0 0 0 / 14%);
+      filter: grayscale(1) brightness(0.55);
+      transform-origin: bottom;
+      transition: 300ms ease;
     }
 
-    .tool,
-    .action {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #334d6e;
-      border-radius: 0.7rem;
-      background: #12243d;
-      color: #f8fafc;
-      cursor: pointer;
-      text-align: left;
+    .building.owned {
+      filter: none;
+      animation: grow 350ms ease-out;
     }
 
-    .tool:hover,
-    .action:hover {
-      border-color: #38bdf8;
-      background: #173152;
+    .building span {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      filter: drop-shadow(0 0.2rem 0.2rem rgb(0 0 0 / 30%));
     }
 
-    .tool.selected {
-      border-color: #38bdf8;
-      outline: 2px solid rgb(56 189 248 / 30%);
-      background: #164060;
+    .building::after {
+      position: absolute;
+      right: 15%;
+      bottom: 16%;
+      left: 15%;
+      height: 12%;
+      border-radius: 0.2rem;
+      background: repeating-linear-gradient(90deg, #fde68a 0 12%, transparent 12% 24%);
+      content: "";
+      opacity: 0;
     }
 
-    .tool strong {
+    .building.owned::after {
+      opacity: 1;
+    }
+
+    .city-label {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      padding: 0.5rem 0.8rem;
+      border-radius: 0.6rem;
+      background: rgb(3 9 19 / 72%);
+      color: #dbeafe;
+    }
+
+    @keyframes grow {
+      from {
+        transform: scaleY(0.15);
+      }
+    }
+
+    .businesses {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+      padding: 1rem;
+    }
+
+    .business {
+      position: relative;
+      overflow: hidden;
+      padding: 1rem;
+      border: 1px solid #304567;
+      border-radius: 0.85rem;
+      background: #101d33;
+      transition: 160ms ease;
+    }
+
+    .business:hover {
+      border-color: #4d6d9c;
+      transform: translateY(-2px);
+    }
+
+    .business.locked {
+      opacity: 0.62;
+    }
+
+    .business-top {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .icon {
+      display: grid;
+      width: 3.2rem;
+      height: 3.2rem;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 0.75rem;
+      background: #1f3455;
+      font-size: 1.7rem;
+    }
+
+    .business h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .business p {
+      margin: 0.2rem 0 0;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    .business-details {
       display: flex;
       justify-content: space-between;
-    }
-
-    .tool small {
-      display: block;
-      margin-top: 0.25rem;
-      color: #a9b7cb;
-    }
-
-    .key {
-      display: inline-grid;
-      min-width: 1.6rem;
-      height: 1.6rem;
-      place-items: center;
-      border: 1px solid #526781;
-      border-radius: 0.3rem;
-      background: #0b1729;
-      color: #e2e8f0;
-      font-size: 0.75rem;
-    }
-
-    .direction {
-      margin: 1rem 0;
-      padding: 0.8rem;
-      border-radius: 0.7rem;
-      background: #091729;
+      gap: 1rem;
+      margin: 0.9rem 0;
       color: #cbd5e1;
-      text-align: center;
+      font-size: 0.85rem;
     }
 
-    #directionArrow {
+    .business-details strong {
       display: block;
-      margin-top: 0.2rem;
-      color: #38bdf8;
-      font-size: 2rem;
-      line-height: 1;
+      color: #4ade80;
+      font-size: 1rem;
     }
 
-    .action {
-      margin-top: 0.55rem;
-      text-align: center;
+    .business button,
+    .side-button {
+      width: 100%;
+      padding: 0.7rem;
+      border: 0;
+      border-radius: 0.65rem;
+      background: #2563eb;
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .business button:hover,
+    .side-button:hover {
+      background: #3b82f6;
+    }
+
+    .business button:disabled {
+      background: #26364f;
+      color: #71829b;
+      cursor: not-allowed;
+    }
+
+    .side {
+      display: grid;
+      align-content: start;
+      gap: 1rem;
+    }
+
+    .side section {
+      padding: 1rem;
+    }
+
+    .side h2 {
+      margin: 0 0 0.7rem;
+      color: #dbeafe;
+      font-size: 1rem;
+    }
+
+    .progress {
+      height: 0.7rem;
+      overflow: hidden;
+      margin: 0.7rem 0;
+      border-radius: 999px;
+      background: #1e293b;
+    }
+
+    .progress div {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2563eb, #a855f7);
+      transition: width 300ms ease;
+    }
+
+    .side p {
+      margin: 0.4rem 0;
+      color: #94a3b8;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .side-button {
+      margin-top: 0.75rem;
+      background: #7c3aed;
+    }
+
+    .side-button:hover {
+      background: #8b5cf6;
+    }
+
+    .side-button:disabled {
+      background: #2d2344;
+      color: #76688f;
+      cursor: not-allowed;
     }
 
     .danger {
+      border: 1px solid #59303d;
+      background: transparent;
       color: #fda4af;
     }
 
-    .help {
-      margin: 1rem 0 0;
-      color: #94a3b8;
-      font-size: 0.82rem;
-      line-height: 1.5;
+    .danger:hover {
+      background: #3c1823;
     }
 
-    .board-wrap {
-      position: relative;
-      min-width: 0;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      border: 1px solid #29405f;
-      border-radius: 1rem;
-      background: #10223a;
-      box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 30%);
-      cursor: crosshair;
-      touch-action: none;
-    }
-
-    #message {
-      position: absolute;
+    #toast {
+      position: fixed;
       left: 50%;
-      bottom: 1rem;
+      bottom: 1.5rem;
+      z-index: 5;
       max-width: calc(100% - 2rem);
-      padding: 0.65rem 1rem;
+      padding: 0.75rem 1.1rem;
+      border: 1px solid #36547d;
       border-radius: 999px;
-      background: rgb(3 10 19 / 88%);
-      color: #e2e8f0;
+      background: rgb(7 15 28 / 94%);
       opacity: 0;
       pointer-events: none;
-      transform: translate(-50%, 0.5rem);
-      transition: 160ms ease;
+      transform: translate(-50%, 1rem);
+      transition: 180ms ease;
       white-space: nowrap;
     }
 
-    #message.show {
+    #toast.show {
       opacity: 1;
       transform: translate(-50%, 0);
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 850px) {
       header {
         align-items: flex-start;
         flex-direction: column;
@@ -229,16 +378,27 @@
         justify-content: flex-start;
       }
 
-      .game {
+      .layout {
         grid-template-columns: 1fr;
       }
 
-      .tools {
+      .side {
         grid-template-columns: repeat(2, 1fr);
       }
+    }
 
-      .direction {
-        margin-bottom: 0;
+    @media (max-width: 580px) {
+      .businesses,
+      .side {
+        grid-template-columns: 1fr;
+      }
+
+      .city {
+        min-height: 14rem;
+      }
+
+      .building {
+        min-width: 2.4rem;
       }
     }
   </style>
@@ -247,387 +407,311 @@
   <div class="app">
     <header>
       <div>
-        <h1>Max <span>Factory</span></h1>
-        <div style="color:#94a3b8">Build. Connect. Automate. Expand.</div>
+        <h1>Max City <span>Tycoon</span></h1>
+        <div class="subtitle">Start small. Build an empire.</div>
       </div>
       <div class="stats">
-        <div class="stat">Cash<strong id="cash">$120</strong></div>
-        <div class="stat">Ore sold<strong id="sold">0</strong></div>
-        <div class="stat">Value / ore<strong id="value">$6</strong></div>
+        <div class="stat"><small>Cash</small><strong id="cash">$250</strong></div>
+        <div class="stat"><small>Income</small><strong id="income">$0/sec</strong></div>
+        <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
       </div>
     </header>
 
-    <div class="game">
-      <aside class="panel">
-        <h2>Build menu</h2>
-        <div class="tools">
-          <button class="tool selected" data-tool="extractor">
-            <strong><span>⛏ Extractor</span><span>$30</span></strong>
-            <small>Place directly on an ore deposit.</small>
-          </button>
-          <button class="tool" data-tool="belt">
-            <strong><span>➜ Conveyor</span><span>$5</span></strong>
-            <small>Moves ore in the arrow direction.</small>
-          </button>
-          <button class="tool" data-tool="seller">
-            <strong><span>🏭 Seller</span><span>$45</span></strong>
-            <small>Turns arriving ore into cash.</small>
-          </button>
-          <button class="tool" data-tool="erase">
-            <strong><span>✕ Bulldozer</span><span>Refund</span></strong>
-            <small>Remove a building for half its cost.</small>
-          </button>
-        </div>
+    <div class="layout">
+      <main>
+        <section class="city panel">
+          <div class="city-label" id="cityLabel">A quiet street with big potential</div>
+          <div class="skyline" id="skyline"></div>
+        </section>
 
-        <div class="direction">
-          Direction <span class="key">R</span>
-          <strong id="directionArrow">→</strong>
-        </div>
-
-        <button id="upgrade" class="action">Upgrade ore value — $150</button>
-        <button id="reset" class="action danger">Reset factory</button>
-
-        <p class="help">
-          Put an extractor on a glowing ore deposit, then connect its arrow to a seller using
-          conveyors. Press <span class="key">R</span> or right-click to rotate before building.
-        </p>
-      </aside>
-
-      <main class="board-wrap">
-        <canvas id="board" width="960" height="640" aria-label="Factory building grid"></canvas>
-        <div id="message" role="status"></div>
+        <section class="businesses panel" id="businesses"></section>
       </main>
+
+      <aside class="side">
+        <section class="panel">
+          <h2>City progress</h2>
+          <p id="nextGoal">Buy your first business.</p>
+          <div class="progress"><div id="progressBar"></div></div>
+          <p><strong id="ownedCount">0 / 6</strong> businesses operating</p>
+        </section>
+
+        <section class="panel">
+          <h2>Advertising</h2>
+          <p>Double all business income for 30 seconds.</p>
+          <button id="advertise" class="side-button">Run campaign — $100</button>
+          <p id="adStatus">No campaign running</p>
+        </section>
+
+        <section class="panel">
+          <h2>How to play</h2>
+          <p>Buy businesses to earn money automatically. Upgrade them to increase their income and unlock larger opportunities.</p>
+          <p>Your progress saves automatically, including up to two hours of offline earnings.</p>
+        </section>
+
+        <section class="panel">
+          <h2>New beginning</h2>
+          <p>Erase the city and start again from $250.</p>
+          <button id="reset" class="side-button danger">Reset game</button>
+        </section>
+      </aside>
     </div>
   </div>
 
+  <div id="toast" role="status"></div>
+
   <script>
-    const canvas = document.querySelector("#board");
-    const context = canvas.getContext("2d");
+    const businessTypes = [
+      {
+        id: "lemonade",
+        name: "Lemonade Stand",
+        icon: "🍋",
+        description: "A tiny stand with a loyal crowd.",
+        purchaseCost: 50,
+        baseIncome: 2,
+        color: "#d97706",
+        height: 28
+      },
+      {
+        id: "foodTruck",
+        name: "Food Truck",
+        icon: "🚚",
+        description: "Fast food for busy city workers.",
+        purchaseCost: 300,
+        baseIncome: 12,
+        color: "#dc2626",
+        height: 36
+      },
+      {
+        id: "arcade",
+        name: "Game Arcade",
+        icon: "🕹️",
+        description: "Bright lights and endless high scores.",
+        purchaseCost: 1500,
+        baseIncome: 55,
+        color: "#7c3aed",
+        height: 48
+      },
+      {
+        id: "cinema",
+        name: "Grand Cinema",
+        icon: "🎬",
+        description: "Blockbusters fill every theatre.",
+        purchaseCost: 7500,
+        baseIncome: 260,
+        color: "#0369a1",
+        height: 58
+      },
+      {
+        id: "hotel",
+        name: "Skyline Hotel",
+        icon: "🏨",
+        description: "Luxury rooms above the city lights.",
+        purchaseCost: 40000,
+        baseIncome: 1250,
+        color: "#0f766e",
+        height: 72
+      },
+      {
+        id: "park",
+        name: "Theme Park",
+        icon: "🎡",
+        description: "The city's ultimate destination.",
+        purchaseCost: 200000,
+        baseIncome: 6500,
+        color: "#be185d",
+        height: 88
+      }
+    ];
+
     const cashDisplay = document.querySelector("#cash");
-    const soldDisplay = document.querySelector("#sold");
-    const valueDisplay = document.querySelector("#value");
-    const directionArrow = document.querySelector("#directionArrow");
-    const message = document.querySelector("#message");
-    const upgradeButton = document.querySelector("#upgrade");
+    const incomeDisplay = document.querySelector("#income");
+    const reputationDisplay = document.querySelector("#reputation");
+    const businessesElement = document.querySelector("#businesses");
+    const skyline = document.querySelector("#skyline");
+    const cityLabel = document.querySelector("#cityLabel");
+    const ownedCount = document.querySelector("#ownedCount");
+    const nextGoal = document.querySelector("#nextGoal");
+    const progressBar = document.querySelector("#progressBar");
+    const advertiseButton = document.querySelector("#advertise");
+    const adStatus = document.querySelector("#adStatus");
+    const toast = document.querySelector("#toast");
 
-    const columns = 12;
-    const rows = 8;
-    const tileSize = canvas.width / columns;
-    const directions = [
-      { x: 1, y: 0, arrow: "→" },
-      { x: 0, y: 1, arrow: "↓" },
-      { x: -1, y: 0, arrow: "←" },
-      { x: 0, y: -1, arrow: "↑" }
-    ];
-    const costs = { extractor: 30, belt: 5, seller: 45 };
-    const deposits = [
-      { x: 1, y: 1 },
-      { x: 2, y: 6 },
-      { x: 5, y: 3 },
-      { x: 8, y: 1 },
-      { x: 10, y: 6 }
-    ];
+    let cash = 250;
+    let businesses = {};
+    let adTimeRemaining = 0;
+    let toastTimer;
 
-    let cash = 120;
-    let sold = 0;
-    let oreValue = 6;
-    let upgradeLevel = 0;
-    let selectedTool = "extractor";
-    let selectedDirection = 0;
-    let tick = 0;
-    let buildings = {};
-    let items = [];
-    let messageTimer;
-
-    function key(x, y) {
-      return `${x},${y}`;
-    }
-
-    function isDeposit(x, y) {
-      return deposits.some(deposit => deposit.x === x && deposit.y === y);
-    }
-
-    function showMessage(text) {
-      message.textContent = text;
-      message.classList.add("show");
-      clearTimeout(messageTimer);
-      messageTimer = setTimeout(() => message.classList.remove("show"), 1700);
-    }
-
-    function updateUi() {
-      cashDisplay.textContent = `$${cash}`;
-      soldDisplay.textContent = sold;
-      valueDisplay.textContent = `$${oreValue}`;
-      directionArrow.textContent = directions[selectedDirection].arrow;
-      const upgradeCost = 150 * (upgradeLevel + 1);
-      upgradeButton.textContent = `Upgrade ore value — $${upgradeCost}`;
-      saveGame();
-    }
-
-    function rotate() {
-      selectedDirection = (selectedDirection + 1) % directions.length;
-      updateUi();
-    }
-
-    function selectTool(tool) {
-      selectedTool = tool;
-      document.querySelectorAll(".tool").forEach(button => {
-        button.classList.toggle("selected", button.dataset.tool === tool);
-      });
-    }
-
-    function build(x, y) {
-      const tileKey = key(x, y);
-      const existing = buildings[tileKey];
-
-      if (selectedTool === "erase") {
-        if (!existing) {
-          showMessage("There is nothing to remove here.");
-          return;
-        }
-
-        cash += Math.floor(costs[existing.type] / 2);
-        delete buildings[tileKey];
-        items = items.filter(item => item.x !== x || item.y !== y);
-        showMessage("Building removed. Half the cost was refunded.");
-        updateUi();
-        return;
+    function formatMoney(value) {
+      if (value >= 1_000_000_000) {
+        return `$${(value / 1_000_000_000).toFixed(2)}B`;
       }
-
-      if (existing) {
-        showMessage("That tile is already occupied.");
-        return;
+      if (value >= 1_000_000) {
+        return `$${(value / 1_000_000).toFixed(2)}M`;
       }
-
-      if (selectedTool === "extractor" && !isDeposit(x, y)) {
-        showMessage("Extractors must be placed on glowing ore deposits.");
-        return;
+      if (value >= 10_000) {
+        return `$${(value / 1_000).toFixed(1)}K`;
       }
+      return `$${Math.floor(value).toLocaleString()}`;
+    }
 
-      if (selectedTool !== "extractor" && isDeposit(x, y)) {
-        showMessage("Only an extractor can be placed on an ore deposit.");
-        return;
-      }
+    function upgradeCost(type, level) {
+      return Math.floor(type.purchaseCost * 0.65 * Math.pow(1.65, level - 1));
+    }
 
-      const cost = costs[selectedTool];
+    function businessIncome(type, level) {
+      return type.baseIncome * level * Math.pow(1.08, Math.max(0, level - 1));
+    }
+
+    function normalIncome() {
+      return businessTypes.reduce((total, type) => {
+        const level = businesses[type.id] || 0;
+        return total + businessIncome(type, level);
+      }, 0);
+    }
+
+    function totalIncome() {
+      return normalIncome() * (adTimeRemaining > 0 ? 2 : 1);
+    }
+
+    function reputation() {
+      return businessTypes.reduce((total, type) => {
+        const level = businesses[type.id] || 0;
+        return total + level * level * 5;
+      }, 0);
+    }
+
+    function ownedBusinesses() {
+      return businessTypes.filter(type => (businesses[type.id] || 0) > 0).length;
+    }
+
+    function isUnlocked(index) {
+      return index === 0 || (businesses[businessTypes[index - 1].id] || 0) >= 1;
+    }
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function buyOrUpgrade(id) {
+      const type = businessTypes.find(item => item.id === id);
+      const level = businesses[id] || 0;
+      const cost = level === 0 ? type.purchaseCost : upgradeCost(type, level);
+
       if (cash < cost) {
-        showMessage(`You need $${cost - cash} more.`);
+        showToast(`You need ${formatMoney(cost - cash)} more.`);
         return;
       }
 
       cash -= cost;
-      buildings[tileKey] = {
-        type: selectedTool,
-        direction: selectedTool === "seller" ? 0 : selectedDirection
-      };
-      showMessage(`${selectedTool[0].toUpperCase()}${selectedTool.slice(1)} built.`);
-      updateUi();
+      businesses[id] = level + 1;
+      showToast(level === 0 ? `${type.name} opened!` : `${type.name} upgraded to level ${level + 1}.`);
+      render();
+      saveGame();
     }
 
-    function hasItem(x, y) {
-      return items.some(item => item.x === x && item.y === y);
-    }
+    function renderBusinesses() {
+      businessesElement.innerHTML = businessTypes.map((type, index) => {
+        const level = businesses[type.id] || 0;
+        const unlocked = isUnlocked(index);
+        const cost = level === 0 ? type.purchaseCost : upgradeCost(type, level);
+        const income = businessIncome(type, level);
+        const buttonText = level === 0 ? `Buy — ${formatMoney(cost)}` : `Upgrade — ${formatMoney(cost)}`;
 
-    function runFactory() {
-      tick += 1;
+        return `
+          <article class="business ${unlocked ? "" : "locked"}">
+            <div class="business-top">
+              <div class="icon">${unlocked ? type.icon : "🔒"}</div>
+              <div>
+                <h2>${type.name}</h2>
+                <p>${unlocked ? type.description : `Own the ${businessTypes[index - 1].name} to unlock.`}</p>
+              </div>
+            </div>
+            <div class="business-details">
+              <span>Level<strong>${level}</strong></span>
+              <span>Income<strong>${formatMoney(income)}/sec</strong></span>
+            </div>
+            <button data-business="${type.id}" ${unlocked ? "" : "disabled"}>${buttonText}</button>
+          </article>
+        `;
+      }).join("");
 
-      if (tick % 4 === 0) {
-        Object.entries(buildings).forEach(([position, building]) => {
-          if (building.type !== "extractor") {
-            return;
-          }
-
-          const [x, y] = position.split(",").map(Number);
-          if (!hasItem(x, y)) {
-            items.push({ x, y });
-          }
-        });
-      }
-
-      const occupied = new Set(items.map(item => key(item.x, item.y)));
-      const nextItems = [];
-
-      items.forEach(item => {
-        const building = buildings[key(item.x, item.y)];
-        if (!building || building.type === "seller") {
-          return;
-        }
-
-        occupied.delete(key(item.x, item.y));
-        const direction = directions[building.direction];
-        const nextX = item.x + direction.x;
-        const nextY = item.y + direction.y;
-        const destination = buildings[key(nextX, nextY)];
-        const destinationKey = key(nextX, nextY);
-
-        if (
-          nextX < 0 || nextX >= columns || nextY < 0 || nextY >= rows ||
-          !destination || destination.type === "extractor" ||
-          occupied.has(destinationKey)
-        ) {
-          occupied.add(key(item.x, item.y));
-          nextItems.push(item);
-          return;
-        }
-
-        if (destination.type === "seller") {
-          cash += oreValue;
-          sold += 1;
-          return;
-        }
-
-        occupied.add(destinationKey);
-        nextItems.push({ x: nextX, y: nextY });
+      document.querySelectorAll("[data-business]").forEach(button => {
+        button.addEventListener("click", () => buyOrUpgrade(button.dataset.business));
       });
-
-      items = nextItems;
-      updateUi();
-      draw();
     }
 
-    function roundedRect(x, y, width, height, radius) {
-      context.beginPath();
-      context.roundRect(x, y, width, height, radius);
+    function renderSkyline() {
+      skyline.innerHTML = businessTypes.map(type => {
+        const level = businesses[type.id] || 0;
+        const extraHeight = Math.min(level * 2, 12);
+        return `
+          <div
+            class="building ${level > 0 ? "owned" : ""}"
+            style="height:${type.height + extraHeight}%;background:${level > 0 ? type.color : "#283750"}"
+            title="${type.name} — Level ${level}"
+          >
+            <span>${type.icon}</span>
+          </div>
+        `;
+      }).join("");
     }
 
-    function drawArrow(centerX, centerY, directionIndex, color, scale = 1) {
-      const direction = directions[directionIndex];
-      context.save();
-      context.translate(centerX, centerY);
-      context.rotate(Math.atan2(direction.y, direction.x));
-      context.strokeStyle = color;
-      context.fillStyle = color;
-      context.lineWidth = 6 * scale;
-      context.lineCap = "round";
-      context.beginPath();
-      context.moveTo(-20 * scale, 0);
-      context.lineTo(18 * scale, 0);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(20 * scale, 0);
-      context.lineTo(7 * scale, -10 * scale);
-      context.lineTo(7 * scale, 10 * scale);
-      context.closePath();
-      context.fill();
-      context.restore();
-    }
+    function renderProgress() {
+      const count = ownedBusinesses();
+      const cityNames = [
+        "A quiet street with big potential",
+        "A promising little business district",
+        "The town is beginning to buzz",
+        "A growing city of opportunity",
+        "A regional business powerhouse",
+        "A world-famous city skyline",
+        "The ultimate tycoon empire"
+      ];
 
-    function drawDeposit(deposit) {
-      const centerX = deposit.x * tileSize + tileSize / 2;
-      const centerY = deposit.y * tileSize + tileSize / 2;
-      const pulse = 3 + Math.sin(performance.now() / 350) * 2;
+      ownedCount.textContent = `${count} / ${businessTypes.length}`;
+      cityLabel.textContent = cityNames[count];
+      progressBar.style.width = `${count / businessTypes.length * 100}%`;
 
-      context.save();
-      context.shadowColor = "#38bdf8";
-      context.shadowBlur = 16 + pulse;
-      context.fillStyle = "#38bdf8";
-      context.beginPath();
-      context.moveTo(centerX, centerY - 23);
-      context.lineTo(centerX + 24, centerY - 6);
-      context.lineTo(centerX + 15, centerY + 22);
-      context.lineTo(centerX - 18, centerY + 20);
-      context.lineTo(centerX - 25, centerY - 7);
-      context.closePath();
-      context.fill();
-      context.fillStyle = "#bae6fd";
-      context.beginPath();
-      context.arc(centerX - 6, centerY - 7, 7, 0, Math.PI * 2);
-      context.fill();
-      context.restore();
-    }
-
-    function drawBuilding(x, y, building) {
-      const left = x * tileSize;
-      const top = y * tileSize;
-      const centerX = left + tileSize / 2;
-      const centerY = top + tileSize / 2;
-
-      if (building.type === "belt") {
-        roundedRect(left + 9, top + 22, tileSize - 18, tileSize - 44, 10);
-        context.fillStyle = "#334155";
-        context.fill();
-        context.strokeStyle = "#64748b";
-        context.lineWidth = 3;
-        context.stroke();
-        drawArrow(centerX, centerY, building.direction, "#e2e8f0", 0.8);
-      }
-
-      if (building.type === "extractor") {
-        roundedRect(left + 12, top + 12, tileSize - 24, tileSize - 24, 12);
-        context.fillStyle = "#ca8a04";
-        context.fill();
-        context.strokeStyle = "#fde047";
-        context.lineWidth = 4;
-        context.stroke();
-        context.fillStyle = "#422006";
-        context.font = "bold 28px system-ui";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText("⛏", centerX, centerY - 5);
-        drawArrow(centerX, centerY + 20, building.direction, "#fff7cc", 0.42);
-      }
-
-      if (building.type === "seller") {
-        roundedRect(left + 9, top + 9, tileSize - 18, tileSize - 18, 12);
-        context.fillStyle = "#166534";
-        context.fill();
-        context.strokeStyle = "#4ade80";
-        context.lineWidth = 4;
-        context.stroke();
-        context.fillStyle = "#dcfce7";
-        context.font = "bold 34px system-ui";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText("$", centerX, centerY);
+      if (count === businessTypes.length) {
+        nextGoal.textContent = "Every district is open. Keep upgrading your empire!";
+      } else {
+        nextGoal.textContent = `Next: open the ${businessTypes[count].name}.`;
       }
     }
 
-    function drawItem(item) {
-      const centerX = item.x * tileSize + tileSize / 2;
-      const centerY = item.y * tileSize + tileSize / 2;
-      context.save();
-      context.shadowColor = "#f97316";
-      context.shadowBlur = 12;
-      context.fillStyle = "#fb923c";
-      context.beginPath();
-      context.arc(centerX, centerY, 11, 0, Math.PI * 2);
-      context.fill();
-      context.restore();
-    }
+    function render() {
+      cashDisplay.textContent = formatMoney(cash);
+      incomeDisplay.textContent = `${formatMoney(totalIncome())}/sec`;
+      reputationDisplay.textContent = Math.floor(reputation()).toLocaleString();
 
-    function draw() {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      const adCost = 100 + ownedBusinesses() * 250;
+      advertiseButton.textContent = adTimeRemaining > 0
+        ? "Campaign active"
+        : `Run campaign — ${formatMoney(adCost)}`;
+      advertiseButton.disabled = adTimeRemaining > 0;
+      adStatus.textContent = adTimeRemaining > 0
+        ? `${Math.ceil(adTimeRemaining)} seconds of double income remaining`
+        : "No campaign running";
 
-      for (let y = 0; y < rows; y += 1) {
-        for (let x = 0; x < columns; x += 1) {
-          context.fillStyle = (x + y) % 2 === 0 ? "#10243d" : "#0e2036";
-          context.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-          context.strokeStyle = "#203a59";
-          context.lineWidth = 1;
-          context.strokeRect(x * tileSize, y * tileSize, tileSize, tileSize);
-        }
-      }
-
-      deposits.forEach(drawDeposit);
-      Object.entries(buildings).forEach(([position, building]) => {
-        const [x, y] = position.split(",").map(Number);
-        drawBuilding(x, y, building);
-      });
-      items.forEach(drawItem);
+      renderBusinesses();
+      renderSkyline();
+      renderProgress();
     }
 
     function saveGame() {
-      localStorage.setItem("maxFactorySave", JSON.stringify({
+      localStorage.setItem("maxCityTycoonSave", JSON.stringify({
         cash,
-        sold,
-        oreValue,
-        upgradeLevel,
-        buildings
+        businesses,
+        adTimeRemaining,
+        savedAt: Date.now()
       }));
     }
 
     function loadGame() {
-      const saved = localStorage.getItem("maxFactorySave");
+      const saved = localStorage.getItem("maxCityTycoonSave");
       if (!saved) {
         return;
       }
@@ -635,80 +719,75 @@
       try {
         const state = JSON.parse(saved);
         cash = Number.isFinite(state.cash) ? state.cash : cash;
-        sold = Number.isFinite(state.sold) ? state.sold : sold;
-        oreValue = Number.isFinite(state.oreValue) ? state.oreValue : oreValue;
-        upgradeLevel = Number.isFinite(state.upgradeLevel) ? state.upgradeLevel : upgradeLevel;
-        buildings = state.buildings && typeof state.buildings === "object" ? state.buildings : {};
+        businesses = state.businesses && typeof state.businesses === "object"
+          ? state.businesses
+          : {};
+        adTimeRemaining = Number.isFinite(state.adTimeRemaining)
+          ? Math.max(0, state.adTimeRemaining)
+          : 0;
+
+        if (Number.isFinite(state.savedAt)) {
+          const secondsAway = Math.min(7200, Math.max(0, (Date.now() - state.savedAt) / 1000));
+          const advertisedSeconds = Math.min(secondsAway, adTimeRemaining);
+          const offlineEarnings = normalIncome() * (secondsAway + advertisedSeconds);
+          adTimeRemaining = Math.max(0, adTimeRemaining - secondsAway);
+          if (offlineEarnings >= 1) {
+            cash += offlineEarnings;
+            setTimeout(() => showToast(`Welcome back! You earned ${formatMoney(offlineEarnings)} offline.`), 300);
+          }
+        }
       } catch {
-        localStorage.removeItem("maxFactorySave");
+        localStorage.removeItem("maxCityTycoonSave");
       }
     }
 
-    canvas.addEventListener("pointerdown", event => {
-      const bounds = canvas.getBoundingClientRect();
-      const x = Math.floor((event.clientX - bounds.left) * canvas.width / bounds.width / tileSize);
-      const y = Math.floor((event.clientY - bounds.top) * canvas.height / bounds.height / tileSize);
-      build(x, y);
-      draw();
-    });
-
-    canvas.addEventListener("contextmenu", event => {
-      event.preventDefault();
-      rotate();
-    });
-
-    document.querySelectorAll(".tool").forEach(button => {
-      button.addEventListener("click", () => selectTool(button.dataset.tool));
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key.toLowerCase() === "r") {
-        rotate();
-      }
-    });
-
-    upgradeButton.addEventListener("click", () => {
-      const cost = 150 * (upgradeLevel + 1);
+    advertiseButton.addEventListener("click", () => {
+      const cost = 100 + ownedBusinesses() * 250;
       if (cash < cost) {
-        showMessage(`You need $${cost - cash} more for this upgrade.`);
+        showToast(`You need ${formatMoney(cost - cash)} more.`);
         return;
       }
 
       cash -= cost;
-      upgradeLevel += 1;
-      oreValue += 3;
-      showMessage(`Ore is now worth $${oreValue}.`);
-      updateUi();
+      adTimeRemaining = 30;
+      showToast("Campaign started! Income doubled.");
+      render();
+      saveGame();
     });
 
     document.querySelector("#reset").addEventListener("click", () => {
-      if (!confirm("Reset all factory progress and start over?")) {
+      if (!confirm("Delete all tycoon progress and start over?")) {
         return;
       }
 
-      localStorage.removeItem("maxFactorySave");
-      cash = 120;
-      sold = 0;
-      oreValue = 6;
-      upgradeLevel = 0;
-      buildings = {};
-      items = [];
-      updateUi();
-      draw();
-      showMessage("Factory reset.");
+      localStorage.removeItem("maxCityTycoonSave");
+      cash = 250;
+      businesses = {};
+      adTimeRemaining = 0;
+      render();
+      saveGame();
+      showToast("Your new city is ready.");
     });
 
     loadGame();
-    updateUi();
-    draw();
-    setInterval(runFactory, 500);
+    render();
 
-    function animateDeposits() {
-      draw();
-      requestAnimationFrame(animateDeposits);
-    }
+    setInterval(() => {
+      cash += totalIncome() / 10;
+      adTimeRemaining = Math.max(0, adTimeRemaining - 0.1);
+      cashDisplay.textContent = formatMoney(cash);
+      incomeDisplay.textContent = `${formatMoney(totalIncome())}/sec`;
+      adStatus.textContent = adTimeRemaining > 0
+        ? `${Math.ceil(adTimeRemaining)} seconds of double income remaining`
+        : "No campaign running";
 
-    requestAnimationFrame(animateDeposits);
+      if (adTimeRemaining === 0 && advertiseButton.disabled) {
+        render();
+      }
+    }, 100);
+
+    setInterval(saveGame, 5000);
+    window.addEventListener("beforeunload", saveGame);
   </script>
 </body>
 </html>
