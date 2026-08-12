@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>House of Wildcards</title>
+  <title>BoxBox Joker</title>
   <style>
     :root {
       color-scheme: dark;
@@ -19,10 +19,7 @@
     body {
       min-height: 100vh;
       margin: 0;
-      background:
-        radial-gradient(circle at 12% 0%, rgb(126 34 206 / 24%), transparent 28rem),
-        radial-gradient(circle at 88% 18%, rgb(190 24 93 / 18%), transparent 30rem),
-        #07080d;
+      background: #090a0f;
     }
 
     button {
@@ -45,21 +42,21 @@
 
     .logo {
       margin: 0;
-      font-family: Georgia, serif;
       font-size: clamp(2rem, 5vw, 3.6rem);
       font-style: italic;
+      font-weight: 950;
       letter-spacing: -0.05em;
       line-height: 0.95;
     }
 
     .logo span {
-      color: #facc15;
+      color: #e879f9;
     }
 
     .logo small {
       display: block;
       margin-top: 0.45rem;
-      color: #a78bfa;
+      color: #a1a1aa;
       font-family: Inter, system-ui, sans-serif;
       font-size: 0.6rem;
       font-style: normal;
@@ -72,6 +69,19 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 0.5rem;
+    }
+
+    .header-side {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.6rem;
+    }
+
+    .header-reset {
+      width: auto;
+      padding: 0.65rem 0.8rem;
+      white-space: nowrap;
     }
 
     .stat {
@@ -101,9 +111,9 @@
       gap: 0.4rem;
       margin-bottom: 1rem;
       padding: 0.4rem;
-      border: 1px solid #302d3e;
+      border: 1px solid #27272f;
       border-radius: 0.8rem;
-      background: #0d0e15;
+      background: #111218;
     }
 
     nav button {
@@ -119,7 +129,7 @@
     }
 
     nav button.active {
-      background: #7e22ce;
+      background: #a21caf;
       color: white;
     }
 
@@ -133,25 +143,24 @@
 
     .hero {
       position: relative;
-      min-height: 17rem;
+      min-height: 14rem;
       overflow: hidden;
       padding: clamp(1.5rem, 5vw, 4rem);
-      border: 1px solid #423852;
+      border: 1px solid #34323d;
       border-radius: 1rem;
       background:
-        linear-gradient(95deg, rgb(9 8 14 / 96%) 15%, rgb(9 8 14 / 30%)),
-        repeating-linear-gradient(120deg, transparent 0 3rem, rgb(255 255 255 / 3%) 3rem 6rem),
-        linear-gradient(140deg, #4c1d95, #181022 52%, #831843);
-      box-shadow: 0 2rem 5rem rgb(0 0 0 / 35%);
+        linear-gradient(95deg, rgb(9 8 14 / 97%) 15%, rgb(9 8 14 / 40%)),
+        linear-gradient(135deg, #701a75, #18181b 58%, #3f0c2a);
+      box-shadow: 0 1rem 3rem rgb(0 0 0 / 30%);
     }
 
     .hero::after {
       position: absolute;
       right: 6%;
-      bottom: -38%;
+      bottom: -52%;
       color: rgb(255 255 255 / 10%);
       content: "🃏";
-      font-size: clamp(12rem, 35vw, 28rem);
+      font-size: clamp(11rem, 30vw, 23rem);
       line-height: 1;
       transform: rotate(12deg);
     }
@@ -172,7 +181,6 @@
 
     .hero h2 {
       margin: 0.45rem 0;
-      font-family: Georgia, serif;
       font-size: clamp(2.3rem, 7vw, 5rem);
       font-style: italic;
       letter-spacing: -0.06em;
@@ -427,9 +435,43 @@
     }
 
     .pack p {
-      min-height: 2.8rem;
+      min-height: 2.5rem;
       color: #aaa5b4;
       font-size: 0.86rem;
+    }
+
+    .odds {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.3rem;
+      margin: 0.75rem 0;
+      padding: 0.55rem;
+      border: 1px solid rgb(255 255 255 / 8%);
+      border-radius: 0.55rem;
+      background: rgb(0 0 0 / 20%);
+    }
+
+    .odds span {
+      color: #a1a1aa;
+      font-size: 0.68rem;
+      text-align: center;
+    }
+
+    .odds strong {
+      display: block;
+      color: #f4f4f5;
+      font-size: 0.73rem;
+    }
+
+    .guarantee {
+      position: relative;
+      min-height: 1.2rem;
+      margin: -0.2rem 0 0.7rem;
+      color: #facc15;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-align: center;
     }
 
     .wildcard-card {
@@ -706,6 +748,12 @@
         flex-direction: column;
       }
 
+      .header-side {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+      }
+
       .stats {
         justify-content: flex-start;
       }
@@ -723,11 +771,14 @@
 <body>
   <div class="app">
     <header>
-      <h1 class="logo">House of <span>Wildcards</span><small>Casino Collection</small></h1>
-      <div class="stats">
-        <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
-        <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
-        <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
+      <h1 class="logo">BoxBox <span>Joker</span><small>Pack · Equip · Profit</small></h1>
+      <div class="header-side">
+        <div class="stats">
+          <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
+          <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
+          <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
+        </div>
+        <button id="reset" class="danger header-reset">Reset game</button>
       </div>
     </header>
 
@@ -771,7 +822,6 @@
           <h2>Wildcard collection</h2>
           <p>Duplicates increase a Wildcard's level and strengthen its effect.</p>
         </div>
-        <button id="reset" class="danger" style="width:auto;padding-inline:1rem">Reset game</button>
       </div>
       <div id="wildcardGrid" class="wildcard-grid"></div>
       <div class="album-summary">
@@ -929,6 +979,50 @@
       return Object.keys(rarityInfo).indexOf(rarity);
     }
 
+    function rarityPercentages(minimumRarity = "Common") {
+      const minimum = rarityRank(minimumRarity);
+      const entries = Object.entries(rarityInfo).filter(([rarity]) => rarityRank(rarity) >= minimum);
+      const totalWeight = entries.reduce((total, [, info]) => total + info.weight, 0);
+      return Object.fromEntries(entries.map(([rarity, info]) => [rarity, info.weight / totalWeight * 100]));
+    }
+
+    function formatOdds(value) {
+      return `${value < 1 ? value.toFixed(2) : value.toFixed(1)}%`;
+    }
+
+    function packOddsMarkup(pack) {
+      const wildcardOdds = rarityPercentages();
+      const regularOdds = {
+        Ordinary: (1 - pack.wildcardChance) * 100,
+        ...Object.fromEntries(
+          Object.entries(wildcardOdds).map(([rarity, percentage]) => [
+            rarity,
+            percentage * pack.wildcardChance
+          ])
+        )
+      };
+      const odds = Object.entries(regularOdds)
+        .map(([rarity, percentage]) => `<span>${rarity}<strong>${formatOdds(percentage)}</strong></span>`)
+        .join("");
+
+      const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      if (!guaranteedCount) {
+        return `<div class="odds" aria-label="Card rarity odds">${odds}</div><div class="guarantee">Odds shown per card</div>`;
+      }
+
+      const guaranteedOdds = rarityPercentages(pack.guaranteed);
+      const guaranteeText = Object.entries(guaranteedOdds)
+        .map(([rarity, percentage]) => `${rarity} ${formatOdds(percentage)}`)
+        .join(" · ");
+      return `
+        <div class="odds" aria-label="Regular card rarity odds">${odds}</div>
+        <div class="guarantee">
+          ${guaranteedCount} guaranteed slot${guaranteedCount === 1 ? "" : "s"}:
+          ${guaranteeText}
+        </div>
+      `;
+    }
+
     function wildcardLevel(id) {
       return wildcardCollection[id] || 0;
     }
@@ -1063,7 +1157,7 @@
       }
 
       packModal.classList.remove("open");
-      showScreen("collection");
+      showToast("Cards added to your collection.");
     }
 
     function dealHand() {
@@ -1318,6 +1412,7 @@
             <h3>${pack.name}</h3>
             <div class="pack-art">${pack.icon}</div>
             <p>${pack.description}</p>
+            ${packOddsMarkup(pack)}
             <button class="primary" data-pack="${pack.id}" ${claimed ? "disabled" : ""}>
               ${claimed ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatMoney(pack.cost)}`}
             </button>
