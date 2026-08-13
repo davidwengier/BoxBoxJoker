@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" role="img" aria-labelledby="title">
+  <title id="title">Box Box Jokers</title>
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#c026d3"/>
+      <stop offset="1" stop-color="#701a75"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="180" rx="30" fill="#111218"/>
+  <g transform="translate(24 20) rotate(-7 55 70)">
+    <rect width="110" height="140" rx="14" fill="url(#card)" stroke="#f0abfc" stroke-width="4"/>
+    <path d="M55 28c18 0 31 14 31 31 0 23-31 51-31 51S24 82 24 59c0-17 13-31 31-31Z" fill="#fff"/>
+    <circle cx="43" cy="58" r="5" fill="#701a75"/>
+    <circle cx="67" cy="58" r="5" fill="#701a75"/>
+    <path d="M38 75q17 18 34 0" fill="none" stroke="#701a75" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <text x="155" y="79" fill="#fff" font-family="Arial, sans-serif" font-size="58" font-style="italic" font-weight="900">BOX BOX</text>
+  <text x="155" y="139" fill="#e879f9" font-family="Arial, sans-serif" font-size="58" font-style="italic" font-weight="900">JOKERS</text>
+</svg>
