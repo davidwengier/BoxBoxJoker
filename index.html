@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Box Box Jokers</title>
-  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     :root {
       color-scheme: dark;
@@ -54,7 +54,7 @@
     }
 
     .logo-image {
-      width: clamp(20rem, 46vw, 34rem);
+      width: clamp(13rem, 30vw, 22rem);
       max-width: 100%;
       height: auto;
     }
@@ -678,16 +678,6 @@
       display: block;
       color: #f4f4f5;
       font-size: 0.73rem;
-    }
-
-    .guarantee {
-      position: relative;
-      min-height: 1.2rem;
-      margin: -0.2rem 0 0.7rem;
-      color: #facc15;
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-align: center;
     }
 
     .wildcard-card {
@@ -1510,8 +1500,7 @@
         icon: "🎁",
         cost: 0,
         wildcardChance: 0.35,
-        guaranteed: "Common",
-        description: "Your first five cards, with one guaranteed Joker."
+        description: "Your first five cards with the standard Joker pool."
       },
       {
         id: "standard",
@@ -1528,8 +1517,8 @@
         className: "premium",
         cost: 750,
         wildcardChance: 0.5,
-        guaranteed: "Uncommon",
-        description: "Better Joker odds and one guaranteed Uncommon or better."
+        minimumRarity: "Uncommon",
+        description: "Five cards with better Joker odds and no Common Jokers."
       },
       {
         id: "vault",
@@ -1538,9 +1527,8 @@
         className: "vault",
         cost: 2800,
         wildcardChance: 0.72,
-        guaranteed: "Rare",
-        description: "Five cards with two guaranteed Rare or better Jokers.",
-        guaranteedCount: 2
+        minimumRarity: "Rare",
+        description: "Five cards where every Joker is Rare or better."
       },
       {
         id: "lucky",
@@ -1549,9 +1537,8 @@
         className: "premium",
         cost: 5200,
         wildcardChance: 0.82,
-        guaranteed: "Epic",
-        description: "Seven cards with two guaranteed Epic or better Jokers.",
-        guaranteedCount: 2,
+        minimumRarity: "Epic",
+        description: "Seven cards where every Joker is Epic or better.",
         cardCount: 7
       },
       {
@@ -1561,9 +1548,8 @@
         className: "mythic",
         cost: 18000,
         wildcardChance: 0.94,
-        guaranteed: "Legendary",
-        description: "Seven premium cards with three Legendary or better slots.",
-        guaranteedCount: 3,
+        minimumRarity: "Legendary",
+        description: "Seven premium cards where every Joker is Legendary or better.",
         cardCount: 7
       },
       {
@@ -1573,9 +1559,8 @@
         className: "limited",
         cost: 75000,
         wildcardChance: 1,
-        exactGuaranteed: "Limited",
-        description: "Five Jokers with one guaranteed Limited card.",
-        guaranteedCount: 1
+        minimumRarity: "Mythic",
+        description: "Five Joker-only cards drawn from the Mythic and Limited pool."
       },
       {
         id: "handmaker",
@@ -1584,8 +1569,8 @@
         className: "premium",
         cost: 12000,
         wildcardChance: 0.78,
-        handChanceGuaranteed: 2,
-        description: "Six cards with two guaranteed hand-chance Jokers.",
+        jokerPool: "handChance",
+        description: "Six cards where every Joker pull is a hand-chance Joker.",
         cardCount: 6
       }
     ];
@@ -1736,7 +1721,9 @@
     }
 
     function regularSlotOdds(pack) {
-      const wildcardOdds = rarityPercentages();
+      const wildcardOdds = pack.jokerPool === "handChance"
+        ? handChanceSlotOdds()
+        : rarityPercentages(pack.minimumRarity || "Common");
       return {
         Ordinary: (1 - pack.wildcardChance) * 100,
         ...Object.fromEntries(
@@ -1775,33 +1762,7 @@
 
     function packOddsMarkup(pack) {
       const cardCount = pack.cardCount || 5;
-      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
-      const regularCount = cardCount - guaranteedCount;
-      let markup = regularCount > 0
-        ? oddsBlock(`Regular slots (${regularCount})`, regularSlotOdds(pack))
-        : "";
-
-      if (pack.handChanceGuaranteed) {
-        return markup + oddsBlock(
-          `Hand-chance Joker slots (${pack.handChanceGuaranteed})`,
-          handChanceSlotOdds()
-        );
-      }
-      if (!guaranteedCount) {
-        return markup;
-      }
-
-      if (pack.exactGuaranteed) {
-        return markup + oddsBlock(
-          `${pack.exactGuaranteed} slots (${guaranteedCount})`,
-          { [pack.exactGuaranteed]: 100 }
-        );
-      }
-
-      return markup + oddsBlock(
-        `Guaranteed ${pack.guaranteed}+ slots (${guaranteedCount})`,
-        rarityPercentages(pack.guaranteed)
-      );
+      return oddsBlock(`Every card (${cardCount} slots)`, regularSlotOdds(pack));
     }
 
     function wildcardLevel(id) {
@@ -1860,11 +1821,6 @@
       return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
     }
 
-    function exactRarityWildcard(rarity) {
-      const pool = wildcards.filter(wildcard => wildcard.packable !== false && wildcard.rarity === rarity);
-      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
-    }
-
     function randomHandChanceJoker() {
       const pool = wildcards.filter(wildcard =>
         wildcard.packable !== false &&
@@ -1874,19 +1830,14 @@
     }
 
     function createPack(pack) {
-      const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
       const cardCount = pack.cardCount || 5;
-      return Array.from({ length: cardCount }, (_, index) => {
-        if (pack.handChanceGuaranteed && index >= cardCount - pack.handChanceGuaranteed) {
-          return randomHandChanceJoker();
+      return Array.from({ length: cardCount }, () => {
+        if (Math.random() >= pack.wildcardChance) {
+          return randomNormalCard();
         }
-        if (index >= cardCount - guaranteedCount) {
-          if (pack.exactGuaranteed) {
-            return exactRarityWildcard(pack.exactGuaranteed);
-          }
-          return randomWildcard(pack.guaranteed);
-        }
-        return Math.random() < pack.wildcardChance ? randomWildcard() : randomNormalCard();
+        return pack.jokerPool === "handChance"
+          ? randomHandChanceJoker()
+          : randomWildcard(pack.minimumRarity || "Common");
       });
     }
 
@@ -2483,33 +2434,23 @@
     }
 
     function possiblePackJokers(pack) {
-      const cardCount = pack.cardCount || 5;
-      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
-      const possible = new Map();
-      if (cardCount - guaranteedCount > 0 && pack.wildcardChance > 0) {
-        wildcards.filter(joker => joker.packable !== false).forEach(joker => possible.set(joker.id, joker));
+      if (pack.wildcardChance <= 0) {
+        return [];
       }
-      if (pack.handChanceGuaranteed) {
-        wildcards
-          .filter(joker => joker.packable !== false && wildcardEffects(joker).some(effect => effect.effectType === "handChance"))
-          .forEach(joker => possible.set(joker.id, joker));
-      } else if (pack.exactGuaranteed) {
-        wildcards
-          .filter(joker => joker.packable !== false && joker.rarity === pack.exactGuaranteed)
-          .forEach(joker => possible.set(joker.id, joker));
-      } else if (pack.guaranteed) {
-        wildcards
-          .filter(joker => joker.packable !== false && rarityRank(joker.rarity) >= rarityRank(pack.guaranteed))
-          .forEach(joker => possible.set(joker.id, joker));
-      }
-      return [...possible.values()];
+      return wildcards.filter(joker => {
+        if (joker.packable === false) {
+          return false;
+        }
+        if (pack.jokerPool === "handChance") {
+          return wildcardEffects(joker).some(effect => effect.effectType === "handChance");
+        }
+        return rarityRank(joker.rarity) >= rarityRank(pack.minimumRarity || "Common");
+      });
     }
 
     function openPackInfo(packId) {
       const pack = packDefinitions.find(item => item.id === packId);
-      const cardCount = pack.cardCount || 5;
-      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
-      const hasOrdinaryCards = cardCount - guaranteedCount > 0 && pack.wildcardChance < 1;
+      const hasOrdinaryCards = pack.wildcardChance < 1;
       const possibleJokers = possiblePackJokers(pack);
       const groups = Object.keys(rarityInfo)
         .filter(rarity => rarityInfo[rarity].packable !== false)
