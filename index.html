@@ -549,6 +549,17 @@
       font-size: 0.86rem;
     }
 
+    .pack-buttons {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .pack-buttons button {
+      position: static;
+    }
+
     .auto-sell {
       margin-bottom: 1rem;
       padding: 1rem;
@@ -623,6 +634,38 @@
       border: 1px solid rgb(255 255 255 / 8%);
       border-radius: 0.55rem;
       background: rgb(0 0 0 / 20%);
+    }
+
+    .odds-block {
+      position: relative;
+      margin: 0.65rem 0;
+      padding: 0.55rem;
+      border: 1px solid rgb(255 255 255 / 8%);
+      border-radius: 0.55rem;
+      background: rgb(0 0 0 / 20%);
+    }
+
+    .odds-title {
+      margin-bottom: 0.35rem;
+      color: #f4f4f5;
+      font-size: 0.72rem;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .odds-block .odds {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .odds-total {
+      margin-top: 0.35rem;
+      color: #4ade80;
+      font-size: 0.68rem;
+      font-weight: 850;
+      text-align: center;
     }
 
     .odds span {
@@ -1010,6 +1053,31 @@
       margin-top: 1.1rem;
     }
 
+    .pack-contents {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.65rem;
+      text-align: left;
+    }
+
+    .contents-group {
+      padding: 0.8rem;
+      border: 1px solid #34343f;
+      border-radius: 0.65rem;
+      background: #15161e;
+    }
+
+    .contents-group h3 {
+      margin: 0 0 0.4rem;
+      color: var(--rarity);
+    }
+
+    .contents-group p {
+      margin: 0.2rem 0;
+      color: #b4b4bf;
+      font-size: 0.8rem;
+    }
+
     .equip-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1090,6 +1158,10 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
+      .pack-contents {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .equip-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1128,6 +1200,10 @@
       .wildcard-grid,
       .pack-reveals,
       .equip-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pack-contents {
         grid-template-columns: 1fr;
       }
 
@@ -1215,8 +1291,8 @@
       <div class="auto-sell">
         <div class="auto-sell-head">
           <div>
-            <h3>Auto-sell duplicates</h3>
-            <p>Your first copy is always kept and checked off in the collection.</p>
+            <h3>Auto-sell cards</h3>
+            <p>Selected rarities sell immediately, including the first copy, while still being checked off in Collection.</p>
           </div>
           <button id="autoSellToggle" class="primary auto-sell-toggle">Auto-sell: Off</button>
         </div>
@@ -1272,6 +1348,15 @@
       <p id="equipStatus"></p>
       <div id="equipGrid" class="equip-grid"></div>
       <button id="equipClose" class="primary modal-action">Done</button>
+    </div>
+  </div>
+
+  <div id="packInfoModal" class="modal">
+    <div class="modal-box">
+      <h2 id="packInfoTitle">Pack contents</h2>
+      <div id="packInfoOdds"></div>
+      <div id="packContents" class="pack-contents"></div>
+      <button id="packInfoClose" class="primary modal-action">Close</button>
     </div>
   </div>
 
@@ -1555,6 +1640,10 @@
     const equipTitle = document.querySelector("#equipTitle");
     const equipStatus = document.querySelector("#equipStatus");
     const equipGrid = document.querySelector("#equipGrid");
+    const packInfoModal = document.querySelector("#packInfoModal");
+    const packInfoTitle = document.querySelector("#packInfoTitle");
+    const packInfoOdds = document.querySelector("#packInfoOdds");
+    const packContents = document.querySelector("#packContents");
     const toast = document.querySelector("#toast");
 
     let cash = 300;
@@ -1562,6 +1651,8 @@
     let guestsServed = 0;
     let wildcardCollection = {};
     let normalCollection = {};
+    let discoveredWildcards = {};
+    let discoveredNormalCards = {};
     let normalCardsPulled = 0;
     let starterOpened = false;
     let luckLevel = 0;
@@ -1617,20 +1708,36 @@
       const entries = Object.entries(rarityInfo).filter(([rarity, info]) =>
         info.packable !== false && rarityRank(rarity) >= minimum
       );
-      const totalWeight = entries.reduce((total, [rarity, info]) => total + effectiveRarityWeight(rarity, info), 0);
-      return Object.fromEntries(entries.map(([rarity, info]) => [
+      const limited = entries.find(([rarity]) => rarity === "Limited");
+      const nonLimited = entries.filter(([rarity]) => rarity !== "Limited");
+      if (nonLimited.length === 0) {
+        return limited ? { Limited: 100 } : {};
+      }
+
+      const baseTotal = entries.reduce((total, [, info]) => total + info.weight, 0);
+      const limitedPercent = limited ? limited[1].weight / baseTotal * 100 : 0;
+      const remainingPercent = 100 - limitedPercent;
+      const boostedTotal = nonLimited.reduce(
+        (total, [rarity, info]) => total + effectiveRarityWeight(rarity, info),
+        0
+      );
+      const percentages = Object.fromEntries(nonLimited.map(([rarity, info]) => [
         rarity,
-        effectiveRarityWeight(rarity, info) / totalWeight * 100
+        effectiveRarityWeight(rarity, info) / boostedTotal * remainingPercent
       ]));
+      if (limited) {
+        percentages.Limited = limitedPercent;
+      }
+      return percentages;
     }
 
     function formatOdds(value) {
       return `${value < 1 ? value.toFixed(2) : value.toFixed(1)}%`;
     }
 
-    function packOddsMarkup(pack) {
+    function regularSlotOdds(pack) {
       const wildcardOdds = rarityPercentages();
-      const regularOdds = {
+      return {
         Ordinary: (1 - pack.wildcardChance) * 100,
         ...Object.fromEntries(
           Object.entries(wildcardOdds).map(([rarity, percentage]) => [
@@ -1639,39 +1746,62 @@
           ])
         )
       };
-      const odds = Object.entries(regularOdds)
+    }
+
+    function handChanceSlotOdds() {
+      const pool = wildcards.filter(joker =>
+        joker.packable !== false &&
+        wildcardEffects(joker).some(effect => effect.effectType === "handChance")
+      );
+      return pool.reduce((odds, joker) => {
+        odds[joker.rarity] = (odds[joker.rarity] || 0) + 100 / pool.length;
+        return odds;
+      }, {});
+    }
+
+    function oddsBlock(title, distribution) {
+      const odds = Object.entries(distribution)
+        .filter(([, percentage]) => percentage > 0)
         .map(([rarity, percentage]) => `<span>${rarity}<strong>${formatOdds(percentage)}</strong></span>`)
         .join("");
+      return `
+        <div class="odds-block">
+          <div class="odds-title">${title}</div>
+          <div class="odds">${odds}</div>
+          <div class="odds-total">Total: 100%</div>
+        </div>
+      `;
+    }
 
-      const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+    function packOddsMarkup(pack) {
+      const cardCount = pack.cardCount || 5;
+      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      const regularCount = cardCount - guaranteedCount;
+      let markup = regularCount > 0
+        ? oddsBlock(`Regular slots (${regularCount})`, regularSlotOdds(pack))
+        : "";
+
       if (pack.handChanceGuaranteed) {
-        return `
-          <div class="odds" aria-label="Card rarity odds">${odds}</div>
-          <div class="guarantee">${pack.handChanceGuaranteed} guaranteed hand-chance Jokers</div>
-        `;
+        return markup + oddsBlock(
+          `Hand-chance Joker slots (${pack.handChanceGuaranteed})`,
+          handChanceSlotOdds()
+        );
       }
       if (!guaranteedCount) {
-        return `<div class="odds" aria-label="Card rarity odds">${odds}</div><div class="guarantee">Odds shown per card</div>`;
+        return markup;
       }
 
       if (pack.exactGuaranteed) {
-        return `
-          <div class="odds" aria-label="Regular card rarity odds">${odds}</div>
-          <div class="guarantee">${guaranteedCount} guaranteed ${pack.exactGuaranteed} slot</div>
-        `;
+        return markup + oddsBlock(
+          `${pack.exactGuaranteed} slots (${guaranteedCount})`,
+          { [pack.exactGuaranteed]: 100 }
+        );
       }
 
-      const guaranteedOdds = rarityPercentages(pack.guaranteed);
-      const guaranteeText = Object.entries(guaranteedOdds)
-        .map(([rarity, percentage]) => `${rarity} ${formatOdds(percentage)}`)
-        .join(" · ");
-      return `
-        <div class="odds" aria-label="Regular card rarity odds">${odds}</div>
-        <div class="guarantee">
-          ${guaranteedCount} guaranteed slot${guaranteedCount === 1 ? "" : "s"}:
-          ${guaranteeText}
-        </div>
-      `;
+      return markup + oddsBlock(
+        `Guaranteed ${pack.guaranteed}+ slots (${guaranteedCount})`,
+        rarityPercentages(pack.guaranteed)
+      );
     }
 
     function wildcardLevel(id) {
@@ -1714,19 +1844,12 @@
     }
 
     function randomWildcard(minimumRarity = "Common") {
-      const minimum = rarityRank(minimumRarity);
-      const rarityPool = Object.entries(rarityInfo).filter(([rarity, info]) =>
-        info.packable !== false && rarityRank(rarity) >= minimum
-      );
-      const totalWeight = rarityPool.reduce(
-        (total, [rarity, info]) => total + effectiveRarityWeight(rarity, info),
-        0
-      );
-      let roll = Math.random() * totalWeight;
-      let chosenRarity = rarityPool[0][0];
+      const percentages = rarityPercentages(minimumRarity);
+      let roll = Math.random() * 100;
+      let chosenRarity = Object.keys(percentages)[0];
 
-      for (const [rarity, info] of rarityPool) {
-        roll -= effectiveRarityWeight(rarity, info);
+      for (const [rarity, percentage] of Object.entries(percentages)) {
+        roll -= percentage;
         if (roll <= 0) {
           chosenRarity = rarity;
           break;
@@ -1772,8 +1895,8 @@
         if (card.type === "wildcard") {
           const id = card.wildcard.id;
           const rarity = card.wildcard.rarity;
-          const duplicate = wildcardLevel(id) > 0;
-          if (duplicate && autoSellEnabled && autoSellRarities[rarity]) {
+          discoveredWildcards[id] = true;
+          if (autoSellEnabled && autoSellRarities[rarity]) {
             card.autoSold = saleValues[rarity];
             cash += card.autoSold;
           } else {
@@ -1781,8 +1904,8 @@
           }
         } else {
           normalCardsPulled += 1;
-          const duplicate = (normalCollection[card.id] || 0) > 0;
-          if (duplicate && autoSellEnabled && autoSellRarities.Ordinary) {
+          discoveredNormalCards[card.id] = true;
+          if (autoSellEnabled && autoSellRarities.Ordinary) {
             card.autoSold = saleValues.Ordinary;
             cash += card.autoSold;
           } else {
@@ -1806,10 +1929,10 @@
         return;
       }
 
-      const ordinaryComplete = ordinaryCardCatalog().every(card => normalCollection[card.id] > 0);
+      const ordinaryComplete = ordinaryCardCatalog().every(card => discoveredNormalCards[card.id]);
       const packCardsComplete = wildcards
         .filter(wildcard => wildcard.packable !== false)
-        .every(wildcard => wildcardLevel(wildcard.id) > 0);
+        .every(wildcard => discoveredWildcards[wildcard.id]);
       if (ordinaryComplete && packCardsComplete) {
         grantTheDug("Collection complete! The Dug has joined your casino.");
       }
@@ -1817,6 +1940,7 @@
 
     function grantTheDug(message = "The Dug has joined your casino.") {
       wildcardCollection.dug = Math.max(1, wildcardLevel("dug"));
+      discoveredWildcards.dug = true;
       if (!dugBonusClaimed) {
         cash += 10000;
         dugBonusClaimed = true;
@@ -1854,7 +1978,7 @@
               <div class="reveal-face normal">
                 <div class="normal-rank ${isRed ? "red" : ""}">${card.label}${card.suit}</div>
                 <h3>Ordinary card</h3>
-                <p>${card.autoSold ? `Duplicate auto-sold for ${formatMoney(card.autoSold)}.` : "No effect. Added to your album."}</p>
+                <p>${card.autoSold ? `Auto-sold for ${formatMoney(card.autoSold)} and checked off.` : "No effect. Added to your album."}</p>
               </div>
             </div>
           `;
@@ -1868,7 +1992,7 @@
               ${wildcardArt(wildcard)}
               <h3>${wildcard.name}</h3>
               <p>${wildcard.effect}</p>
-              <p>${card.autoSold ? `Duplicate auto-sold for ${formatMoney(card.autoSold)}.` : `Level ${wildcardLevel(wildcard.id)}`}</p>
+              <p>${card.autoSold ? `Auto-sold for ${formatMoney(card.autoSold)} and checked off.` : `Level ${wildcardLevel(wildcard.id)}`}</p>
             </div>
           </div>
         `;
@@ -2340,9 +2464,12 @@
             <div class="pack-art">${pack.icon}</div>
             <p>${pack.description}</p>
             ${packOddsMarkup(pack)}
-            <button class="primary" data-pack="${pack.id}" ${claimed ? "disabled" : ""}>
-              ${claimed ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatMoney(pack.cost)}`}
-            </button>
+            <div class="pack-buttons">
+              <button class="secondary" data-pack-info="${pack.id}">View contents</button>
+              <button class="primary" data-pack="${pack.id}" ${claimed ? "disabled" : ""}>
+                ${claimed ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatMoney(pack.cost)}`}
+              </button>
+            </div>
           </article>
         `;
       }).join("");
@@ -2350,30 +2477,89 @@
       packStore.querySelectorAll("[data-pack]").forEach(button => {
         button.addEventListener("click", () => openPack(button.dataset.pack));
       });
+      packStore.querySelectorAll("[data-pack-info]").forEach(button => {
+        button.addEventListener("click", () => openPackInfo(button.dataset.packInfo));
+      });
+    }
+
+    function possiblePackJokers(pack) {
+      const cardCount = pack.cardCount || 5;
+      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      const possible = new Map();
+      if (cardCount - guaranteedCount > 0 && pack.wildcardChance > 0) {
+        wildcards.filter(joker => joker.packable !== false).forEach(joker => possible.set(joker.id, joker));
+      }
+      if (pack.handChanceGuaranteed) {
+        wildcards
+          .filter(joker => joker.packable !== false && wildcardEffects(joker).some(effect => effect.effectType === "handChance"))
+          .forEach(joker => possible.set(joker.id, joker));
+      } else if (pack.exactGuaranteed) {
+        wildcards
+          .filter(joker => joker.packable !== false && joker.rarity === pack.exactGuaranteed)
+          .forEach(joker => possible.set(joker.id, joker));
+      } else if (pack.guaranteed) {
+        wildcards
+          .filter(joker => joker.packable !== false && rarityRank(joker.rarity) >= rarityRank(pack.guaranteed))
+          .forEach(joker => possible.set(joker.id, joker));
+      }
+      return [...possible.values()];
+    }
+
+    function openPackInfo(packId) {
+      const pack = packDefinitions.find(item => item.id === packId);
+      const cardCount = pack.cardCount || 5;
+      const guaranteedCount = pack.handChanceGuaranteed || pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      const hasOrdinaryCards = cardCount - guaranteedCount > 0 && pack.wildcardChance < 1;
+      const possibleJokers = possiblePackJokers(pack);
+      const groups = Object.keys(rarityInfo)
+        .filter(rarity => rarityInfo[rarity].packable !== false)
+        .map(rarity => ({
+          rarity,
+          jokers: possibleJokers.filter(joker => joker.rarity === rarity)
+        }))
+        .filter(group => group.jokers.length > 0);
+
+      packInfoTitle.textContent = `${pack.name} contents`;
+      packInfoOdds.innerHTML = packOddsMarkup(pack);
+      packContents.innerHTML = `
+        ${hasOrdinaryCards ? `
+          <section class="contents-group" style="--rarity:#d4d4d8">
+            <h3>Ordinary cards</h3>
+            <p>${ordinaryCardCatalog().map(card => `${card.label}${card.suit}`).join(" · ")}</p>
+          </section>
+        ` : ""}
+        ${groups.map(group => `
+          <section class="contents-group" style="--rarity:${rarityInfo[group.rarity].color}">
+            <h3>${group.rarity} Jokers</h3>
+            <p>${group.jokers.map(joker => joker.name).join(" · ")}</p>
+          </section>
+        `).join("")}
+      `;
+      packInfoModal.classList.add("open");
     }
 
     function renderCollection() {
       wildcardGrid.innerHTML = wildcards.map(wildcard => {
         const level = wildcardLevel(wildcard.id);
-        const owned = level > 0;
+        const discovered = Boolean(discoveredWildcards[wildcard.id]) || level > 0;
         return `
-          <article class="wildcard-card ${owned ? "" : "locked"} ${wildcard.rarity === "Limited" && owned ? "rarity-limited" : ""}" style="--rarity:${owned ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
-            ${owned ? '<span class="collection-check">✓</span>' : ""}
-            <div class="rarity-label">${owned ? wildcard.rarity : wildcard.packable === false ? "Secret" : "Undiscovered"}</div>
-            ${owned ? wildcardArt(wildcard) : '<div class="wild-art">?</div>'}
-            <h3>${owned ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Joker"}</h3>
-            <p>${owned ? wildcard.effect : wildcard.packable === false ? "Complete every other card to unlock this secret." : "Find this card inside a pack."}</p>
-            <div class="level">${owned ? `Level ${level}` : ""}</div>
+          <article class="wildcard-card ${discovered ? "" : "locked"} ${wildcard.rarity === "Limited" && discovered ? "rarity-limited" : ""}" style="--rarity:${discovered ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
+            ${discovered ? '<span class="collection-check">✓</span>' : ""}
+            <div class="rarity-label">${discovered ? wildcard.rarity : wildcard.packable === false ? "Secret" : "Undiscovered"}</div>
+            ${discovered ? wildcardArt(wildcard) : '<div class="wild-art">?</div>'}
+            <h3>${discovered ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Joker"}</h3>
+            <p>${discovered ? wildcard.effect : wildcard.packable === false ? "Complete every other card to unlock this secret." : "Find this card inside a pack."}</p>
+            <div class="level">${discovered ? level > 0 ? `Level ${level}` : "Auto-sold" : ""}</div>
           </article>
         `;
       }).join("");
 
       const allOrdinaryCards = ordinaryCardCatalog();
-      const ordinaryDiscovered = allOrdinaryCards.filter(card => normalCollection[card.id] > 0).length;
-      const wildcardsDiscovered = wildcards.filter(wildcard => wildcardLevel(wildcard.id) > 0).length;
+      const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
+      const wildcardsDiscovered = wildcards.filter(wildcard => discoveredWildcards[wildcard.id] || wildcardLevel(wildcard.id) > 0).length;
 
       ordinaryGrid.innerHTML = allOrdinaryCards.map(card => {
-        const owned = normalCollection[card.id] > 0;
+        const owned = Boolean(discoveredNormalCards[card.id]);
         const red = card.suit === "♥" || card.suit === "♦";
         return `
           <div class="album-card ${owned ? "owned" : ""} ${red ? "red" : ""}" title="${owned ? `${card.label}${card.suit} collected` : `${card.label}${card.suit} missing`}">
@@ -2475,6 +2661,8 @@
         guestsServed,
         wildcardCollection,
         normalCollection,
+        discoveredWildcards,
+        discoveredNormalCards,
         normalCardsPulled,
         starterOpened,
         luckLevel,
@@ -2508,6 +2696,12 @@
         normalCollection = state.normalCollection && typeof state.normalCollection === "object"
           ? state.normalCollection
           : {};
+        discoveredWildcards = state.discoveredWildcards && typeof state.discoveredWildcards === "object"
+          ? state.discoveredWildcards
+          : Object.fromEntries(Object.keys(wildcardCollection).map(id => [id, true]));
+        discoveredNormalCards = state.discoveredNormalCards && typeof state.discoveredNormalCards === "object"
+          ? state.discoveredNormalCards
+          : Object.fromEntries(Object.keys(normalCollection).map(id => [id, true]));
         normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
         luckLevel = Number.isFinite(state.luckLevel) ? Math.max(0, Math.floor(state.luckLevel)) : 0;
@@ -2568,6 +2762,9 @@
     document.querySelector("#equipClose").addEventListener("click", () => {
       equipModal.classList.remove("open");
       activeEquipTable = null;
+    });
+    document.querySelector("#packInfoClose").addEventListener("click", () => {
+      packInfoModal.classList.remove("open");
     });
     document.querySelector("#reset").addEventListener("click", () => {
       if (!confirm("Delete your casino and collection and start again?")) {
