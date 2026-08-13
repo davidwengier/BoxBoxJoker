@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BoxBox Joker</title>
+  <title>Box Box Jokers</title>
   <style>
     :root {
       color-scheme: dark;
@@ -41,12 +41,20 @@
     }
 
     .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
       margin: 0;
       font-size: clamp(2rem, 5vw, 3.6rem);
       font-style: italic;
       font-weight: 950;
       letter-spacing: -0.05em;
       line-height: 0.95;
+    }
+
+    .logo-image {
+      width: clamp(13rem, 30vw, 22rem);
+      height: auto;
     }
 
     .logo span {
@@ -259,15 +267,68 @@
     }
 
     .customer-avatar {
-      display: grid;
-      width: 3.2rem;
-      height: 3.2rem;
+      position: relative;
+      width: 4.2rem;
+      height: 5rem;
       margin: auto;
-      place-items: center;
+      overflow: hidden;
       border: 2px solid #64748b;
-      border-radius: 50%;
-      background: #1e293b;
-      font-size: 1.65rem;
+      border-radius: 2rem 2rem 0.7rem 0.7rem;
+      background: #172033;
+    }
+
+    .person-head {
+      position: absolute;
+      top: 0.65rem;
+      left: 50%;
+      width: 2.15rem;
+      height: 2.45rem;
+      border-radius: 48% 48% 45% 45%;
+      background: var(--skin);
+      transform: translateX(-50%);
+    }
+
+    .person-hair {
+      position: absolute;
+      top: 0.35rem;
+      left: 50%;
+      width: 2.35rem;
+      height: 1.2rem;
+      border-radius: 55% 55% 30% 30%;
+      background: var(--hair);
+      transform: translateX(-50%);
+    }
+
+    .person-eyes {
+      position: absolute;
+      top: 1.55rem;
+      left: 50%;
+      width: 1.25rem;
+      height: 0.18rem;
+      border-right: 0.18rem solid #111827;
+      border-left: 0.18rem solid #111827;
+      transform: translateX(-50%);
+    }
+
+    .person-body {
+      position: absolute;
+      right: 0.35rem;
+      bottom: -0.7rem;
+      left: 0.35rem;
+      height: 2.3rem;
+      border-radius: 1.2rem 1.2rem 0 0;
+      background: var(--jacket);
+    }
+
+    .person-shirt {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0.9rem;
+      height: 1.5rem;
+      background: #f8fafc;
+      clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
+      transform: translateX(-50%);
     }
 
     .customer strong {
@@ -314,6 +375,33 @@
 
     .round-result strong {
       color: #4ade80;
+    }
+
+    .table-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .hand-odds {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.25rem;
+      margin: 0.65rem 0;
+    }
+
+    .hand-odds span {
+      padding: 0.3rem;
+      border-radius: 0.35rem;
+      background: rgb(3 8 7 / 62%);
+      color: #a1a1aa;
+      font-size: 0.62rem;
+      text-align: center;
+    }
+
+    .hand-odds strong {
+      display: block;
+      color: #f4f4f5;
     }
 
     .equipped-row {
@@ -1072,7 +1160,7 @@
 <body>
   <div class="app">
     <header>
-      <h1 class="logo">BoxBox <span>Joker</span><small>Pack · Equip · Profit</small></h1>
+      <h1 class="logo"><img class="logo-image" src="logo.svg" alt="Box Box Jokers"></h1>
       <div class="header-side">
         <div class="stats">
           <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
@@ -1095,14 +1183,14 @@
         <div class="hero-content">
           <div class="eyebrow">Tonight at the tables</div>
           <h2>Make every hand unforgettable.</h2>
-          <p>Guests play automatically and pay for the experience. Equip collectible Wildcards to change the rules, create bigger hands, and turn a quiet card room into the hottest casino in town.</p>
+          <p>Guests play automatically and pay for the experience. Equip collectible Jokers to change the rules, create bigger hands, and turn a quiet card room into the hottest casino in town.</p>
         </div>
       </div>
 
       <div class="section-head">
         <div>
           <h2>Casino floor</h2>
-          <p>Combine Wildcards to improve each table.</p>
+          <p>Combine Jokers, improve hand chances, and speed up each table.</p>
         </div>
       </div>
       <div id="casinoFloor" class="casino-floor"></div>
@@ -1112,7 +1200,7 @@
       <div class="section-head">
         <div>
           <h2>Card packs</h2>
-          <p>Most cards are ordinary. The lucky pulls are powerful Wildcards.</p>
+          <p>Most cards are ordinary. The lucky pulls are powerful Jokers.</p>
         </div>
       </div>
       <div class="luck-panel">
@@ -1139,14 +1227,13 @@
       <div class="section-head">
         <div>
           <h2>Card collection</h2>
-          <p>Discover every ordinary card and Wildcard available in packs.</p>
+          <p>Discover every ordinary card and Joker available in packs.</p>
         </div>
-        <button id="claimDug" class="primary" style="width:auto;padding-inline:1rem">Claim The Dug</button>
       </div>
       <div class="collection-progress">
-        Total collection: <strong id="collectionTotal">0 / 69</strong>
+        Total collection: <strong id="collectionTotal">0 / 73</strong>
       </div>
-      <h3>Wildcards</h3>
+      <h3>Jokers</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
       <div class="album-summary">
         Ordinary card album: <strong id="normalAlbum">0 / 52</strong> discovered ·
@@ -1179,7 +1266,7 @@
 
   <div id="equipModal" class="modal">
     <div class="modal-box">
-      <h2 id="equipTitle">Equip Wildcards</h2>
+      <h2 id="equipTitle">Equip Jokers</h2>
       <p id="equipStatus"></p>
       <div id="equipGrid" class="equip-grid"></div>
       <button id="equipClose" class="primary modal-action">Done</button>
@@ -1268,6 +1355,38 @@
         ]
       },
       {
+        id: "pairMagnet",
+        name: "Pair Magnet",
+        icon: "🧲",
+        rarity: "Common",
+        effect: "Adds a 20% chance for the guest to be dealt a Pair.",
+        effects: [{ effectType: "handChance", hand: "Pair", chance: 0.2 }]
+      },
+      {
+        id: "doubleDate",
+        name: "Double Date",
+        icon: "💞",
+        rarity: "Uncommon",
+        effect: "Adds a 14% chance for the guest to be dealt Two Pair.",
+        effects: [{ effectType: "handChance", hand: "Two Pair", chance: 0.14 }]
+      },
+      {
+        id: "openRoad",
+        name: "Open Road",
+        icon: "🛣️",
+        rarity: "Rare",
+        effect: "Adds a 10% chance for the guest to be dealt a Straight.",
+        effects: [{ effectType: "handChance", hand: "Straight", chance: 0.1 }]
+      },
+      {
+        id: "houseBuilder",
+        name: "House Builder",
+        icon: "🧱",
+        rarity: "Epic",
+        effect: "Adds a 7% chance for the guest to be dealt a Full House.",
+        effects: [{ effectType: "handChance", hand: "Full House", chance: 0.07 }]
+      },
+      {
         id: "dug",
         name: "The Dug",
         icon: "🐶",
@@ -1305,7 +1424,7 @@
         cost: 0,
         wildcardChance: 0.35,
         guaranteed: "Common",
-        description: "Your first five cards, with one guaranteed Wildcard."
+        description: "Your first five cards, with one guaranteed Joker."
       },
       {
         id: "standard",
@@ -1313,7 +1432,7 @@
         icon: "🂠",
         cost: 180,
         wildcardChance: 0.22,
-        description: "Five cards. Wildcards can appear at any rarity."
+        description: "Five cards. Jokers can appear at any rarity."
       },
       {
         id: "premium",
@@ -1323,7 +1442,7 @@
         cost: 750,
         wildcardChance: 0.5,
         guaranteed: "Uncommon",
-        description: "Better Wildcard odds and one guaranteed Uncommon or better."
+        description: "Better Joker odds and one guaranteed Uncommon or better."
       },
       {
         id: "vault",
@@ -1333,7 +1452,7 @@
         cost: 2800,
         wildcardChance: 0.72,
         guaranteed: "Rare",
-        description: "Five cards with two guaranteed Rare or better Wildcards.",
+        description: "Five cards with two guaranteed Rare or better Jokers.",
         guaranteedCount: 2
       },
       {
@@ -1344,7 +1463,7 @@
         cost: 5200,
         wildcardChance: 0.82,
         guaranteed: "Epic",
-        description: "Seven cards with two guaranteed Epic or better Wildcards.",
+        description: "Seven cards with two guaranteed Epic or better Jokers.",
         guaranteedCount: 2,
         cardCount: 7
       },
@@ -1368,16 +1487,46 @@
         cost: 75000,
         wildcardChance: 1,
         exactGuaranteed: "Limited",
-        description: "Five Wildcards with one guaranteed Limited card.",
+        description: "Five Jokers with one guaranteed Limited card.",
         guaranteedCount: 1
+      },
+      {
+        id: "handmaker",
+        name: "Handmaker Pack",
+        icon: "🖐️",
+        className: "premium",
+        cost: 12000,
+        wildcardChance: 0.78,
+        handChanceGuaranteed: 2,
+        description: "Six cards with two guaranteed hand-chance Jokers.",
+        cardCount: 6
       }
     ];
 
     const ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
     const suits = ["♠", "♥", "♦", "♣"];
     const rankLabels = { 11: "J", 12: "Q", 13: "K", 14: "A" };
-    const customerNames = ["Mina", "Theo", "Jules", "Ari", "Nico", "Rae", "Kit", "Sam", "Luca", "Zoe"];
-    const customerIcons = ["😎", "🤠", "🤑", "🕶️", "🎩", "💎", "👑", "🥳"];
+    const customerProfiles = [
+      { name: "Mina", skin: "#d8a47f", hair: "#241b18", jacket: "#7c3aed" },
+      { name: "Theo", skin: "#8f5f43", hair: "#111827", jacket: "#0369a1" },
+      { name: "Jules", skin: "#f1c7a5", hair: "#92400e", jacket: "#be123c" },
+      { name: "Ari", skin: "#b97852", hair: "#3f2d20", jacket: "#047857" },
+      { name: "Nico", skin: "#e0ad87", hair: "#171717", jacket: "#1d4ed8" },
+      { name: "Rae", skin: "#70452f", hair: "#2d1b12", jacket: "#a21caf" },
+      { name: "Kit", skin: "#f0c9a9", hair: "#d97706", jacket: "#475569" },
+      { name: "Sam", skin: "#a86f4c", hair: "#09090b", jacket: "#b45309" }
+    ];
+    const baseHandOdds = {
+      "High Card": 50.1177,
+      "Pair": 42.2569,
+      "Two Pair": 4.7539,
+      "Three of a Kind": 2.1128,
+      "Straight": 0.3925,
+      "Flush": 0.1965,
+      "Full House": 0.1441,
+      "Four of a Kind": 0.024,
+      "Straight Flush": 0.0015
+    };
 
     const cashDisplay = document.querySelector("#cash");
     const reputationDisplay = document.querySelector("#reputation");
@@ -1393,7 +1542,6 @@
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
-    const claimDugButton = document.querySelector("#claimDug");
     const dugShopNav = document.querySelector("#dugShopNav");
     const dugCoinsDisplay = document.querySelector("#dugCoins");
     const dugUpgradeGrid = document.querySelector("#dugUpgradeGrid");
@@ -1433,6 +1581,7 @@
       unlocked: index === 0,
       equipped: [],
       timer: table.roundTime,
+      speedLevel: 0,
       customer: null,
       lastHand: [],
       lastResult: "Waiting for the first guest..."
@@ -1493,6 +1642,12 @@
         .join("");
 
       const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
+      if (pack.handChanceGuaranteed) {
+        return `
+          <div class="odds" aria-label="Card rarity odds">${odds}</div>
+          <div class="guarantee">${pack.handChanceGuaranteed} guaranteed hand-chance Jokers</div>
+        `;
+      }
       if (!guaranteedCount) {
         return `<div class="odds" aria-label="Card rarity odds">${odds}</div><div class="guarantee">Odds shown per card</div>`;
       }
@@ -1585,10 +1740,21 @@
       return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
     }
 
+    function randomHandChanceJoker() {
+      const pool = wildcards.filter(wildcard =>
+        wildcard.packable !== false &&
+        wildcardEffects(wildcard).some(effect => effect.effectType === "handChance")
+      );
+      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
+    }
+
     function createPack(pack) {
       const guaranteedCount = pack.guaranteedCount || (pack.guaranteed ? 1 : 0);
       const cardCount = pack.cardCount || 5;
       return Array.from({ length: cardCount }, (_, index) => {
+        if (pack.handChanceGuaranteed && index >= cardCount - pack.handChanceGuaranteed) {
+          return randomHandChanceJoker();
+        }
         if (index >= cardCount - guaranteedCount) {
           if (pack.exactGuaranteed) {
             return exactRarityWildcard(pack.exactGuaranteed);
@@ -1727,10 +1893,75 @@
       showToast("Cards added to your collection.");
     }
 
-    function dealHand(hasDug = false) {
+    function shuffled(values) {
+      const result = [...values];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function generateTargetHand(handName) {
+      const chosenRanks = shuffled(ranks);
+      const chosenSuits = shuffled(suits);
+      if (handName === "Pair") {
+        return [
+          { rank: chosenRanks[0], suit: chosenSuits[0] },
+          { rank: chosenRanks[0], suit: chosenSuits[1] },
+          { rank: chosenRanks[1], suit: chosenSuits[0] },
+          { rank: chosenRanks[2], suit: chosenSuits[1] },
+          { rank: chosenRanks[3], suit: chosenSuits[2] }
+        ];
+      }
+      if (handName === "Two Pair") {
+        return [
+          { rank: chosenRanks[0], suit: chosenSuits[0] },
+          { rank: chosenRanks[0], suit: chosenSuits[1] },
+          { rank: chosenRanks[1], suit: chosenSuits[2] },
+          { rank: chosenRanks[1], suit: chosenSuits[3] },
+          { rank: chosenRanks[2], suit: chosenSuits[0] }
+        ];
+      }
+      if (handName === "Straight") {
+        const start = 2 + Math.floor(Math.random() * 9);
+        return Array.from({ length: 5 }, (_, index) => ({
+          rank: start + index,
+          suit: suits[index % suits.length]
+        }));
+      }
+      if (handName === "Full House") {
+        return [
+          { rank: chosenRanks[0], suit: chosenSuits[0] },
+          { rank: chosenRanks[0], suit: chosenSuits[1] },
+          { rank: chosenRanks[0], suit: chosenSuits[2] },
+          { rank: chosenRanks[1], suit: chosenSuits[0] },
+          { rank: chosenRanks[1], suit: chosenSuits[1] }
+        ];
+      }
+      return null;
+    }
+
+    function scaledHandChance(joker, effect) {
+      return Math.min(0.75, effect.chance * (1 + Math.max(0, wildcardLevel(joker.id) - 1) * 0.25));
+    }
+
+    function dealHand(equippedJokers = []) {
+      const chanceEffects = equippedJokers.flatMap(joker =>
+        wildcardEffects(joker)
+          .filter(effect => effect.effectType === "handChance")
+          .map(effect => ({ joker, effect }))
+      );
+      for (const { joker, effect } of chanceEffects) {
+        if (Math.random() < scaledHandChance(joker, effect)) {
+          return generateTargetHand(effect.hand);
+        }
+      }
+
+      const hasDug = equippedJokers.some(joker => joker.id === "dug");
       if (hasDug && Math.random() < 0.3) {
         const suit = suits[Math.floor(Math.random() * suits.length)];
-        const shuffledRanks = [...ranks].sort(() => Math.random() - 0.5);
+        const shuffledRanks = shuffled(ranks);
         return shuffledRanks.slice(0, 5).map(rank => ({ rank, suit }));
       }
 
@@ -1798,7 +2029,7 @@
         .map(id => wildcards.find(wildcard => wildcard.id === id))
         .filter(Boolean);
       const hasDug = equippedWildcards.some(wildcard => wildcard.id === "dug");
-      const hand = dealHand(hasDug);
+      const hand = dealHand(equippedWildcards);
       const result = evaluateHand(hand);
 
       guestsServed += 1;
@@ -1826,10 +2057,7 @@
       cash += earnings;
       reputation += 1 + result.tier;
       tableState.lastHand = hand;
-      tableState.customer = {
-        name: customerNames[Math.floor(Math.random() * customerNames.length)],
-        icon: customerIcons[Math.floor(Math.random() * customerIcons.length)]
-      };
+      tableState.customer = customerProfiles[Math.floor(Math.random() * customerProfiles.length)];
       tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
       saveGame();
     }
@@ -1847,10 +2075,38 @@
 
       cash -= definition.unlockCost;
       tables[index].unlocked = true;
-      tables[index].timer = definition.roundTime;
+      tables[index].timer = tableRoundTime(index);
       showToast(`${definition.name} is now open.`);
       saveGame();
       render();
+    }
+
+    function tableRoundTime(index) {
+      return Math.max(1, tableDefinitions[index].roundTime - (tables[index].speedLevel || 0));
+    }
+
+    function speedUpgradeCost(index) {
+      const level = tables[index].speedLevel || 0;
+      return Math.floor(600 * (index + 1) * Math.pow(2.25, level));
+    }
+
+    function upgradeTableSpeed(index) {
+      const table = tables[index];
+      const maxLevel = tableDefinitions[index].roundTime - 1;
+      if (table.speedLevel >= maxLevel) {
+        return;
+      }
+      const cost = speedUpgradeCost(index);
+      if (cash < cost) {
+        showToast(`You need ${formatMoney(cost - cash)} more for this speed upgrade.`);
+        return;
+      }
+      cash -= cost;
+      table.speedLevel += 1;
+      table.timer = Math.min(table.timer, tableRoundTime(index));
+      saveGame();
+      render();
+      showToast(`${tableDefinitions[index].name} now deals every ${tableRoundTime(index)} seconds.`);
     }
 
     function wildcardUsage(id, excludingTable = -1) {
@@ -1878,11 +2134,11 @@
         table.equipped.splice(existingIndex, 1);
       } else {
         if (table.equipped.length >= definition.slots) {
-          showToast("Every Wildcard slot is full.");
+          showToast("Every Joker slot is full.");
           return;
         }
         if (wildcardUsage(id, activeEquipTable) >= wildcardLevel(id)) {
-          showToast("That Wildcard is already being used at another table.");
+          showToast("That Joker is already being used at another table.");
           return;
         }
         table.equipped.push(id);
@@ -1900,7 +2156,7 @@
       equipStatus.textContent = `${table.equipped.length} / ${definition.slots} slots used`;
 
       if (owned.length === 0) {
-        equipGrid.innerHTML = "<p>Open card packs to find your first Wildcard.</p>";
+        equipGrid.innerHTML = "<p>Open card packs to find your first Joker.</p>";
         return;
       }
 
@@ -1934,6 +2190,45 @@
         const red = card.suit === "♥" || card.suit === "♦";
         return `<div class="mini-card ${red ? "red" : ""}" style="--tilt:${(index - 2) * 3}deg">${label}${card.suit}</div>`;
       }).join("");
+    }
+
+    function renderPerson(customer) {
+      if (!customer) {
+        return '<div class="customer-avatar" style="--skin:#64748b;--hair:#334155;--jacket:#1e293b"><div class="person-head"></div><div class="person-hair"></div><div class="person-eyes"></div><div class="person-body"></div><div class="person-shirt"></div></div>';
+      }
+      return `
+        <div class="customer-avatar" style="--skin:${customer.skin};--hair:${customer.hair};--jacket:${customer.jacket}">
+          <div class="person-head"></div>
+          <div class="person-hair"></div>
+          <div class="person-eyes"></div>
+          <div class="person-body"></div>
+          <div class="person-shirt"></div>
+        </div>
+      `;
+    }
+
+    function tableHandOdds(table) {
+      const odds = { ...baseHandOdds };
+      table.equipped
+        .map(id => wildcards.find(joker => joker.id === id))
+        .filter(Boolean)
+        .forEach(joker => {
+          wildcardEffects(joker).forEach(effect => {
+            if (effect.effectType === "handChance") {
+              odds[effect.hand] += scaledHandChance(joker, effect) * 100;
+            }
+          });
+          if (joker.id === "dug") {
+            odds.Flush += 30;
+          }
+        });
+      return odds;
+    }
+
+    function renderHandOdds(table) {
+      return Object.entries(tableHandOdds(table)).map(([hand, chance]) => `
+        <span>${hand}<strong>${chance < 0.01 ? chance.toFixed(4) : chance.toFixed(2)}%</strong></span>
+      `).join("");
     }
 
     function renderCasino() {
@@ -1971,16 +2266,22 @@
             <h3>${definition.name}</h3>
             <div class="table-meta">
               <span>Next hand in ${table.timer}s</span>
-              <span>${definition.slots} Wildcard slots</span>
+              <span>${definition.slots} Joker slots · Speed ${table.speedLevel || 0}</span>
             </div>
             <div class="customer">
-              <div class="customer-avatar">${table.customer?.icon || "🪑"}</div>
+              ${renderPerson(table.customer)}
               <strong>${table.customer?.name || "Waiting for a guest"}</strong>
             </div>
             <div class="hand">${renderHand(table.lastHand)}</div>
             <div class="round-result">${table.lastResult}</div>
+            <div class="hand-odds">${renderHandOdds(table)}</div>
             <div class="equipped-row">${equipped}${emptySlots}</div>
-            <button class="secondary" data-manage="${index}">Manage Wildcards</button>
+            <div class="table-actions">
+              <button class="secondary" data-manage="${index}">Manage Jokers</button>
+              <button class="secondary" data-speed="${index}" ${(table.speedLevel || 0) >= definition.roundTime - 1 ? "disabled" : ""}>
+                ${(table.speedLevel || 0) >= definition.roundTime - 1 ? "Maximum speed" : `Speed up · ${formatMoney(speedUpgradeCost(index))}`}
+              </button>
+            </div>
           </article>
         `;
       }).join("");
@@ -1990,6 +2291,9 @@
       });
       casinoFloor.querySelectorAll("[data-manage]").forEach(button => {
         button.addEventListener("click", () => openEquipModal(Number(button.dataset.manage)));
+      });
+      casinoFloor.querySelectorAll("[data-speed]").forEach(button => {
+        button.addEventListener("click", () => upgradeTableSpeed(Number(button.dataset.speed)));
       });
     }
 
@@ -2055,7 +2359,7 @@
             ${owned ? '<span class="collection-check">✓</span>' : ""}
             <div class="rarity-label">${owned ? wildcard.rarity : wildcard.packable === false ? "Secret" : "Undiscovered"}</div>
             ${owned ? wildcardArt(wildcard) : '<div class="wild-art">?</div>'}
-            <h3>${owned ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Wildcard"}</h3>
+            <h3>${owned ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Joker"}</h3>
             <p>${owned ? wildcard.effect : wildcard.packable === false ? "Complete every other card to unlock this secret." : "Find this card inside a pack."}</p>
             <div class="level">${owned ? `Level ${level}` : ""}</div>
           </article>
@@ -2080,11 +2384,6 @@
       collectionTotalDisplay.textContent = `${ordinaryDiscovered + wildcardsDiscovered} / ${allOrdinaryCards.length + wildcards.length}`;
       normalAlbumDisplay.textContent = `${ordinaryDiscovered} / ${allOrdinaryCards.length}`;
       normalPulledDisplay.textContent = normalCardsPulled.toLocaleString();
-      const hasDug = wildcardLevel("dug") > 0;
-      claimDugButton.textContent = hasDug
-        ? dugBonusClaimed ? "The Dug claimed" : "Claim The Dug's $10,000"
-        : "Claim The Dug · Free";
-      claimDugButton.disabled = hasDug && dugBonusClaimed;
     }
 
     function dugUpgradeCost(upgrade) {
@@ -2184,7 +2483,8 @@
         autoSellRarities,
         tables: tables.map(table => ({
           unlocked: table.unlocked,
-          equipped: table.equipped
+          equipped: table.equipped,
+          speedLevel: table.speedLevel
         }))
       }));
     }
@@ -2229,6 +2529,10 @@
             tables[index].equipped = Array.isArray(savedTable.equipped)
               ? savedTable.equipped.filter(id => wildcards.some(wildcard => wildcard.id === id))
               : [];
+            tables[index].speedLevel = Number.isFinite(savedTable.speedLevel)
+              ? Math.min(tableDefinitions[index].roundTime - 1, Math.max(0, Math.floor(savedTable.speedLevel)))
+              : 0;
+            tables[index].timer = tableRoundTime(index);
           });
           tables[0].unlocked = true;
         }
@@ -2246,7 +2550,6 @@
       renderAutoSell();
       showToast(`Duplicate auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
     });
-    claimDugButton.addEventListener("click", () => grantTheDug());
     luckUpgradeButton.addEventListener("click", () => {
       const cost = luckUpgradeCost();
       if (cash < cost) {
@@ -2284,7 +2587,7 @@
         table.timer -= 1;
         if (table.timer <= 0) {
           playRound(index);
-          table.timer = tableDefinitions[index].roundTime;
+          table.timer = tableRoundTime(index);
         }
       });
       renderStats();
