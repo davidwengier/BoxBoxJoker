@@ -2018,6 +2018,18 @@
       return null;
     }
 
+    function generateFlushHand() {
+      const suit = suits[Math.floor(Math.random() * suits.length)];
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        const selectedRanks = shuffled(ranks).slice(0, 5).sort((a, b) => a - b);
+        const aceLow = selectedRanks.join(",") === "2,3,4,5,14";
+        if (!aceLow && selectedRanks[4] - selectedRanks[0] !== 4) {
+          return selectedRanks.map(rank => ({ rank, suit }));
+        }
+      }
+      return [2, 4, 6, 8, 10].map(rank => ({ rank, suit }));
+    }
+
     function scaledHandChance(joker, effect) {
       return Math.min(0.75, effect.chance * (1 + Math.max(0, wildcardLevel(joker.id) - 1) * 0.25));
     }
@@ -2036,9 +2048,7 @@
 
       const hasDug = equippedJokers.some(joker => joker.id === "dug");
       if (hasDug && Math.random() < 0.3) {
-        const suit = suits[Math.floor(Math.random() * suits.length)];
-        const shuffledRanks = shuffled(ranks);
-        return shuffledRanks.slice(0, 5).map(rank => ({ rank, suit }));
+        return generateFlushHand();
       }
 
       const deck = [];
@@ -2086,7 +2096,7 @@
         case "minimumTier":
           return result.tier >= effect.tier ? amount : 0;
         case "exactHand":
-          return result.name === effect.hand ? amount : 0;
+          return handMatches(effect.hand, result.name) ? amount : 0;
         case "fifthGuest":
           return guestsServed % 5 === 0 ? amount : 0;
         case "flushFamily":
@@ -2096,6 +2106,16 @@
         default:
           return 0;
       }
+    }
+
+    function handMatches(targetHand, actualHand) {
+      if (targetHand === actualHand) {
+        return true;
+      }
+      if (targetHand === "Flush" && actualHand === "Straight Flush") {
+        return true;
+      }
+      return targetHand === "Straight" && actualHand === "Straight Flush";
     }
 
     function playRound(tableIndex) {
@@ -2120,7 +2140,7 @@
           }
         });
       });
-      const matchingUpgrade = dugUpgradeDefinitions.find(upgrade => upgrade.hand === result.name);
+      const matchingUpgrade = dugUpgradeDefinitions.find(upgrade => handMatches(upgrade.hand, result.name));
       if (matchingUpgrade) {
         earnings += matchingUpgrade.baseBonus * (dugUpgrades[matchingUpgrade.id] || 0);
       }
@@ -2284,20 +2304,33 @@
     }
 
     function tableHandOdds(table) {
-      const odds = { ...baseHandOdds };
-      table.equipped
+      const odds = Object.fromEntries(Object.keys(baseHandOdds).map(hand => [hand, 0]));
+      const equippedJokers = table.equipped
         .map(id => wildcards.find(joker => joker.id === id))
-        .filter(Boolean)
-        .forEach(joker => {
-          wildcardEffects(joker).forEach(effect => {
-            if (effect.effectType === "handChance") {
-              odds[effect.hand] += scaledHandChance(joker, effect) * 100;
-            }
-          });
-          if (joker.id === "dug") {
-            odds.Flush += 30;
+        .filter(Boolean);
+      let remainingChance = 1;
+
+      equippedJokers.forEach(joker => {
+        wildcardEffects(joker).forEach(effect => {
+          if (effect.effectType !== "handChance") {
+            return;
           }
+          const chance = scaledHandChance(joker, effect);
+          odds[effect.hand] += remainingChance * chance * 100;
+          remainingChance *= 1 - chance;
         });
+      });
+
+      if (equippedJokers.some(joker => joker.id === "dug")) {
+        odds.Flush += remainingChance * 0.3 * 100;
+        remainingChance *= 0.7;
+      }
+
+      Object.entries(baseHandOdds).forEach(([hand, chance]) => {
+        odds[hand] += remainingChance * chance;
+      });
+      const total = Object.values(odds).reduce((sum, chance) => sum + chance, 0);
+      odds["High Card"] += 100 - total;
       return odds;
     }
 
@@ -2642,6 +2675,16 @@
         discoveredNormalCards = state.discoveredNormalCards && typeof state.discoveredNormalCards === "object"
           ? state.discoveredNormalCards
           : Object.fromEntries(Object.keys(normalCollection).map(id => [id, true]));
+        Object.entries(wildcardCollection).forEach(([id, count]) => {
+          if (Number(count) > 0) {
+            discoveredWildcards[id] = true;
+          }
+        });
+        Object.entries(normalCollection).forEach(([id, count]) => {
+          if (Number(count) > 0) {
+            discoveredNormalCards[id] = true;
+          }
+        });
         normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
         luckLevel = Number.isFinite(state.luckLevel) ? Math.max(0, Math.floor(state.luckLevel)) : 0;
@@ -2684,7 +2727,7 @@
       autoSellEnabled = !autoSellEnabled;
       saveGame();
       renderAutoSell();
-      showToast(`Duplicate auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
+      showToast(`Card auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
     });
     luckUpgradeButton.addEventListener("click", () => {
       const cost = luckUpgradeCost();
