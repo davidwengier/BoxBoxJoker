@@ -698,6 +698,58 @@
       color: #f4f4f5;
     }
 
+    .secret-shop {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .dug-banner {
+      display: grid;
+      grid-template-columns: 8rem 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #facc15;
+      border-radius: 0.9rem;
+      background: linear-gradient(135deg, #422006, #16120c);
+    }
+
+    .dug-banner img {
+      width: 8rem;
+      height: 8rem;
+      border-radius: 0.75rem;
+      object-fit: cover;
+    }
+
+    .dug-banner h2 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 2rem;
+    }
+
+    .dug-banner p {
+      color: #d6d3d1;
+      line-height: 1.5;
+    }
+
+    .dug-upgrade {
+      padding: 1rem;
+      border: 1px solid #3f3f46;
+      border-radius: 0.8rem;
+      background: #111218;
+    }
+
+    .dug-upgrade h3 {
+      margin: 0;
+    }
+
+    .dug-upgrade p {
+      min-height: 2.6rem;
+      color: #a1a1aa;
+      font-size: 0.85rem;
+    }
+
     .ordinary-grid {
       display: grid;
       grid-template-columns: repeat(13, minmax(0, 1fr));
@@ -939,6 +991,10 @@
       .ordinary-grid {
         grid-template-columns: repeat(7, minmax(0, 1fr));
       }
+
+      .secret-shop {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 600px) {
@@ -986,6 +1042,10 @@
       .ordinary-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
+
+      .dug-banner {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -1007,6 +1067,7 @@
       <button class="active" data-screen="casino">Casino</button>
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
+      <button id="dugShopNav" data-screen="dugShop" hidden>Dug Shop</button>
     </nav>
 
     <section id="casino" class="screen active">
@@ -1060,9 +1121,10 @@
           <h2>Card collection</h2>
           <p>Discover every ordinary card and Wildcard available in packs.</p>
         </div>
+        <button id="claimDug" class="primary" style="width:auto;padding-inline:1rem">Claim The Dug</button>
       </div>
       <div class="collection-progress">
-        Total collection: <strong id="collectionTotal">0 / 64</strong>
+        Total collection: <strong id="collectionTotal">0 / 69</strong>
       </div>
       <h3>Wildcards</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
@@ -1071,6 +1133,19 @@
         <strong id="normalPulled">0</strong> ordinary cards pulled. They look nice, but provide no bonuses.
       </div>
       <div id="ordinaryGrid" class="ordinary-grid"></div>
+    </section>
+
+    <section id="dugShop" class="screen">
+      <div class="dug-banner">
+        <img src="https://wengier.com/InfiniteGummies/Dug.png" alt="The Dug">
+        <div>
+          <div class="eyebrow">Secret shop unlocked</div>
+          <h2>The Dug's Hand Lab</h2>
+          <p>Equip The Dug to gain 300% Flush luck. Every Flush earns a Dug Coin and a huge cash bonus. Spend those coins here on permanent hand upgrades.</p>
+          <div class="stat" style="display:inline-block"><small>Dug Coins</small><strong id="dugCoins">0</strong></div>
+        </div>
+      </div>
+      <div id="dugUpgradeGrid" class="secret-shop"></div>
     </section>
   </div>
 
@@ -1174,17 +1249,26 @@
       },
       {
         id: "dug",
-        name: "Dug, the Infinite",
+        name: "The Dug",
         icon: "🐶",
         image: "https://wengier.com/InfiniteGummies/Dug.png",
         rarity: "Secret",
         packable: false,
-        effect: "Every hand adds $1,000 and all income is doubled.",
+        effect: "Gain $10,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, and double income.",
         effects: [
-          { effectType: "always", amount: 1000 },
+          { effectType: "flushFamily", amount: 2500 },
           { effectType: "multiplier", amount: 1 }
         ]
       }
+    ];
+
+    const dugUpgradeDefinitions = [
+      { id: "pairPayday", name: "Pair Payday", hand: "Pair", baseBonus: 250, baseCost: 3 },
+      { id: "twoPairTreasury", name: "Two Pair Treasury", hand: "Two Pair", baseBonus: 500, baseCost: 5 },
+      { id: "straightStacks", name: "Straight Stacks", hand: "Straight", baseBonus: 1200, baseCost: 8 },
+      { id: "flushFortune", name: "Flush Fortune", hand: "Flush", baseBonus: 2500, baseCost: 12 },
+      { id: "fullHouseVault", name: "Full House Vault", hand: "Full House", baseBonus: 5000, baseCost: 18 },
+      { id: "fourKindFortune", name: "Four-Kind Fortune", hand: "Four of a Kind", baseBonus: 12000, baseCost: 25 }
     ];
 
     const tableDefinitions = [
@@ -1289,6 +1373,10 @@
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
+    const claimDugButton = document.querySelector("#claimDug");
+    const dugShopNav = document.querySelector("#dugShopNav");
+    const dugCoinsDisplay = document.querySelector("#dugCoins");
+    const dugUpgradeGrid = document.querySelector("#dugUpgradeGrid");
     const packModal = document.querySelector("#packModal");
     const packTitle = document.querySelector("#packTitle");
     const packReveals = document.querySelector("#packReveals");
@@ -1307,6 +1395,9 @@
     let normalCardsPulled = 0;
     let starterOpened = false;
     let luckLevel = 0;
+    let dugCoins = 0;
+    let dugBonusClaimed = false;
+    let dugUpgrades = {};
     let autoSellEnabled = false;
     let autoSellRarities = {
       Ordinary: true,
@@ -1532,10 +1623,20 @@
         .filter(wildcard => wildcard.packable !== false)
         .every(wildcard => wildcardLevel(wildcard.id) > 0);
       if (ordinaryComplete && packCardsComplete) {
-        wildcardCollection.dug = 1;
-        saveGame();
-        showToast("Collection complete! Dug, the Infinite has joined your casino.");
+        grantTheDug("Collection complete! The Dug has joined your casino.");
       }
+    }
+
+    function grantTheDug(message = "The Dug has joined your casino.") {
+      wildcardCollection.dug = Math.max(1, wildcardLevel("dug"));
+      if (!dugBonusClaimed) {
+        cash += 10000;
+        dugBonusClaimed = true;
+        message += " You received $10,000.";
+      }
+      saveGame();
+      render();
+      showToast(message);
     }
 
     function openPack(packId) {
@@ -1606,7 +1707,13 @@
       showToast("Cards added to your collection.");
     }
 
-    function dealHand() {
+    function dealHand(hasDug = false) {
+      if (hasDug && Math.random() < 0.3) {
+        const suit = suits[Math.floor(Math.random() * suits.length)];
+        const shuffledRanks = [...ranks].sort(() => Math.random() - 0.5);
+        return shuffledRanks.slice(0, 5).map(rank => ({ rank, suit }));
+      }
+
       const deck = [];
       ranks.forEach(rank => suits.forEach(suit => deck.push({ rank, suit })));
       for (let index = deck.length - 1; index > 0; index -= 1) {
@@ -1655,6 +1762,8 @@
           return result.name === effect.hand ? amount : 0;
         case "fifthGuest":
           return guestsServed % 5 === 0 ? amount : 0;
+        case "flushFamily":
+          return result.name.includes("Flush") ? amount : 0;
         case "always":
           return amount;
         default:
@@ -1665,11 +1774,12 @@
     function playRound(tableIndex) {
       const tableState = tables[tableIndex];
       const definition = tableDefinitions[tableIndex];
-      const hand = dealHand();
-      const result = evaluateHand(hand);
       const equippedWildcards = tableState.equipped
         .map(id => wildcards.find(wildcard => wildcard.id === id))
         .filter(Boolean);
+      const hasDug = equippedWildcards.some(wildcard => wildcard.id === "dug");
+      const hand = dealHand(hasDug);
+      const result = evaluateHand(hand);
 
       guestsServed += 1;
       let earnings = definition.fee + result.payout;
@@ -1683,6 +1793,13 @@
           }
         });
       });
+      const matchingUpgrade = dugUpgradeDefinitions.find(upgrade => upgrade.hand === result.name);
+      if (matchingUpgrade) {
+        earnings += matchingUpgrade.baseBonus * (dugUpgrades[matchingUpgrade.id] || 0);
+      }
+      if (hasDug && result.name.includes("Flush")) {
+        dugCoins += 1;
+      }
       earnings = Math.floor(earnings * multiplier);
 
       cash += earnings;
@@ -1692,7 +1809,7 @@
         name: customerNames[Math.floor(Math.random() * customerNames.length)],
         icon: customerIcons[Math.floor(Math.random() * customerIcons.length)]
       };
-      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>`;
+      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
       saveGame();
     }
 
@@ -1939,6 +2056,65 @@
       collectionTotalDisplay.textContent = `${ordinaryDiscovered + wildcardsDiscovered} / ${allOrdinaryCards.length + wildcards.length}`;
       normalAlbumDisplay.textContent = `${ordinaryDiscovered} / ${allOrdinaryCards.length}`;
       normalPulledDisplay.textContent = normalCardsPulled.toLocaleString();
+      const hasDug = wildcardLevel("dug") > 0;
+      claimDugButton.textContent = hasDug
+        ? dugBonusClaimed ? "The Dug claimed" : "Claim The Dug's $10,000"
+        : "Claim The Dug · Free";
+      claimDugButton.disabled = hasDug && dugBonusClaimed;
+    }
+
+    function dugUpgradeCost(upgrade) {
+      const level = dugUpgrades[upgrade.id] || 0;
+      return upgrade.baseCost * (level + 1);
+    }
+
+    function buyDugUpgrade(id) {
+      const upgrade = dugUpgradeDefinitions.find(item => item.id === id);
+      const level = dugUpgrades[id] || 0;
+      if (!upgrade || level >= 5) {
+        return;
+      }
+      const cost = dugUpgradeCost(upgrade);
+      if (dugCoins < cost) {
+        showToast(`You need ${cost - dugCoins} more Dug Coins.`);
+        return;
+      }
+      dugCoins -= cost;
+      dugUpgrades[id] = level + 1;
+      saveGame();
+      renderSecretShop();
+      showToast(`${upgrade.name} upgraded to level ${level + 1}.`);
+    }
+
+    function renderSecretShop() {
+      const unlocked = wildcardLevel("dug") > 0;
+      dugShopNav.hidden = !unlocked;
+      if (!unlocked) {
+        if (document.querySelector("#dugShop").classList.contains("active")) {
+          showScreen("collection");
+        }
+        return;
+      }
+
+      dugCoinsDisplay.textContent = dugCoins.toLocaleString();
+      dugUpgradeGrid.innerHTML = dugUpgradeDefinitions.map(upgrade => {
+        const level = dugUpgrades[upgrade.id] || 0;
+        const cost = dugUpgradeCost(upgrade);
+        return `
+          <article class="dug-upgrade">
+            <div class="eyebrow">${upgrade.hand}</div>
+            <h3>${upgrade.name}</h3>
+            <p>Adds ${formatMoney(upgrade.baseBonus)} per level whenever a guest plays ${upgrade.hand}.</p>
+            <button class="primary" data-dug-upgrade="${upgrade.id}" ${level >= 5 ? "disabled" : ""}>
+              ${level >= 5 ? "Maximum level" : `Level ${level} · Upgrade for ${cost} Dug Coins`}
+            </button>
+          </article>
+        `;
+      }).join("");
+
+      dugUpgradeGrid.querySelectorAll("[data-dug-upgrade]").forEach(button => {
+        button.addEventListener("click", () => buyDugUpgrade(button.dataset.dugUpgrade));
+      });
     }
 
     function renderStats() {
@@ -1954,6 +2130,7 @@
       renderAutoSell();
       renderPacks();
       renderCollection();
+      renderSecretShop();
     }
 
     function showScreen(screenId) {
@@ -1976,6 +2153,9 @@
         normalCardsPulled,
         starterOpened,
         luckLevel,
+        dugCoins,
+        dugBonusClaimed,
+        dugUpgrades,
         autoSellEnabled,
         autoSellRarities,
         tables: tables.map(table => ({
@@ -2005,6 +2185,11 @@
         normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
         starterOpened = Boolean(state.starterOpened);
         luckLevel = Number.isFinite(state.luckLevel) ? Math.max(0, Math.floor(state.luckLevel)) : 0;
+        dugCoins = Number.isFinite(state.dugCoins) ? Math.max(0, Math.floor(state.dugCoins)) : 0;
+        dugBonusClaimed = Boolean(state.dugBonusClaimed);
+        dugUpgrades = state.dugUpgrades && typeof state.dugUpgrades === "object"
+          ? state.dugUpgrades
+          : {};
         autoSellEnabled = Boolean(state.autoSellEnabled);
         if (state.autoSellRarities && typeof state.autoSellRarities === "object") {
           Object.keys(autoSellRarities).forEach(rarity => {
@@ -2037,6 +2222,7 @@
       renderAutoSell();
       showToast(`Duplicate auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
     });
+    claimDugButton.addEventListener("click", () => grantTheDug());
     luckUpgradeButton.addEventListener("click", () => {
       const cost = luckUpgradeCost();
       if (cash < cost) {
