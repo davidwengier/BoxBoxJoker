@@ -335,6 +335,13 @@
       font-size: 1.25rem;
     }
 
+    .wild-mini img {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.3rem;
+      object-fit: cover;
+    }
+
     .empty-slot {
       border-style: dashed;
       border-color: #4b5563;
@@ -940,6 +947,19 @@
     .equip-option strong,
     .equip-option small {
       display: block;
+    }
+
+    .equip-option strong {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .equip-option strong img {
+      width: 1.8rem;
+      height: 1.8rem;
+      border-radius: 0.3rem;
+      object-fit: cover;
     }
 
     .equip-option small {
@@ -1892,7 +1912,7 @@
             data-equip="${wildcard.id}"
             style="--rarity:${rarityInfo[wildcard.rarity].color}"
           >
-            <strong>${wildcard.icon} ${wildcard.name}</strong>
+            <strong>${wildcard.image ? `<img src="${wildcard.image}" alt="">` : wildcard.icon} ${wildcard.name}</strong>
             <small>${wildcard.effect}</small>
             <small>Level ${wildcardLevel(wildcard.id)}</small>
           </button>
@@ -1935,7 +1955,10 @@
 
         const equipped = table.equipped.map(id => {
           const wildcard = wildcards.find(item => item.id === id);
-          return `<div class="wild-mini" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${wildcard.icon}</div>`;
+          const art = wildcard.image
+            ? `<img src="${wildcard.image}" alt="${wildcard.name}">`
+            : wildcard.icon;
+          return `<div class="wild-mini" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${art}</div>`;
         }).join("");
         const emptySlots = Array.from(
           { length: definition.slots - table.equipped.length },
