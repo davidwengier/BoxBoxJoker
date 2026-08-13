@@ -1699,8 +1699,7 @@
         return limited ? { Limited: 100 } : {};
       }
 
-      const baseTotal = entries.reduce((total, [, info]) => total + info.weight, 0);
-      const limitedPercent = limited ? limited[1].weight / baseTotal * 100 : 0;
+      const limitedPercent = limited ? 0.5 : 0;
       const remainingPercent = 100 - limitedPercent;
       const boostedTotal = nonLimited.reduce(
         (total, [rarity, info]) => total + effectiveRarityWeight(rarity, info),
