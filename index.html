@@ -1456,7 +1456,7 @@
         </div>
       </div>
       <div class="collection-progress">
-        Total collection: <strong id="collectionTotal">0 / 77</strong>
+        Total collection: <strong id="collectionTotal">0 / 0</strong>
       </div>
       <h3>Jokers</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
@@ -2066,7 +2066,7 @@
           "Red Royal",
           "Inferno Table",
           "Dragon Lounge",
-          "Crimson Crown",
+          "Ruby Crown",
           "Ruby High Rollers"
         ]
       }
@@ -2133,7 +2133,7 @@
         className: "vault",
         cost: 14000,
         wildcardChance: 0.72,
-        jokerIds: ["chipCollector", "pocketChange", "tripleTip", "threeCheers", "straightLine", "flushFund", "tripleThreat", "straightSpark", "tripleCrown", "straightFortune", "quadVault", "quadEngine", "redlineRoyal", "spectrumShift"],
+        jokerIds: ["chipCollector", "pocketChange", "tripleTip", "threeCheers", "straightLine", "flushFund", "tripleThreat", "straightSpark", "tripleCrown", "straightFortune", "quadEngine", "redlineRoyal", "spectrumShift"],
         description: "Contains exclusive Jokers from Common through Limited."
       },
       {
@@ -2187,7 +2187,7 @@
         className: "mythic",
         cost: 90000,
         wildcardChance: 0.94,
-        jokerIds: ["steadyStack", "clubBonus", "spadeSafe", "fullHouseFunds", "royalRush", "flushKing", "straightKing", "royalDecree", "scarletSpades", "phoenixFlush", "rainbowRoyale", "rainbowRush", "eternalJackpot"],
+        jokerIds: ["steadyStack", "clubBonus", "spadeSafe", "fullHouseFunds", "royalRush", "flushKing", "straightKing", "royalDecree", "scarletSpades", "rainbowRoyale", "rainbowRush", "eternalJackpot"],
         description: "Contains exclusive Jokers from Common through Limited.",
         cardCount: 7
       },
@@ -2220,8 +2220,8 @@
         className: "limited",
         cost: 375000,
         wildcardChance: 0.98,
-        jokerIds: ["legendaryPayday", "bloodDiamond", "prismParade", "infiniteVIP"],
-        description: "Contains exclusive Legendary, Mythic, and Limited Jokers."
+        jokerIds: ["legendaryPayday", "quadVault", "bloodDiamond", "phoenixFlush", "prismParade", "infiniteVIP"],
+        description: "Contains two exclusive Legendary, Mythic, and Limited Jokers."
       }
     ];
 
@@ -2447,8 +2447,9 @@
       return wildcards.filter(joker => joker.packable !== false && ids.has(joker.id));
     }
 
-    function jokerWeightsForPack(pack) {
-      const eligible = eligiblePackJokers(pack);
+    function jokerWeightsForPack(pack, excludedIds = new Set()) {
+      const eligible = eligiblePackJokers(pack)
+        .filter(joker => !excludedIds.has(joker.id));
       const rarityOdds = packJokerRarityOdds(pack);
       const rarityCounts = eligible.reduce((counts, joker) => {
         counts[joker.rarity] = (counts[joker.rarity] || 0) + 1;
@@ -2461,7 +2462,7 @@
     }
 
     function randomPackJoker(pack, excludedIds) {
-      const candidates = jokerWeightsForPack(pack).filter(({ joker }) => !excludedIds.has(joker.id));
+      const candidates = jokerWeightsForPack(pack, excludedIds);
       if (candidates.length === 0) {
         return null;
       }
