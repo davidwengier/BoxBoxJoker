@@ -988,6 +988,72 @@
       transform: rotateY(180deg);
     }
 
+    .reveal-card.limited-reveal {
+      z-index: 2;
+    }
+
+    .reveal-card.limited-reveal::after {
+      position: absolute;
+      inset: -2.5rem;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(
+        #ef4444,
+        #facc15,
+        #22c55e,
+        #38bdf8,
+        #a855f7,
+        #ef4444
+      );
+      content: "";
+      opacity: 0;
+      filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .reveal-card.limited-reveal.revealed {
+      animation: limited-card-burst 1100ms cubic-bezier(0.16, 0.8, 0.25, 1) both;
+      animation-delay: var(--reveal-delay, 0ms);
+    }
+
+    .reveal-card.limited-reveal.revealed::after {
+      animation: limited-burst-glow 1100ms ease-out both;
+      animation-delay: var(--reveal-delay, 0ms);
+    }
+
+    @keyframes limited-card-burst {
+      0% {
+        transform: rotateY(0deg) scale(0.82);
+        filter: brightness(1);
+      }
+      38% {
+        transform: rotateY(180deg) scale(1.22);
+        filter: brightness(2.6);
+      }
+      62% {
+        transform: rotateY(180deg) scale(0.96);
+        filter: brightness(1.35);
+      }
+      100% {
+        transform: rotateY(180deg) scale(1);
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes limited-burst-glow {
+      0% {
+        opacity: 0;
+        transform: scale(0.15) rotate(0deg);
+      }
+      38% {
+        opacity: 0.95;
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.45) rotate(150deg);
+      }
+    }
+
     .reveal-face {
       position: absolute;
       inset: 0;
@@ -1002,6 +1068,17 @@
         #11131b;
       backface-visibility: hidden;
       transform: rotateY(180deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-card.limited-reveal.revealed {
+        animation: none;
+        transform: rotateY(180deg);
+      }
+
+      .reveal-card.limited-reveal.revealed::after {
+        animation: none;
+      }
     }
 
     .reveal-face.normal {
@@ -1812,30 +1889,9 @@
         className: "premium",
         cost: 26000,
         wildcardChance: 0.82,
-        jokerIds: ["deuceJuice", "tenSpot", "jackAttack", "pairPurse", "fifthStreet", "kingCash", "twoPairTreasury", "fullHouseParty", "fourKindFireworks", "aceJackpot", "houseFavorite", "legendaryPayday", "crimsonCrown", "infernoHouse", "jackpotLoop", "infiniteHouse"],
+        jokerIds: ["deuceJuice", "tenSpot", "jackAttack", "pairPurse", "fifthStreet", "kingCash", "twoPairTreasury", "fullHouseParty", "fourKindFireworks", "aceJackpot", "houseFavorite", "crimsonCrown", "infernoHouse", "jackpotLoop", "infiniteHouse"],
         description: "Contains exclusive Jokers from Common through Limited.",
         cardCount: 7
-      },
-      {
-        id: "mythic",
-        name: "Crimson Mythic Pack",
-        icon: "🔥",
-        className: "mythic",
-        cost: 90000,
-        wildcardChance: 0.94,
-        jokerIds: ["steadyStack", "clubBonus", "spadeSafe", "fullHouseFunds", "royalRush", "flushKing", "straightKing", "royalDecree", "scarletSpades", "phoenixFlush", "bloodDiamond", "rainbowRoyale", "rainbowRush", "eternalJackpot"],
-        description: "Contains exclusive Jokers from Common through Limited.",
-        cardCount: 7
-      },
-      {
-        id: "limited",
-        name: "Rainbow Limited Pack",
-        icon: "🌈",
-        className: "limited",
-        cost: 375000,
-        wildcardChance: 0.005,
-        jokerIds: ["prismParade", "infiniteVIP"],
-        description: "Contains two exclusive Limited Jokers."
       },
       {
         id: "handmaker",
@@ -1847,6 +1903,27 @@
         jokerIds: ["pairMagnet", "doubleDate", "openRoad", "houseBuilder", "flushFinder", "goldenMultiplier", "nightmareStraight", "spectrumSpades"],
         description: "Contains hand-chance Jokers plus exclusive Jokers from every rarity.",
         cardCount: 6
+      },
+      {
+        id: "mythic",
+        name: "Crimson Mythic Pack",
+        icon: "🔥",
+        className: "mythic",
+        cost: 90000,
+        wildcardChance: 0.94,
+        jokerIds: ["steadyStack", "clubBonus", "spadeSafe", "fullHouseFunds", "royalRush", "flushKing", "straightKing", "royalDecree", "scarletSpades", "phoenixFlush", "rainbowRoyale", "rainbowRush", "eternalJackpot"],
+        description: "Contains exclusive Jokers from Common through Limited.",
+        cardCount: 7
+      },
+      {
+        id: "limited",
+        name: "Rainbow Limited Pack",
+        icon: "🌈",
+        className: "limited",
+        cost: 375000,
+        wildcardChance: 0.98,
+        jokerIds: ["legendaryPayday", "bloodDiamond", "prismParade", "infiniteVIP"],
+        description: "Contains exclusive Legendary, Mythic, and Limited Jokers."
       }
     ];
 
@@ -1988,7 +2065,7 @@
       if (hasLimited && nonLimited.length === 0) {
         return { Limited: 100 };
       }
-      const limitedPercent = hasLimited ? 0.5 : 0;
+      const limitedPercent = hasLimited ? Math.min(100, 0.5 / pack.wildcardChance) : 0;
       const remainingPercent = 100 - limitedPercent;
       const totalWeight = nonLimited.reduce(
         (total, rarity) => total + effectiveRarityWeight(rarity, rarityInfo[rarity]),
@@ -2195,7 +2272,7 @@
       revealIndex = 0;
 
       packTitle.textContent = quantity === 1 ? pack.name : `${quantity}× ${pack.name}`;
-      packReveals.innerHTML = currentPack.map(card => {
+      packReveals.innerHTML = currentPack.map((card, index) => {
         if (card.type === "normal") {
           const isRed = card.suit === "♥" || card.suit === "♦";
           return `
@@ -2211,7 +2288,10 @@
 
         const wildcard = card.wildcard;
         return `
-          <div class="reveal-card">
+          <div
+            class="reveal-card ${wildcard.rarity === "Limited" ? "limited-reveal" : ""}"
+            style="--reveal-delay:${Math.min(index * 45, 450)}ms"
+          >
             <div class="reveal-face ${wildcard.rarity === "Limited" ? "rarity-limited" : ""}" style="--rarity:${rarityInfo[wildcard.rarity].color}">
               <div class="rarity-label">${wildcard.rarity}</div>
               ${wildcardArt(wildcard)}
