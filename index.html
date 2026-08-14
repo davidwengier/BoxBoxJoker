@@ -328,7 +328,9 @@
     .table-card.locked {
       display: grid;
       place-items: center;
-      background: linear-gradient(145deg, #12131a, #090a0f);
+      background:
+        radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--table-felt) 45%, #12131a) 0 42%, var(--table-rim) 43% 48%, transparent 49%),
+        linear-gradient(145deg, #12131a, #090a0f);
       text-align: center;
     }
 
@@ -2839,10 +2841,11 @@
           }
         });
       });
-      const matchingUpgrade = dugUpgradeDefinitions.find(upgrade => handMatches(upgrade.hand, result.name));
-      if (matchingUpgrade) {
-        earnings += matchingUpgrade.baseBonus * (dugUpgrades[matchingUpgrade.id] || 0);
-      }
+      dugUpgradeDefinitions
+        .filter(upgrade => handMatches(upgrade.hand, result.name))
+        .forEach(upgrade => {
+          earnings += upgrade.baseBonus * (dugUpgrades[upgrade.id] || 0);
+        });
       if (hasDug && result.name.includes("Flush")) {
         dugCoins += 1;
         renderSecretShop();
@@ -3053,7 +3056,7 @@
             style="--floor-color:${item.color}"
           >
             <strong>${item.name}</strong>
-            <small>${unlockedCount} / 9 tables open · ${item.id} tables</small>
+            <small>${unlockedCount} / 9 tables open · 3 sets · ${item.id[0].toUpperCase()}${item.id.slice(1)}</small>
           </button>
         `;
       }).join("");
