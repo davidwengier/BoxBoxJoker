@@ -229,15 +229,66 @@
       gap: 0.85rem;
     }
 
+    .floor-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+    }
+
+    .floor-tab {
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--floor-color);
+      border-radius: 0.75rem;
+      background: color-mix(in srgb, var(--floor-color) 12%, #111218);
+      color: #d4d4d8;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .floor-tab strong,
+    .floor-tab small {
+      display: block;
+    }
+
+    .floor-tab small {
+      margin-top: 0.2rem;
+      color: #a1a1aa;
+    }
+
+    .floor-tab.active {
+      background: color-mix(in srgb, var(--floor-color) 35%, #111218);
+      box-shadow: 0 0 1.2rem color-mix(in srgb, var(--floor-color) 35%, transparent);
+      color: white;
+    }
+
+    .casino-floor.floor-green {
+      --table-felt: #15803d;
+      --table-rim: #14532d;
+      --table-border: #4ade80;
+    }
+
+    .casino-floor.floor-blue {
+      --table-felt: #1d4ed8;
+      --table-rim: #1e3a8a;
+      --table-border: #60a5fa;
+    }
+
+    .casino-floor.floor-red {
+      --table-felt: #dc2626;
+      --table-rim: #7f1d1d;
+      --table-border: #f87171;
+    }
+
     .table-card {
       position: relative;
       min-height: 23rem;
       overflow: hidden;
       padding: 1rem;
-      border: 1px solid #3a4353;
+      border: 1px solid var(--table-border, #4ade80);
       border-radius: 0.9rem;
       background:
-        radial-gradient(ellipse at 50% 45%, #14532d 0 42%, #0f2b20 43% 48%, transparent 49%),
+        radial-gradient(ellipse at 50% 45%, var(--table-felt, #15803d) 0 42%, var(--table-rim, #14532d) 43% 48%, transparent 49%),
         linear-gradient(150deg, #171923, #0c0d13);
       box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 24%);
     }
@@ -1290,6 +1341,10 @@
         grid-template-columns: 1fr;
       }
 
+      .floor-tabs {
+        grid-template-columns: 1fr;
+      }
+
       .pack-contents {
         grid-template-columns: 1fr;
       }
@@ -1358,10 +1413,11 @@
 
       <div class="section-head">
         <div>
-          <h2>Casino floor</h2>
-          <p>Combine Jokers, improve hand chances, and speed up each table.</p>
+          <h2>Casino floors</h2>
+          <p>Each floor has nine tables with its own color and progression.</p>
         </div>
       </div>
+      <div id="floorTabs" class="floor-tabs"></div>
       <div id="casinoFloor" class="casino-floor"></div>
     </section>
 
@@ -1965,11 +2021,81 @@
       { id: "fourKindFortune", name: "Four-Kind Fortune", hand: "Four of a Kind", baseBonus: 12000, baseCost: 75 }
     ];
 
-    const tableDefinitions = [
-      { id: "corner", name: "Corner Table", unlockCost: 0, reputationNeeded: 0, slots: 2, roundTime: 6, fee: 8 },
-      { id: "velvet", name: "Velvet Room", unlockCost: 6000, reputationNeeded: 18, slots: 3, roundTime: 5, fee: 18 },
-      { id: "skyline", name: "Skyline Lounge", unlockCost: 32500, reputationNeeded: 80, slots: 4, roundTime: 4, fee: 45 }
+    const casinoFloors = [
+      {
+        id: "green",
+        name: "Floor 1",
+        color: "#4ade80",
+        tableNames: [
+          "Corner Table",
+          "Velvet Room",
+          "Skyline Lounge",
+          "Lucky Clover",
+          "Emerald Booth",
+          "Garden Table",
+          "Jade Lounge",
+          "Green Crown",
+          "Emerald High Rollers"
+        ]
+      },
+      {
+        id: "blue",
+        name: "Floor 2",
+        color: "#60a5fa",
+        tableNames: [
+          "Blue Bay",
+          "Sapphire Table",
+          "Azure Room",
+          "Ocean Booth",
+          "Royal Blue",
+          "Midnight Table",
+          "Crystal Lounge",
+          "Blue Crown",
+          "Sapphire High Rollers"
+        ]
+      },
+      {
+        id: "red",
+        name: "Floor 3",
+        color: "#f87171",
+        tableNames: [
+          "Crimson Corner",
+          "Ruby Table",
+          "Scarlet Room",
+          "Fire Booth",
+          "Red Royal",
+          "Inferno Table",
+          "Dragon Lounge",
+          "Crimson Crown",
+          "Ruby High Rollers"
+        ]
+      }
     ];
+    const originalTableDefinitions = [
+      { id: "corner", unlockCost: 0, reputationNeeded: 0, slots: 2, roundTime: 6, fee: 8 },
+      { id: "velvet", unlockCost: 6000, reputationNeeded: 18, slots: 3, roundTime: 5, fee: 18 },
+      { id: "skyline", unlockCost: 32500, reputationNeeded: 80, slots: 4, roundTime: 4, fee: 45 }
+    ];
+    const tableDefinitions = casinoFloors.flatMap((floor, floorIndex) =>
+      floor.tableNames.map((name, tableIndex) => {
+        const globalIndex = floorIndex * 9 + tableIndex;
+        const original = originalTableDefinitions[globalIndex];
+        if (original) {
+          return { ...original, name, floor: floorIndex };
+        }
+        const progressionIndex = globalIndex - originalTableDefinitions.length;
+        return {
+          id: `${floor.id}-${tableIndex + 1}`,
+          name,
+          floor: floorIndex,
+          unlockCost: Math.floor(65 * Math.pow(1.55, progressionIndex)) * 1000,
+          reputationNeeded: Math.floor(150 * Math.pow(1.3, progressionIndex)),
+          slots: Math.min(6, 2 + floorIndex + Math.floor(tableIndex / 3)),
+          roundTime: Math.max(3, 6 - floorIndex),
+          fee: Math.floor(65 * Math.pow(1.35, progressionIndex))
+        };
+      })
+    );
 
     const packDefinitions = [
       {
@@ -2127,6 +2253,7 @@
     const cashDisplay = document.querySelector("#cash");
     const reputationDisplay = document.querySelector("#reputation");
     const guestsDisplay = document.querySelector("#guests");
+    const floorTabs = document.querySelector("#floorTabs");
     const casinoFloor = document.querySelector("#casinoFloor");
     const packStore = document.querySelector("#packStore");
     const wildcardGrid = document.querySelector("#wildcardGrid");
@@ -2169,6 +2296,7 @@
     let dugBonusClaimed = false;
     let dugUpgrades = {};
     let autoSellEnabled = false;
+    let activeFloor = 0;
     let autoSellRarities = {
       Ordinary: true,
       Common: false,
@@ -2683,7 +2811,6 @@
       tableState.lastHand = hand;
       tableState.customer = customerProfiles[Math.floor(Math.random() * customerProfiles.length)];
       tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
-      saveGame();
     }
 
     function unlockTable(index) {
@@ -2869,7 +2996,37 @@
     }
 
     function renderCasino() {
-      casinoFloor.innerHTML = tableDefinitions.map((definition, index) => {
+      const floor = casinoFloors[activeFloor];
+      floorTabs.innerHTML = casinoFloors.map((item, floorIndex) => {
+        const floorTableIndexes = tableDefinitions
+          .map((definition, index) => ({ definition, index }))
+          .filter(item => item.definition.floor === floorIndex)
+          .map(item => item.index);
+        const unlockedCount = floorTableIndexes.filter(index => tables[index].unlocked).length;
+        return `
+          <button
+            class="floor-tab ${floorIndex === activeFloor ? "active" : ""}"
+            data-floor="${floorIndex}"
+            style="--floor-color:${item.color}"
+          >
+            <strong>${item.name}</strong>
+            <small>${unlockedCount} / 9 tables open · ${item.id} tables</small>
+          </button>
+        `;
+      }).join("");
+      floorTabs.querySelectorAll("[data-floor]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeFloor = Number(button.dataset.floor);
+          saveGame();
+          renderCasino();
+        });
+      });
+
+      casinoFloor.className = `casino-floor floor-${floor.id}`;
+      const visibleTables = tableDefinitions
+        .map((definition, index) => ({ definition, index }))
+        .filter(item => item.definition.floor === activeFloor);
+      casinoFloor.innerHTML = visibleTables.map(({ definition, index }) => {
         const table = tables[index];
         if (!table.unlocked) {
           return `
@@ -3170,6 +3327,7 @@
         dugUpgrades,
         autoSellEnabled,
         autoSellRarities,
+        activeFloor,
         tables: tables.map(table => ({
           unlocked: table.unlocked,
           equipped: table.equipped,
@@ -3220,6 +3378,9 @@
           ? state.dugUpgrades
           : {};
         autoSellEnabled = Boolean(state.autoSellEnabled);
+        activeFloor = Number.isInteger(state.activeFloor)
+          ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
+          : 0;
         if (state.autoSellRarities && typeof state.autoSellRarities === "object") {
           Object.keys(autoSellRarities).forEach(rarity => {
             autoSellRarities[rarity] = Boolean(state.autoSellRarities[rarity]);
@@ -3288,6 +3449,7 @@
     render();
 
     setInterval(() => {
+      let roundPlayed = false;
       tables.forEach((table, index) => {
         if (!table.unlocked) {
           return;
@@ -3296,8 +3458,12 @@
         if (table.timer <= 0) {
           playRound(index);
           table.timer = tableRoundTime(index);
+          roundPlayed = true;
         }
       });
+      if (roundPlayed) {
+        saveGame();
+      }
       renderStats();
       renderCasino();
     }, 1000);
