@@ -262,6 +262,38 @@
       color: white;
     }
 
+    .table-set-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+
+    .table-set-tab {
+      padding: 0.65rem 0.8rem;
+      border: 1px solid #3f3f46;
+      border-radius: 0.65rem;
+      background: #15161e;
+      color: #a1a1aa;
+      cursor: pointer;
+    }
+
+    .table-set-tab strong,
+    .table-set-tab small {
+      display: block;
+    }
+
+    .table-set-tab small {
+      margin-top: 0.15rem;
+      color: #71717a;
+    }
+
+    .table-set-tab.active {
+      border-color: var(--set-color);
+      background: color-mix(in srgb, var(--set-color) 20%, #15161e);
+      color: white;
+    }
+
     .casino-floor.floor-green {
       --table-felt: #15803d;
       --table-rim: #14532d;
@@ -1345,6 +1377,10 @@
         grid-template-columns: 1fr;
       }
 
+      .table-set-tabs {
+        grid-template-columns: 1fr;
+      }
+
       .pack-contents {
         grid-template-columns: 1fr;
       }
@@ -1418,6 +1454,7 @@
         </div>
       </div>
       <div id="floorTabs" class="floor-tabs"></div>
+      <div id="tableSetTabs" class="table-set-tabs"></div>
       <div id="casinoFloor" class="casino-floor"></div>
     </section>
 
@@ -2254,6 +2291,7 @@
     const reputationDisplay = document.querySelector("#reputation");
     const guestsDisplay = document.querySelector("#guests");
     const floorTabs = document.querySelector("#floorTabs");
+    const tableSetTabs = document.querySelector("#tableSetTabs");
     const casinoFloor = document.querySelector("#casinoFloor");
     const packStore = document.querySelector("#packStore");
     const wildcardGrid = document.querySelector("#wildcardGrid");
@@ -2297,6 +2335,7 @@
     let dugUpgrades = {};
     let autoSellEnabled = false;
     let activeFloor = 0;
+    let activeTableSets = [0, 0, 0];
     let autoSellRarities = {
       Ordinary: true,
       Common: false,
@@ -3026,10 +3065,34 @@
         });
       });
 
-      casinoFloor.className = `casino-floor floor-${floor.id}`;
-      const visibleTables = tableDefinitions
+      const floorTables = tableDefinitions
         .map((definition, index) => ({ definition, index }))
         .filter(item => item.definition.floor === activeFloor);
+      const activeSet = activeTableSets[activeFloor] || 0;
+      tableSetTabs.innerHTML = Array.from({ length: 3 }, (_, setIndex) => {
+        const setTables = floorTables.slice(setIndex * 3, setIndex * 3 + 3);
+        const unlockedCount = setTables.filter(item => tables[item.index].unlocked).length;
+        return `
+          <button
+            class="table-set-tab ${setIndex === activeSet ? "active" : ""}"
+            data-table-set="${setIndex}"
+            style="--set-color:${floor.color}"
+          >
+            <strong>Set ${setIndex + 1}</strong>
+            <small>Tables ${setIndex * 3 + 1}–${setIndex * 3 + 3} · ${unlockedCount} / 3 open</small>
+          </button>
+        `;
+      }).join("");
+      tableSetTabs.querySelectorAll("[data-table-set]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeTableSets[activeFloor] = Number(button.dataset.tableSet);
+          saveGame();
+          renderCasino();
+        });
+      });
+
+      casinoFloor.className = `casino-floor floor-${floor.id}`;
+      const visibleTables = floorTables.slice(activeSet * 3, activeSet * 3 + 3);
       casinoFloor.innerHTML = visibleTables.map(({ definition, index }) => {
         const table = tables[index];
         if (!table.unlocked) {
@@ -3332,6 +3395,7 @@
         autoSellEnabled,
         autoSellRarities,
         activeFloor,
+        activeTableSets,
         tables: tables.map(table => ({
           unlocked: table.unlocked,
           equipped: table.equipped,
@@ -3385,6 +3449,12 @@
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
           : 0;
+        activeTableSets = casinoFloors.map((_, floorIndex) => {
+          const savedSet = Array.isArray(state.activeTableSets)
+            ? state.activeTableSets[floorIndex]
+            : 0;
+          return Number.isInteger(savedSet) ? Math.min(2, Math.max(0, savedSet)) : 0;
+        });
         if (state.autoSellRarities && typeof state.autoSellRarities === "object") {
           Object.keys(autoSellRarities).forEach(rarity => {
             autoSellRarities[rarity] = Boolean(state.autoSellRarities[rarity]);
