@@ -1382,15 +1382,24 @@
       { id: "redVelvet", name: "Red Velvet", icon: "♥️", rarity: "Common", effect: "Hearts add $3 each.", effectType: "suit", suit: "♥", amount: 3 },
       { id: "clubMember", name: "Club Member", icon: "♣️", rarity: "Common", effect: "Clubs add $3 each.", effectType: "suit", suit: "♣", amount: 3 },
       { id: "faceTime", name: "Face Time", icon: "👑", rarity: "Common", effect: "Face cards add $4 each.", effectType: "faces", amount: 4 },
+      { id: "diamondDealer", name: "Diamond Dealer", icon: "♦️", rarity: "Common", effect: "Diamonds add $3 each.", effectType: "suit", suit: "♦", amount: 3 },
+      { id: "spadeScout", name: "Spade Scout", icon: "♠️", rarity: "Common", effect: "Spades add $3 each.", effectType: "suit", suit: "♠", amount: 3 },
       { id: "luckySeven", name: "Lucky Seven", icon: "7️⃣", rarity: "Uncommon", effect: "Any seven adds $18.", effectType: "rank", rank: 7, amount: 18 },
       { id: "pairUp", name: "Pair Up", icon: "👯", rarity: "Uncommon", effect: "Pairs add $22.", effectType: "minimumTier", tier: 1, amount: 22 },
+      { id: "aceUp", name: "Ace Up", icon: "🅰️", rarity: "Uncommon", effect: "Any ace adds $25.", effectType: "rank", rank: 14, amount: 25 },
+      { id: "tripleTip", name: "Triple Tip", icon: "🔱", rarity: "Uncommon", effect: "Three of a Kind adds $40.", effectType: "exactHand", hand: "Three of a Kind", amount: 40 },
       { id: "doubleTrouble", name: "Double Trouble", icon: "✌️", rarity: "Rare", effect: "Two Pair adds $55.", effectType: "exactHand", hand: "Two Pair", amount: 55 },
       { id: "straightLine", name: "Straight Line", icon: "📏", rarity: "Rare", effect: "Straights add $85.", effectType: "exactHand", hand: "Straight", amount: 85 },
       { id: "flushFund", name: "Flush Fund", icon: "🚿", rarity: "Rare", effect: "Flushes add $110.", effectType: "exactHand", hand: "Flush", amount: 110 },
+      { id: "tripleThreat", name: "Triple Threat", icon: "3️⃣", rarity: "Rare", effect: "Three of a Kind adds $125.", effectType: "exactHand", hand: "Three of a Kind", amount: 125 },
+      { id: "royalTips", name: "Royal Tips", icon: "💂", rarity: "Rare", effect: "Face cards add $18 each.", effectType: "faces", amount: 18 },
       { id: "fullHouseParty", name: "Full House Party", icon: "🏠", rarity: "Epic", effect: "Full Houses add $240.", effectType: "exactHand", hand: "Full House", amount: 240 },
       { id: "goldenGuest", name: "Golden Guest", icon: "🌟", rarity: "Epic", effect: "Every fifth guest pays $120 extra.", effectType: "fifthGuest", amount: 120 },
+      { id: "fourKindFireworks", name: "Four-Kind Fireworks", icon: "🎆", rarity: "Epic", effect: "Four of a Kind adds $900.", effectType: "exactHand", hand: "Four of a Kind", amount: 900 },
       { id: "highSociety", name: "High Society", icon: "🎩", rarity: "Legendary", effect: "Multiplies all table income.", effectType: "multiplier", amount: 0.35 },
       { id: "houseFavorite", name: "House Favorite", icon: "🃏", rarity: "Legendary", effect: "Every hand adds $100.", effectType: "always", amount: 100 },
+      { id: "casinoBoss", name: "Casino Boss", icon: "💼", rarity: "Legendary", effect: "Every hand adds $175.", effectType: "always", amount: 175 },
+      { id: "straightFortune", name: "Straight Fortune", icon: "💰", rarity: "Legendary", effect: "Straight Flushes add $2,500.", effectType: "exactHand", hand: "Straight Flush", amount: 2500 },
       {
         id: "crimsonCrown",
         name: "Crimson Crown",
@@ -1433,6 +1442,28 @@
         effects: [
           { effectType: "always", amount: 180 },
           { effectType: "exactHand", hand: "Four of a Kind", amount: 4000 }
+        ]
+      },
+      {
+        id: "infernoHouse",
+        name: "Inferno House",
+        icon: "🏚️",
+        rarity: "Mythic",
+        effect: "Full Houses add $1,200 and all income is multiplied by 1.35.",
+        effects: [
+          { effectType: "exactHand", hand: "Full House", amount: 1200 },
+          { effectType: "multiplier", amount: 0.35 }
+        ]
+      },
+      {
+        id: "redlineRoyal",
+        name: "Redline Royal",
+        icon: "🚨",
+        rarity: "Mythic",
+        effect: "Straights add $800 and face cards add $75 each.",
+        effects: [
+          { effectType: "exactHand", hand: "Straight", amount: 800 },
+          { effectType: "faces", amount: 75 }
         ]
       },
       {
@@ -1481,6 +1512,29 @@
         ]
       },
       {
+        id: "rainbowRoyale",
+        name: "Rainbow Royale",
+        icon: "👑",
+        rarity: "Limited",
+        effect: "Straight Flushes add $8,000, every hand adds $350, and all income is multiplied by 1.4.",
+        effects: [
+          { effectType: "exactHand", hand: "Straight Flush", amount: 8000 },
+          { effectType: "always", amount: 350 },
+          { effectType: "multiplier", amount: 0.4 }
+        ]
+      },
+      {
+        id: "chromaticCharm",
+        name: "Chromatic Charm",
+        icon: "💎",
+        rarity: "Limited",
+        effect: "Pairs or better add $250 and every fifth guest adds $1,500.",
+        effects: [
+          { effectType: "minimumTier", tier: 1, amount: 250 },
+          { effectType: "fifthGuest", amount: 1500 }
+        ]
+      },
+      {
         id: "pairMagnet",
         name: "Pair Magnet",
         icon: "🧲",
@@ -1511,6 +1565,14 @@
         rarity: "Epic",
         effect: "Adds a 7% chance for the guest to be dealt a Full House.",
         effects: [{ effectType: "handChance", hand: "Full House", chance: 0.07 }]
+      },
+      {
+        id: "flushFinder",
+        name: "Flush Finder",
+        icon: "🔍",
+        rarity: "Epic",
+        effect: "Adds a 6% chance for the guest to be dealt a Flush.",
+        effects: [{ effectType: "handChance", hand: "Flush", chance: 0.06 }]
       },
       {
         id: "dug",
@@ -1549,8 +1611,8 @@
         icon: "🎁",
         cost: 0,
         wildcardChance: 0.35,
-        jokerIds: ["redVelvet", "clubMember", "faceTime"],
-        description: "Contains Red Velvet, Club Member, and Face Time."
+        jokerIds: ["redVelvet", "clubMember", "faceTime", "diamondDealer", "spadeScout"],
+        description: "Contains five exclusive Common Jokers."
       },
       {
         id: "standard",
@@ -1558,8 +1620,8 @@
         icon: "🂠",
         cost: 900,
         wildcardChance: 0.22,
-        jokerIds: ["luckySeven", "pairUp", "doubleTrouble"],
-        description: "Contains Lucky Seven, Pair Up, and Double Trouble."
+        jokerIds: ["luckySeven", "pairUp", "aceUp", "tripleTip", "doubleTrouble"],
+        description: "Contains five exclusive Uncommon and Rare Jokers."
       },
       {
         id: "premium",
@@ -1568,8 +1630,8 @@
         className: "premium",
         cost: 3750,
         wildcardChance: 0.5,
-        jokerIds: ["goldenGuest"],
-        description: "The only pack containing Golden Guest."
+        jokerIds: ["goldenGuest", "royalTips", "casinoBoss"],
+        description: "Contains three exclusive Rare, Epic, and Legendary Jokers."
       },
       {
         id: "vault",
@@ -1578,8 +1640,8 @@
         className: "vault",
         cost: 14000,
         wildcardChance: 0.72,
-        jokerIds: ["straightLine", "flushFund", "highSociety"],
-        description: "Contains Straight Line, Flush Fund, and High Society."
+        jokerIds: ["straightLine", "flushFund", "tripleThreat", "highSociety", "straightFortune"],
+        description: "Contains five exclusive Rare and Legendary Jokers."
       },
       {
         id: "lucky",
@@ -1588,8 +1650,8 @@
         className: "premium",
         cost: 26000,
         wildcardChance: 0.82,
-        jokerIds: ["fullHouseParty", "crimsonCrown", "houseFavorite"],
-        description: "Contains Full House Party, Crimson Crown, and House Favorite.",
+        jokerIds: ["fullHouseParty", "fourKindFireworks", "crimsonCrown", "infernoHouse", "houseFavorite"],
+        description: "Contains five exclusive Epic, Legendary, and Mythic Jokers.",
         cardCount: 7
       },
       {
@@ -1599,8 +1661,8 @@
         className: "mythic",
         cost: 90000,
         wildcardChance: 0.94,
-        jokerIds: ["bloodMoon", "quadEngine", "royalDecree"],
-        description: "Contains Blood Moon, Quad Engine, and Royal Decree.",
+        jokerIds: ["bloodMoon", "quadEngine", "royalDecree", "redlineRoyal"],
+        description: "Contains four exclusive Mythic Jokers.",
         cardCount: 7
       },
       {
@@ -1610,8 +1672,8 @@
         className: "limited",
         cost: 375000,
         wildcardChance: 0.005,
-        jokerIds: ["prismParade", "infiniteVIP", "spectrumShift", "jackpotLoop"],
-        description: "The only pack containing the four Limited Jokers."
+        jokerIds: ["prismParade", "infiniteVIP", "spectrumShift", "jackpotLoop", "rainbowRoyale", "chromaticCharm"],
+        description: "The only pack containing the six Limited Jokers."
       },
       {
         id: "handmaker",
@@ -1620,8 +1682,8 @@
         className: "premium",
         cost: 60000,
         wildcardChance: 0.78,
-        jokerIds: ["pairMagnet", "doubleDate", "openRoad", "houseBuilder"],
-        description: "The only pack containing the four hand-chance Jokers.",
+        jokerIds: ["pairMagnet", "doubleDate", "openRoad", "houseBuilder", "flushFinder"],
+        description: "The only pack containing the five hand-chance Jokers.",
         cardCount: 6
       }
     ];
@@ -2063,6 +2125,9 @@
           { rank: chosenRanks[1], suit: chosenSuits[0] },
           { rank: chosenRanks[1], suit: chosenSuits[1] }
         ];
+      }
+      if (handName === "Flush") {
+        return generateFlushHand();
       }
       return null;
     }
