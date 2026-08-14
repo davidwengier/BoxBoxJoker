@@ -552,7 +552,7 @@
     .pack-buttons {
       position: relative;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0.45rem;
     }
 
@@ -1197,6 +1197,10 @@
         grid-template-columns: 1fr;
       }
 
+      .pack-buttons {
+        grid-template-columns: 1fr;
+      }
+
       .auto-sell-head {
         align-items: stretch;
         flex-direction: column;
@@ -1268,7 +1272,7 @@
       <div class="section-head">
         <div>
           <h2>Card packs</h2>
-          <p>Most cards are ordinary. The lucky pulls are powerful Jokers.</p>
+          <p>Most cards are ordinary. Jokers never repeat inside the same pack.</p>
         </div>
       </div>
       <div class="luck-panel">
@@ -1299,7 +1303,7 @@
         </div>
       </div>
       <div class="collection-progress">
-        Total collection: <strong id="collectionTotal">0 / 73</strong>
+        Total collection: <strong id="collectionTotal">0 / 77</strong>
       </div>
       <h3>Jokers</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
@@ -1328,7 +1332,7 @@
     <div class="modal-box">
       <h2 id="packTitle">Opening pack</h2>
       <div id="packReveals" class="pack-reveals"></div>
-      <button id="revealButton" class="primary modal-action">Reveal first card</button>
+      <button id="revealButton" class="primary modal-action">Reveal all</button>
     </div>
   </div>
 
@@ -1410,6 +1414,28 @@
         ]
       },
       {
+        id: "royalDecree",
+        name: "Royal Decree",
+        icon: "📜",
+        rarity: "Mythic",
+        effect: "Face cards add $90 each and all income is multiplied by 1.4.",
+        effects: [
+          { effectType: "faces", amount: 90 },
+          { effectType: "multiplier", amount: 0.4 }
+        ]
+      },
+      {
+        id: "quadEngine",
+        name: "Quad Engine",
+        icon: "⚙️",
+        rarity: "Mythic",
+        effect: "Every hand adds $180 and Four of a Kind adds $4,000.",
+        effects: [
+          { effectType: "always", amount: 180 },
+          { effectType: "exactHand", hand: "Four of a Kind", amount: 4000 }
+        ]
+      },
+      {
         id: "prismParade",
         name: "Prism Parade",
         icon: "🌈",
@@ -1429,6 +1455,29 @@
         effects: [
           { effectType: "minimumTier", tier: 1, amount: 100 },
           { effectType: "fifthGuest", amount: 500 }
+        ]
+      },
+      {
+        id: "spectrumShift",
+        name: "Spectrum Shift",
+        icon: "🔮",
+        rarity: "Limited",
+        effect: "Straights add $900, Flushes add $1,400, and all income is multiplied by 1.25.",
+        effects: [
+          { effectType: "exactHand", hand: "Straight", amount: 900 },
+          { effectType: "exactHand", hand: "Flush", amount: 1400 },
+          { effectType: "multiplier", amount: 0.25 }
+        ]
+      },
+      {
+        id: "jackpotLoop",
+        name: "Jackpot Loop",
+        icon: "🎰",
+        rarity: "Limited",
+        effect: "Every hand adds $450 and every fifth guest adds $2,000.",
+        effects: [
+          { effectType: "always", amount: 450 },
+          { effectType: "fifthGuest", amount: 2000 }
         ]
       },
       {
@@ -1479,18 +1528,18 @@
     ];
 
     const dugUpgradeDefinitions = [
-      { id: "pairPayday", name: "Pair Payday", hand: "Pair", baseBonus: 250, baseCost: 3 },
-      { id: "twoPairTreasury", name: "Two Pair Treasury", hand: "Two Pair", baseBonus: 500, baseCost: 5 },
-      { id: "straightStacks", name: "Straight Stacks", hand: "Straight", baseBonus: 1200, baseCost: 8 },
-      { id: "flushFortune", name: "Flush Fortune", hand: "Flush", baseBonus: 2500, baseCost: 12 },
-      { id: "fullHouseVault", name: "Full House Vault", hand: "Full House", baseBonus: 5000, baseCost: 18 },
-      { id: "fourKindFortune", name: "Four-Kind Fortune", hand: "Four of a Kind", baseBonus: 12000, baseCost: 25 }
+      { id: "pairPayday", name: "Pair Payday", hand: "Pair", baseBonus: 250, baseCost: 8 },
+      { id: "twoPairTreasury", name: "Two Pair Treasury", hand: "Two Pair", baseBonus: 500, baseCost: 14 },
+      { id: "straightStacks", name: "Straight Stacks", hand: "Straight", baseBonus: 1200, baseCost: 22 },
+      { id: "flushFortune", name: "Flush Fortune", hand: "Flush", baseBonus: 2500, baseCost: 35 },
+      { id: "fullHouseVault", name: "Full House Vault", hand: "Full House", baseBonus: 5000, baseCost: 50 },
+      { id: "fourKindFortune", name: "Four-Kind Fortune", hand: "Four of a Kind", baseBonus: 12000, baseCost: 75 }
     ];
 
     const tableDefinitions = [
       { id: "corner", name: "Corner Table", unlockCost: 0, reputationNeeded: 0, slots: 2, roundTime: 6, fee: 8 },
-      { id: "velvet", name: "Velvet Room", unlockCost: 1200, reputationNeeded: 18, slots: 3, roundTime: 5, fee: 18 },
-      { id: "skyline", name: "Skyline Lounge", unlockCost: 6500, reputationNeeded: 80, slots: 4, roundTime: 4, fee: 45 }
+      { id: "velvet", name: "Velvet Room", unlockCost: 6000, reputationNeeded: 18, slots: 3, roundTime: 5, fee: 18 },
+      { id: "skyline", name: "Skyline Lounge", unlockCost: 32500, reputationNeeded: 80, slots: 4, roundTime: 4, fee: 45 }
     ];
 
     const packDefinitions = [
@@ -1506,7 +1555,7 @@
         id: "standard",
         name: "House Pack",
         icon: "🂠",
-        cost: 180,
+        cost: 900,
         wildcardChance: 0.22,
         description: "Five cards. Jokers can appear at any rarity."
       },
@@ -1515,7 +1564,7 @@
         name: "Velvet Pack",
         icon: "💜",
         className: "premium",
-        cost: 750,
+        cost: 3750,
         wildcardChance: 0.5,
         minimumRarity: "Uncommon",
         description: "Five cards with better Joker odds and no Common Jokers."
@@ -1525,7 +1574,7 @@
         name: "Golden Vault",
         icon: "🔐",
         className: "vault",
-        cost: 2800,
+        cost: 14000,
         wildcardChance: 0.72,
         minimumRarity: "Rare",
         description: "Five cards where every Joker is Rare or better."
@@ -1535,7 +1584,7 @@
         name: "Lucky Seven Pack",
         icon: "🍀",
         className: "premium",
-        cost: 5200,
+        cost: 26000,
         wildcardChance: 0.82,
         minimumRarity: "Epic",
         description: "Seven cards where every Joker is Epic or better.",
@@ -1546,7 +1595,7 @@
         name: "Crimson Mythic Pack",
         icon: "🔥",
         className: "mythic",
-        cost: 18000,
+        cost: 90000,
         wildcardChance: 0.94,
         minimumRarity: "Legendary",
         description: "Seven premium cards where every Joker is Legendary or better.",
@@ -1557,7 +1606,7 @@
         name: "Rainbow Limited Pack",
         icon: "🌈",
         className: "limited",
-        cost: 75000,
+        cost: 375000,
         wildcardChance: 1,
         minimumRarity: "Mythic",
         description: "Five Joker-only cards drawn from the Mythic and Limited pool."
@@ -1567,7 +1616,7 @@
         name: "Handmaker Pack",
         icon: "🖐️",
         className: "premium",
-        cost: 12000,
+        cost: 60000,
         wildcardChance: 0.78,
         jokerPool: "handChance",
         description: "Six cards where every Joker pull is a hand-chance Joker.",
@@ -1735,14 +1784,16 @@
     }
 
     function handChanceSlotOdds() {
-      const pool = wildcards.filter(joker =>
+      const handChanceJokers = wildcards.filter(joker =>
         joker.packable !== false &&
+        joker.rarity !== "Limited" &&
         wildcardEffects(joker).some(effect => effect.effectType === "handChance")
       );
-      return pool.reduce((odds, joker) => {
-        odds[joker.rarity] = (odds[joker.rarity] || 0) + 100 / pool.length;
-        return odds;
-      }, {});
+      const odds = { Limited: 0.5 };
+      handChanceJokers.forEach(joker => {
+        odds[joker.rarity] = (odds[joker.rarity] || 0) + 99.5 / handChanceJokers.length;
+      });
+      return odds;
     }
 
     function oddsBlock(title, distribution) {
@@ -1803,40 +1854,62 @@
       };
     }
 
-    function randomWildcard(minimumRarity = "Common") {
-      const percentages = rarityPercentages(minimumRarity);
-      let roll = Math.random() * 100;
-      let chosenRarity = Object.keys(percentages)[0];
-
-      for (const [rarity, percentage] of Object.entries(percentages)) {
-        roll -= percentage;
-        if (roll <= 0) {
-          chosenRarity = rarity;
-          break;
+    function eligiblePackJokers(pack) {
+      return wildcards.filter(joker => {
+        if (joker.packable === false) {
+          return false;
         }
-      }
-
-      const pool = wildcards.filter(wildcard => wildcard.packable !== false && wildcard.rarity === chosenRarity);
-      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
+        if (pack.jokerPool === "handChance") {
+          return joker.rarity === "Limited" ||
+            wildcardEffects(joker).some(effect => effect.effectType === "handChance");
+        }
+        return rarityRank(joker.rarity) >= rarityRank(pack.minimumRarity || "Common");
+      });
     }
 
-    function randomHandChanceJoker() {
-      const pool = wildcards.filter(wildcard =>
-        wildcard.packable !== false &&
-        wildcardEffects(wildcard).some(effect => effect.effectType === "handChance")
-      );
-      return { type: "wildcard", wildcard: pool[Math.floor(Math.random() * pool.length)] };
+    function jokerWeightsForPack(pack) {
+      const eligible = eligiblePackJokers(pack);
+      const rarityOdds = pack.jokerPool === "handChance"
+        ? handChanceSlotOdds()
+        : rarityPercentages(pack.minimumRarity || "Common");
+      const rarityCounts = eligible.reduce((counts, joker) => {
+        counts[joker.rarity] = (counts[joker.rarity] || 0) + 1;
+        return counts;
+      }, {});
+      return eligible.map(joker => ({
+        joker,
+        weight: (rarityOdds[joker.rarity] || 0) / rarityCounts[joker.rarity]
+      }));
+    }
+
+    function randomPackJoker(pack, excludedIds) {
+      const candidates = jokerWeightsForPack(pack).filter(({ joker }) => !excludedIds.has(joker.id));
+      if (candidates.length === 0) {
+        return null;
+      }
+      let roll = Math.random() * candidates.reduce((total, candidate) => total + candidate.weight, 0);
+      for (const candidate of candidates) {
+        roll -= candidate.weight;
+        if (roll <= 0) {
+          return candidate.joker;
+        }
+      }
+      return candidates[candidates.length - 1].joker;
     }
 
     function createPack(pack) {
       const cardCount = pack.cardCount || 5;
+      const usedJokerIds = new Set();
       return Array.from({ length: cardCount }, () => {
         if (Math.random() >= pack.wildcardChance) {
           return randomNormalCard();
         }
-        return pack.jokerPool === "handChance"
-          ? randomHandChanceJoker()
-          : randomWildcard(pack.minimumRarity || "Common");
+        const joker = randomPackJoker(pack, usedJokerIds);
+        if (!joker) {
+          return randomNormalCard();
+        }
+        usedJokerIds.add(joker.id);
+        return { type: "wildcard", wildcard: joker };
       });
     }
 
@@ -1901,25 +1974,29 @@
       showToast(message);
     }
 
-    function openPack(packId) {
+    function openPack(packId, quantity = 1) {
       const pack = packDefinitions.find(item => item.id === packId);
       if (pack.id === "starter" && starterOpened) {
         return;
       }
-      if (cash < pack.cost) {
-        showToast(`You need ${formatMoney(pack.cost - cash)} more.`);
+      if (pack.id === "starter" && quantity > 1) {
+        return;
+      }
+      const totalCost = pack.cost * quantity;
+      if (cash < totalCost) {
+        showToast(`You need ${formatMoney(totalCost - cash)} more.`);
         return;
       }
 
-      cash -= pack.cost;
+      cash -= totalCost;
       if (pack.id === "starter") {
         starterOpened = true;
       }
-      currentPack = createPack(pack);
+      currentPack = Array.from({ length: quantity }, () => createPack(pack)).flat();
       addPackToCollection(currentPack);
       revealIndex = 0;
 
-      packTitle.textContent = pack.name;
+      packTitle.textContent = quantity === 1 ? pack.name : `${quantity}× ${pack.name}`;
       packReveals.innerHTML = currentPack.map(card => {
         if (card.type === "normal") {
           const isRed = card.suit === "♥" || card.suit === "♦";
@@ -1948,7 +2025,7 @@
         `;
       }).join("");
 
-      revealButton.textContent = "Reveal first card";
+      revealButton.textContent = "Reveal all";
       packModal.classList.add("open");
       saveGame();
       render();
@@ -1956,12 +2033,10 @@
 
     function revealNextCard() {
       const cards = packReveals.querySelectorAll(".reveal-card");
-      if (revealIndex < cards.length) {
-        cards[revealIndex].classList.add("revealed");
-        revealIndex += 1;
-        revealButton.textContent = revealIndex < cards.length
-          ? `Reveal card ${revealIndex + 1}`
-          : "Keep cards";
+      if (revealIndex === 0) {
+        cards.forEach(card => card.classList.add("revealed"));
+        revealIndex = cards.length;
+        revealButton.textContent = "Keep cards";
         return;
       }
 
@@ -2183,7 +2258,7 @@
 
     function speedUpgradeCost(index) {
       const level = tables[index].speedLevel || 0;
-      return Math.floor(600 * (index + 1) * Math.pow(2.25, level));
+      return Math.floor(3000 * (index + 1) * Math.pow(2.25, level));
     }
 
     function upgradeTableSpeed(index) {
@@ -2430,7 +2505,7 @@
     }
 
     function luckUpgradeCost() {
-      return Math.floor(2500 * Math.pow(2.4, luckLevel));
+      return Math.floor(12500 * Math.pow(2.4, luckLevel));
     }
 
     function renderLuck() {
@@ -2452,6 +2527,9 @@
               <button class="primary" data-pack="${pack.id}" ${claimed ? "disabled" : ""}>
                 ${claimed ? "Pack claimed" : pack.cost === 0 ? "Open free pack" : `Open · ${formatMoney(pack.cost)}`}
               </button>
+              <button class="primary" data-pack-five="${pack.id}" ${claimed || pack.cost === 0 ? "disabled" : ""}>
+                Buy 5 · ${formatMoney(pack.cost * 5)}
+              </button>
             </div>
           </article>
         `;
@@ -2463,21 +2541,16 @@
       packStore.querySelectorAll("[data-pack-info]").forEach(button => {
         button.addEventListener("click", () => openPackInfo(button.dataset.packInfo));
       });
+      packStore.querySelectorAll("[data-pack-five]").forEach(button => {
+        button.addEventListener("click", () => openPack(button.dataset.packFive, 5));
+      });
     }
 
     function possiblePackJokers(pack) {
       if (pack.wildcardChance <= 0) {
         return [];
       }
-      return wildcards.filter(joker => {
-        if (joker.packable === false) {
-          return false;
-        }
-        if (pack.jokerPool === "handChance") {
-          return wildcardEffects(joker).some(effect => effect.effectType === "handChance");
-        }
-        return rarityRank(joker.rarity) >= rarityRank(pack.minimumRarity || "Common");
-      });
+      return eligiblePackJokers(pack);
     }
 
     function openPackInfo(packId) {
