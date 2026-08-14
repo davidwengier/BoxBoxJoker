@@ -1266,8 +1266,24 @@
       cursor: pointer;
     }
 
+    .equip-option.rarity-limited {
+      border: 2px solid transparent !important;
+      background:
+        linear-gradient(#151721, #151721) padding-box,
+        linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box !important;
+    }
+
+    .equip-option.rarity-secret {
+      border: 2px solid #ffffff;
+      background:
+        radial-gradient(circle at 20% 15%, rgb(255 255 255 / 24%), transparent 35%),
+        linear-gradient(145deg, #3f3f46, #09090b);
+      box-shadow: inset 0 0 1.2rem rgb(255 255 255 / 12%);
+    }
+
     .equip-option.active {
-      outline: 3px solid white;
+      outline: 2px solid white;
+      outline-offset: 3px;
     }
 
     .equip-option.unavailable {
@@ -1295,6 +1311,25 @@
     .equip-option small {
       margin-top: 0.3rem;
       color: #aaa6b4;
+    }
+
+    .equip-option .equip-rarity {
+      color: var(--rarity);
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .equip-option.rarity-limited .equip-rarity {
+      background: linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #c084fc);
+      background-clip: text;
+      color: transparent;
+    }
+
+    .equip-option.rarity-secret .equip-rarity {
+      color: white;
+      text-shadow: 0 0 0.7rem white;
     }
 
     #toast {
@@ -2960,12 +2995,18 @@
       equipGrid.innerHTML = owned.map(wildcard => {
         const active = table.equipped.includes(wildcard.id);
         const unavailable = !active && wildcardUsage(wildcard.id, activeEquipTable) >= wildcardLevel(wildcard.id);
+        const rarityClass = wildcard.rarity === "Limited"
+          ? "rarity-limited"
+          : wildcard.rarity === "Secret"
+            ? "rarity-secret"
+            : "";
         return `
           <button
-            class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""} ${wildcard.rarity === "Limited" ? "rarity-limited" : ""}"
+            class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""} ${rarityClass}"
             data-equip="${wildcard.id}"
             style="--rarity:${rarityInfo[wildcard.rarity].color}"
           >
+            <small class="equip-rarity">${wildcard.rarity}</small>
             <strong>${wildcard.image ? `<img src="${wildcard.image}" alt="">` : wildcard.icon} ${wildcard.name}</strong>
             <small>${wildcard.effect}</small>
             <small>Level ${wildcardLevel(wildcard.id)}</small>
