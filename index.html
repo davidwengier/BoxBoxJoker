@@ -2545,33 +2545,23 @@
       return wildcards.filter(joker => joker.packable !== false && ids.has(joker.id));
     }
 
-    function jokerWeightsForPack(pack, excludedIds = new Set()) {
-      const eligible = eligiblePackJokers(pack)
-        .filter(joker => !excludedIds.has(joker.id));
-      const rarityOdds = packJokerRarityOdds(pack);
-      const rarityCounts = eligible.reduce((counts, joker) => {
-        counts[joker.rarity] = (counts[joker.rarity] || 0) + 1;
-        return counts;
-      }, {});
-      return eligible.map(joker => ({
-        joker,
-        weight: (rarityOdds[joker.rarity] || 0) / rarityCounts[joker.rarity]
-      }));
-    }
-
     function randomPackJoker(pack, excludedIds) {
-      const candidates = jokerWeightsForPack(pack, excludedIds);
+      const rarityOdds = packJokerRarityOdds(pack);
+      let rarityRoll = Math.random() * 100;
+      let selectedRarity = Object.keys(rarityOdds)[0];
+      for (const [rarity, percentage] of Object.entries(rarityOdds)) {
+        rarityRoll -= percentage;
+        if (rarityRoll <= 0) {
+          selectedRarity = rarity;
+          break;
+        }
+      }
+      const candidates = eligiblePackJokers(pack)
+        .filter(joker => joker.rarity === selectedRarity && !excludedIds.has(joker.id));
       if (candidates.length === 0) {
         return null;
       }
-      let roll = Math.random() * candidates.reduce((total, candidate) => total + candidate.weight, 0);
-      for (const candidate of candidates) {
-        roll -= candidate.weight;
-        if (roll <= 0) {
-          return candidate.joker;
-        }
-      }
-      return candidates[candidates.length - 1].joker;
+      return candidates[Math.floor(Math.random() * candidates.length)];
     }
 
     function createPack(pack) {
