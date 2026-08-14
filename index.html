@@ -1272,7 +1272,7 @@
       <div class="section-head">
         <div>
           <h2>Card packs</h2>
-          <p>Most cards are ordinary. Jokers never repeat inside the same pack.</p>
+          <p>Every Joker belongs to exactly one pack type and never repeats inside one opening.</p>
         </div>
       </div>
       <div class="luck-panel">
@@ -1549,7 +1549,8 @@
         icon: "🎁",
         cost: 0,
         wildcardChance: 0.35,
-        description: "Your first five cards with the standard Joker pool."
+        jokerIds: ["redVelvet", "clubMember", "faceTime"],
+        description: "Contains Red Velvet, Club Member, and Face Time."
       },
       {
         id: "standard",
@@ -1557,7 +1558,8 @@
         icon: "🂠",
         cost: 900,
         wildcardChance: 0.22,
-        description: "Five cards. Jokers can appear at any rarity."
+        jokerIds: ["luckySeven", "pairUp", "doubleTrouble"],
+        description: "Contains Lucky Seven, Pair Up, and Double Trouble."
       },
       {
         id: "premium",
@@ -1566,8 +1568,8 @@
         className: "premium",
         cost: 3750,
         wildcardChance: 0.5,
-        minimumRarity: "Uncommon",
-        description: "Five cards with better Joker odds and no Common Jokers."
+        jokerIds: ["goldenGuest"],
+        description: "The only pack containing Golden Guest."
       },
       {
         id: "vault",
@@ -1576,8 +1578,8 @@
         className: "vault",
         cost: 14000,
         wildcardChance: 0.72,
-        minimumRarity: "Rare",
-        description: "Five cards where every Joker is Rare or better."
+        jokerIds: ["straightLine", "flushFund", "highSociety"],
+        description: "Contains Straight Line, Flush Fund, and High Society."
       },
       {
         id: "lucky",
@@ -1586,8 +1588,8 @@
         className: "premium",
         cost: 26000,
         wildcardChance: 0.82,
-        minimumRarity: "Epic",
-        description: "Seven cards where every Joker is Epic or better.",
+        jokerIds: ["fullHouseParty", "crimsonCrown", "houseFavorite"],
+        description: "Contains Full House Party, Crimson Crown, and House Favorite.",
         cardCount: 7
       },
       {
@@ -1597,8 +1599,8 @@
         className: "mythic",
         cost: 90000,
         wildcardChance: 0.94,
-        minimumRarity: "Legendary",
-        description: "Seven premium cards where every Joker is Legendary or better.",
+        jokerIds: ["bloodMoon", "quadEngine", "royalDecree"],
+        description: "Contains Blood Moon, Quad Engine, and Royal Decree.",
         cardCount: 7
       },
       {
@@ -1607,9 +1609,9 @@
         icon: "🌈",
         className: "limited",
         cost: 375000,
-        wildcardChance: 1,
-        minimumRarity: "Mythic",
-        description: "Five Joker-only cards drawn from the Mythic and Limited pool."
+        wildcardChance: 0.005,
+        jokerIds: ["prismParade", "infiniteVIP", "spectrumShift", "jackpotLoop"],
+        description: "The only pack containing the four Limited Jokers."
       },
       {
         id: "handmaker",
@@ -1618,8 +1620,8 @@
         className: "premium",
         cost: 60000,
         wildcardChance: 0.78,
-        jokerPool: "handChance",
-        description: "Six cards where every Joker pull is a hand-chance Joker.",
+        jokerIds: ["pairMagnet", "doubleDate", "openRoad", "houseBuilder"],
+        description: "The only pack containing the four hand-chance Jokers.",
         cardCount: 6
       }
     ];
@@ -1737,41 +1739,12 @@
       return info.weight * (luckBoosted ? 1 + luckLevel * 0.35 : 1);
     }
 
-    function rarityPercentages(minimumRarity = "Common") {
-      const minimum = rarityRank(minimumRarity);
-      const entries = Object.entries(rarityInfo).filter(([rarity, info]) =>
-        info.packable !== false && rarityRank(rarity) >= minimum
-      );
-      const limited = entries.find(([rarity]) => rarity === "Limited");
-      const nonLimited = entries.filter(([rarity]) => rarity !== "Limited");
-      if (nonLimited.length === 0) {
-        return limited ? { Limited: 100 } : {};
-      }
-
-      const limitedPercent = limited ? 0.5 : 0;
-      const remainingPercent = 100 - limitedPercent;
-      const boostedTotal = nonLimited.reduce(
-        (total, [rarity, info]) => total + effectiveRarityWeight(rarity, info),
-        0
-      );
-      const percentages = Object.fromEntries(nonLimited.map(([rarity, info]) => [
-        rarity,
-        effectiveRarityWeight(rarity, info) / boostedTotal * remainingPercent
-      ]));
-      if (limited) {
-        percentages.Limited = limitedPercent;
-      }
-      return percentages;
-    }
-
     function formatOdds(value) {
       return `${value < 1 ? value.toFixed(2) : value.toFixed(1)}%`;
     }
 
     function regularSlotOdds(pack) {
-      const wildcardOdds = pack.jokerPool === "handChance"
-        ? handChanceSlotOdds()
-        : rarityPercentages(pack.minimumRarity || "Common");
+      const wildcardOdds = packJokerRarityOdds(pack);
       return {
         Ordinary: (1 - pack.wildcardChance) * 100,
         ...Object.fromEntries(
@@ -1783,16 +1756,27 @@
       };
     }
 
-    function handChanceSlotOdds() {
-      const handChanceJokers = wildcards.filter(joker =>
-        joker.packable !== false &&
-        joker.rarity !== "Limited" &&
-        wildcardEffects(joker).some(effect => effect.effectType === "handChance")
+    function packJokerRarityOdds(pack) {
+      const pool = eligiblePackJokers(pack);
+      const rarities = [...new Set(pool.map(joker => joker.rarity))];
+      const hasLimited = rarities.includes("Limited");
+      const nonLimited = rarities.filter(rarity => rarity !== "Limited");
+      if (hasLimited && nonLimited.length === 0) {
+        return { Limited: 100 };
+      }
+      const limitedPercent = hasLimited ? 0.5 : 0;
+      const remainingPercent = 100 - limitedPercent;
+      const totalWeight = nonLimited.reduce(
+        (total, rarity) => total + effectiveRarityWeight(rarity, rarityInfo[rarity]),
+        0
       );
-      const odds = { Limited: 0.5 };
-      handChanceJokers.forEach(joker => {
-        odds[joker.rarity] = (odds[joker.rarity] || 0) + 99.5 / handChanceJokers.length;
-      });
+      const odds = Object.fromEntries(nonLimited.map(rarity => [
+        rarity,
+        effectiveRarityWeight(rarity, rarityInfo[rarity]) / totalWeight * remainingPercent
+      ]));
+      if (hasLimited) {
+        odds.Limited = limitedPercent;
+      }
       return odds;
     }
 
@@ -1855,23 +1839,13 @@
     }
 
     function eligiblePackJokers(pack) {
-      return wildcards.filter(joker => {
-        if (joker.packable === false) {
-          return false;
-        }
-        if (pack.jokerPool === "handChance") {
-          return joker.rarity === "Limited" ||
-            wildcardEffects(joker).some(effect => effect.effectType === "handChance");
-        }
-        return rarityRank(joker.rarity) >= rarityRank(pack.minimumRarity || "Common");
-      });
+      const ids = new Set(pack.jokerIds || []);
+      return wildcards.filter(joker => joker.packable !== false && ids.has(joker.id));
     }
 
     function jokerWeightsForPack(pack) {
       const eligible = eligiblePackJokers(pack);
-      const rarityOdds = pack.jokerPool === "handChance"
-        ? handChanceSlotOdds()
-        : rarityPercentages(pack.minimumRarity || "Common");
+      const rarityOdds = packJokerRarityOdds(pack);
       const rarityCounts = eligible.reduce((counts, joker) => {
         counts[joker.rarity] = (counts[joker.rarity] || 0) + 1;
         return counts;
