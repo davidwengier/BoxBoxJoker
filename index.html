@@ -512,6 +512,26 @@
         linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box;
     }
 
+    .pack.arcade {
+      border-color: #22d3ee;
+      background: linear-gradient(145deg, #082f49, #15121d 58%);
+    }
+
+    .pack.sport {
+      border-color: #4ade80;
+      background: linear-gradient(145deg, #14532d, #15121d 58%);
+    }
+
+    .pack.ocean {
+      border-color: #38bdf8;
+      background: linear-gradient(145deg, #0c4a6e, #15121d 58%);
+    }
+
+    .pack.cosmic {
+      border-color: #a78bfa;
+      background: linear-gradient(145deg, #312e81, #15121d 58%);
+    }
+
     .pack::before {
       position: absolute;
       inset: -30%;
@@ -1773,6 +1793,114 @@
           { effectType: "fifthGuest", amount: 4000 }
         ]
       },
+      { id: "pixelPenny", name: "Pixel Penny", icon: "🟦", rarity: "Common", effect: "Every hand adds $12.", effectType: "always", amount: 12 },
+      { id: "bonusLife", name: "Bonus Life", icon: "🕹️", rarity: "Uncommon", effect: "Any nine adds $35.", effectType: "rank", rank: 9, amount: 35 },
+      { id: "comboChain", name: "Combo Chain", icon: "🔗", rarity: "Rare", effect: "Straights add $160.", effectType: "exactHand", hand: "Straight", amount: 160 },
+      { id: "highScore", name: "High Score", icon: "🏆", rarity: "Epic", effect: "Every fifth guest pays $350 extra.", effectType: "fifthGuest", amount: 350 },
+      { id: "finalBoss", name: "Final Boss", icon: "👾", rarity: "Legendary", effect: "Multiplies all table income by 1.42.", effectType: "multiplier", amount: 0.42 },
+      {
+        id: "gameOver",
+        name: "Game Over",
+        icon: "☠️",
+        rarity: "Mythic",
+        effect: "Every hand adds $250 and all income is multiplied by 1.35.",
+        effects: [
+          { effectType: "always", amount: 250 },
+          { effectType: "multiplier", amount: 0.35 }
+        ]
+      },
+      {
+        id: "glitchCrown",
+        name: "Glitch Crown",
+        icon: "👑",
+        rarity: "Limited",
+        effect: "Pairs or better add $400 and every fifth guest adds $2,500.",
+        effects: [
+          { effectType: "minimumTier", tier: 1, amount: 400 },
+          { effectType: "fifthGuest", amount: 2500 }
+        ]
+      },
+      { id: "seaShell", name: "Sea Shell", icon: "🐚", rarity: "Common", effect: "Clubs add $5 each.", effectType: "suit", suit: "♣", amount: 5 },
+      { id: "luckyAnchor", name: "Lucky Anchor", icon: "⚓", rarity: "Uncommon", effect: "Any four adds $35.", effectType: "rank", rank: 4, amount: 35 },
+      { id: "treasureTide", name: "Treasure Tide", icon: "🪸", rarity: "Rare", effect: "Flushes add $180.", effectType: "exactHand", hand: "Flush", amount: 180 },
+      { id: "coralCastle", name: "Coral Castle", icon: "🏰", rarity: "Epic", effect: "Full Houses add $500.", effectType: "exactHand", hand: "Full House", amount: 500 },
+      { id: "seaKing", name: "Sea King", icon: "🔱", rarity: "Legendary", effect: "Face cards add $60 each.", effectType: "faces", amount: 60 },
+      {
+        id: "kraken",
+        name: "The Kraken",
+        icon: "🐙",
+        rarity: "Mythic",
+        effect: "Flushes add $1,500 and all income is multiplied by 1.3.",
+        effects: [
+          { effectType: "exactHand", hand: "Flush", amount: 1500 },
+          { effectType: "multiplier", amount: 0.3 }
+        ]
+      },
+      {
+        id: "infinitePearl",
+        name: "Infinite Pearl",
+        icon: "🦪",
+        rarity: "Limited",
+        effect: "Diamonds add $200 each and every hand adds $500.",
+        effects: [
+          { effectType: "suit", suit: "♦", amount: 200 },
+          { effectType: "always", amount: 500 }
+        ]
+      },
+      { id: "moonChip", name: "Moon Chip", icon: "🌙", rarity: "Common", effect: "Every hand adds $14.", effectType: "always", amount: 14 },
+      { id: "orbitSeven", name: "Orbit Seven", icon: "🛰️", rarity: "Uncommon", effect: "Any seven adds $45.", effectType: "rank", rank: 7, amount: 45 },
+      { id: "meteorPair", name: "Meteor Pair", icon: "☄️", rarity: "Rare", effect: "Two Pair adds $200.", effectType: "exactHand", hand: "Two Pair", amount: 200 },
+      { id: "nebulaFlush", name: "Nebula Flush", icon: "🌌", rarity: "Epic", effect: "Flushes add $550.", effectType: "exactHand", hand: "Flush", amount: 550 },
+      { id: "galaxyCrown", name: "Galaxy Crown", icon: "👑", rarity: "Legendary", effect: "Multiplies all table income by 1.48.", effectType: "multiplier", amount: 0.48 },
+      {
+        id: "supernova",
+        name: "Supernova",
+        icon: "💥",
+        rarity: "Mythic",
+        effect: "Straights add $1,800 and every hand adds $250.",
+        effects: [
+          { effectType: "exactHand", hand: "Straight", amount: 1800 },
+          { effectType: "always", amount: 250 }
+        ]
+      },
+      {
+        id: "blackHole",
+        name: "Black Hole",
+        icon: "⚫",
+        rarity: "Limited",
+        effect: "Four of a Kind adds $7,000 and all income is multiplied by 1.45.",
+        effects: [
+          { effectType: "exactHand", hand: "Four of a Kind", amount: 7000 },
+          { effectType: "multiplier", amount: 0.45 }
+        ]
+      },
+      { id: "bootLaces", name: "Boot Laces", icon: "🥾", rarity: "Common", effect: "Every hand adds $15.", effectType: "always", amount: 15 },
+      { id: "goalPost", name: "Goal Post", icon: "🥅", rarity: "Uncommon", effect: "Pairs or better add $35.", effectType: "minimumTier", tier: 1, amount: 35 },
+      { id: "hatTrick", name: "Hat Trick", icon: "3️⃣", rarity: "Rare", effect: "Three of a Kind adds $220.", effectType: "exactHand", hand: "Three of a Kind", amount: 220 },
+      { id: "playmaker", name: "Playmaker", icon: "🏃", rarity: "Epic", effect: "Straights add $450.", effectType: "exactHand", hand: "Straight", amount: 450 },
+      { id: "goldenBoot", name: "Golden Boot", icon: "🏆", rarity: "Legendary", effect: "Every fifth guest pays $900 extra.", effectType: "fifthGuest", amount: 900 },
+      {
+        id: "worldChampion",
+        name: "World Champion",
+        icon: "🌍",
+        rarity: "Mythic",
+        effect: "Face cards add $100 each and all income is multiplied by 1.35.",
+        effects: [
+          { effectType: "faces", amount: 100 },
+          { effectType: "multiplier", amount: 0.35 }
+        ]
+      },
+      {
+        id: "soccerBall",
+        name: "Soccer Ball",
+        icon: "⚽",
+        rarity: "Limited",
+        effect: "Flushes score $2,500 and all income is multiplied by 1.4.",
+        effects: [
+          { effectType: "exactHand", hand: "Flush", amount: 2500 },
+          { effectType: "multiplier", amount: 0.4 }
+        ]
+      },
       {
         id: "pairMagnet",
         name: "Pair Magnet",
@@ -1894,6 +2022,17 @@
         cardCount: 7
       },
       {
+        id: "arcade",
+        name: "Arcade Pack",
+        icon: "🕹️",
+        className: "arcade",
+        cost: 45000,
+        wildcardChance: 0.86,
+        jokerIds: ["pixelPenny", "bonusLife", "comboChain", "highScore", "finalBoss", "gameOver", "glitchCrown"],
+        description: "Contains seven exclusive video-game Jokers from Common through Limited.",
+        cardCount: 6
+      },
+      {
         id: "handmaker",
         name: "Handmaker Pack",
         icon: "🖐️",
@@ -1905,6 +2044,17 @@
         cardCount: 6
       },
       {
+        id: "sport",
+        name: "Sports Pack",
+        icon: "⚽",
+        className: "sport",
+        cost: 75000,
+        wildcardChance: 0.9,
+        jokerIds: ["bootLaces", "goalPost", "hatTrick", "playmaker", "goldenBoot", "worldChampion", "soccerBall"],
+        description: "Contains seven exclusive soccer Jokers, including the Limited Soccer Ball.",
+        cardCount: 6
+      },
+      {
         id: "mythic",
         name: "Crimson Mythic Pack",
         icon: "🔥",
@@ -1913,6 +2063,28 @@
         wildcardChance: 0.94,
         jokerIds: ["steadyStack", "clubBonus", "spadeSafe", "fullHouseFunds", "royalRush", "flushKing", "straightKing", "royalDecree", "scarletSpades", "phoenixFlush", "rainbowRoyale", "rainbowRush", "eternalJackpot"],
         description: "Contains exclusive Jokers from Common through Limited.",
+        cardCount: 7
+      },
+      {
+        id: "ocean",
+        name: "Ocean Pack",
+        icon: "🌊",
+        className: "ocean",
+        cost: 150000,
+        wildcardChance: 0.93,
+        jokerIds: ["seaShell", "luckyAnchor", "treasureTide", "coralCastle", "seaKing", "kraken", "infinitePearl"],
+        description: "Contains seven exclusive ocean Jokers from Common through Limited.",
+        cardCount: 7
+      },
+      {
+        id: "cosmic",
+        name: "Cosmic Pack",
+        icon: "🪐",
+        className: "cosmic",
+        cost: 240000,
+        wildcardChance: 0.96,
+        jokerIds: ["moonChip", "orbitSeven", "meteorPair", "nebulaFlush", "galaxyCrown", "supernova", "blackHole"],
+        description: "Contains seven exclusive space Jokers from Common through Limited.",
         cardCount: 7
       },
       {
