@@ -524,6 +524,14 @@
       object-fit: cover;
     }
 
+    .wild-mini.rarity-limited {
+      border: 2px solid transparent !important;
+      background:
+        linear-gradient(#151721, #151721) padding-box,
+        linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box !important;
+      box-shadow: 0 0 0.75rem rgb(168 85 247 / 28%);
+    }
+
     .empty-slot {
       border-style: dashed;
       border-color: #4b5563;
@@ -1283,6 +1291,19 @@
       font-size: 0.8rem;
     }
 
+    .contents-group.rarity-limited {
+      border: 2px solid transparent !important;
+      background:
+        linear-gradient(#151721, #151721) padding-box,
+        linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #a855f7, #ef4444) border-box !important;
+    }
+
+    .contents-group.rarity-limited h3 {
+      background: linear-gradient(90deg, #ef4444, #facc15, #22c55e, #38bdf8, #c084fc);
+      background-clip: text;
+      color: transparent;
+    }
+
     .equip-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1928,7 +1949,7 @@
       { id: "heartTip", name: "Heart Tip", icon: "💗", rarity: "Common", effect: "Hearts add $4 each.", effectType: "suit", suit: "♥", amount: 4 },
       { id: "steadyStack", name: "Steady Stack", icon: "🟠", rarity: "Common", effect: "Every hand adds $10.", effectType: "always", amount: 10 },
       { id: "luckySeven", name: "Lucky Seven", icon: "7️⃣", rarity: "Uncommon", effect: "Any seven adds $18.", effectType: "rank", rank: 7, amount: 18 },
-      { id: "pairUp", name: "Pair Up", icon: "👯", rarity: "Uncommon", effect: "Pairs add $22.", effectType: "minimumTier", tier: 1, amount: 22 },
+      { id: "pairUp", name: "Pair Up", icon: "👯", rarity: "Uncommon", effect: "Pairs add $22.", effectType: "exactHand", hand: "Pair", amount: 22 },
       { id: "aceUp", name: "Ace Up", icon: "🅰️", rarity: "Uncommon", effect: "Any ace adds $25.", effectType: "rank", rank: 14, amount: 25 },
       { id: "tripleTip", name: "Triple Tip", icon: "🔱", rarity: "Uncommon", effect: "Three of a Kind adds $40.", effectType: "exactHand", hand: "Three of a Kind", amount: 40 },
       { id: "queenBee", name: "Queen Bee", icon: "🐝", rarity: "Uncommon", effect: "Any queen adds $30.", effectType: "rank", rank: 12, amount: 30 },
@@ -2704,8 +2725,10 @@
     }));
     let currentPack = [];
     let revealIndex = 0;
+    let revealReadyTimer;
     let activeEquipTable = null;
     let toastTimer;
+    const packOddsCache = new Map();
 
     function formatMoney(value) {
       if (value >= 1_000_000_000_000_000) {
@@ -2740,16 +2763,62 @@
     }
 
     function regularSlotOdds(pack) {
-      const wildcardOdds = packJokerRarityOdds(pack);
-      return {
-        Ordinary: (1 - pack.wildcardChance) * 100,
-        ...Object.fromEntries(
-          Object.entries(wildcardOdds).map(([rarity, percentage]) => [
-            rarity,
-            percentage * pack.wildcardChance
-          ])
-        )
-      };
+      const cacheKey = `${pack.id}:${luckLevel}`;
+      if (packOddsCache.has(cacheKey)) {
+        return packOddsCache.get(cacheKey);
+      }
+
+      const pool = eligiblePackJokers(pack);
+      const rarityOdds = packJokerRarityOdds(pack);
+      const cardCount = pack.cardCount || 5;
+      const totals = { Ordinary: 0 };
+      Object.keys(rarityOdds).forEach(rarity => {
+        totals[rarity] = 0;
+      });
+      let states = new Map([[0, 1]]);
+
+      for (let slot = 0; slot < cardCount; slot += 1) {
+        const nextStates = new Map();
+        const addState = (mask, probability) => {
+          nextStates.set(mask, (nextStates.get(mask) || 0) + probability);
+        };
+
+        states.forEach((stateProbability, usedMask) => {
+          const ordinaryProbability = stateProbability * (1 - pack.wildcardChance);
+          totals.Ordinary += ordinaryProbability;
+          addState(usedMask, ordinaryProbability);
+
+          Object.entries(rarityOdds).forEach(([rarity, percentage]) => {
+            const branchProbability = stateProbability * pack.wildcardChance * percentage / 100;
+            const candidates = pool
+              .map((joker, index) => ({ joker, index }))
+              .filter(({ joker, index }) =>
+                joker.rarity === rarity && (usedMask & (1 << index)) === 0
+              );
+            if (candidates.length === 0) {
+              totals.Ordinary += branchProbability;
+              addState(usedMask, branchProbability);
+              return;
+            }
+
+            totals[rarity] += branchProbability;
+            const candidateProbability = branchProbability / candidates.length;
+            candidates.forEach(({ index }) => {
+              addState(usedMask | (1 << index), candidateProbability);
+            });
+          });
+        });
+        states = nextStates;
+      }
+
+      const result = Object.fromEntries(
+        Object.entries(totals).map(([rarity, expectedCount]) => [
+          rarity,
+          expectedCount / cardCount * 100
+        ])
+      );
+      packOddsCache.set(cacheKey, result);
+      return result;
     }
 
     function packJokerRarityOdds(pack) {
@@ -2792,7 +2861,7 @@
 
     function packOddsMarkup(pack) {
       const cardCount = pack.cardCount || 5;
-      return oddsBlock(`Every card (${cardCount} slots)`, regularSlotOdds(pack));
+      return oddsBlock(`Average per card after no-duplicate rules (${cardCount} slots)`, regularSlotOdds(pack));
     }
 
     function wildcardLevel(id) {
@@ -2956,6 +3025,7 @@
       currentPack = Array.from({ length: quantity }, () => createPack(pack)).flat();
       addPackToCollection(currentPack);
       revealIndex = 0;
+      clearTimeout(revealReadyTimer);
 
       packTitle.textContent = quantity === 1 ? pack.name : `${quantity}× ${pack.name}`;
       packReveals.innerHTML = currentPack.map((card, index) => {
@@ -2990,6 +3060,7 @@
       }).join("");
 
       revealButton.textContent = "Reveal all";
+      revealButton.disabled = false;
       packModal.classList.add("open");
       saveGame();
       render();
@@ -3000,7 +3071,22 @@
       if (revealIndex === 0) {
         cards.forEach(card => card.classList.add("revealed"));
         revealIndex = cards.length;
-        revealButton.textContent = "Keep cards";
+        const lastLimitedIndex = currentPack.reduce(
+          (lastIndex, card, index) =>
+            card.type === "wildcard" && card.wildcard.rarity === "Limited"
+              ? index
+              : lastIndex,
+          -1
+        );
+        const revealDuration = lastLimitedIndex >= 0
+          ? Math.min(lastLimitedIndex * 45, 450) + 1100
+          : 520;
+        revealButton.textContent = "Revealing...";
+        revealButton.disabled = true;
+        revealReadyTimer = setTimeout(() => {
+          revealButton.textContent = "Keep cards";
+          revealButton.disabled = false;
+        }, revealDuration);
         return;
       }
 
@@ -3465,7 +3551,8 @@
           const art = wildcard.image
             ? `<img src="${wildcard.image}" alt="${wildcard.name}">`
             : wildcard.icon;
-          return `<div class="wild-mini" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${art}</div>`;
+          const rarityClass = wildcard.rarity === "Limited" ? "rarity-limited" : "";
+          return `<div class="wild-mini ${rarityClass}" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${art}</div>`;
         }).join("");
         const emptySlots = Array.from(
           { length: definition.slots - table.equipped.length },
@@ -3476,15 +3563,15 @@
           <article class="table-card">
             <h3>${definition.name}</h3>
             <div class="table-meta">
-              <span>Next hand in ${table.timer}s</span>
+              <span data-table-timer="${index}">Next hand in ${table.timer}s</span>
               <span>${definition.slots} Joker slots · Speed ${table.speedLevel || 0}</span>
             </div>
-            <div class="customer">
+            <div class="customer" data-table-customer="${index}">
               ${renderPerson(table.customer)}
               <strong>${table.customer?.name || "Waiting for a guest"}</strong>
             </div>
-            <div class="hand">${renderHand(table.lastHand)}</div>
-            <div class="round-result">${table.lastResult}</div>
+            <div class="hand" data-table-hand="${index}">${renderHand(table.lastHand)}</div>
+            <div class="round-result" data-table-result="${index}">${table.lastResult}</div>
             <div class="hand-odds">${renderHandOdds(table)}</div>
             <div class="equipped-row">${equipped}${emptySlots}</div>
             <div class="table-actions">
@@ -3505,6 +3592,29 @@
       });
       casinoFloor.querySelectorAll("[data-speed]").forEach(button => {
         button.addEventListener("click", () => upgradeTableSpeed(Number(button.dataset.speed)));
+      });
+    }
+
+    function updateVisibleCasinoTables() {
+      casinoFloor.querySelectorAll("[data-table-timer]").forEach(element => {
+        const index = Number(element.dataset.tableTimer);
+        element.textContent = `Next hand in ${tables[index].timer}s`;
+      });
+      casinoFloor.querySelectorAll("[data-table-customer]").forEach(element => {
+        const index = Number(element.dataset.tableCustomer);
+        const customer = tables[index].customer;
+        element.innerHTML = `
+          ${renderPerson(customer)}
+          <strong>${customer?.name || "Waiting for a guest"}</strong>
+        `;
+      });
+      casinoFloor.querySelectorAll("[data-table-hand]").forEach(element => {
+        const index = Number(element.dataset.tableHand);
+        element.innerHTML = renderHand(tables[index].lastHand);
+      });
+      casinoFloor.querySelectorAll("[data-table-result]").forEach(element => {
+        const index = Number(element.dataset.tableResult);
+        element.innerHTML = tables[index].lastResult;
       });
     }
 
@@ -3602,7 +3712,7 @@
           </section>
         ` : ""}
         ${groups.map(group => `
-          <section class="contents-group" style="--rarity:${rarityInfo[group.rarity].color}">
+          <section class="contents-group ${group.rarity === "Limited" ? "rarity-limited" : ""}" style="--rarity:${rarityInfo[group.rarity].color}">
             <h3>${group.rarity} Jokers</h3>
             <p>${group.jokers.map(joker => joker.name).join(" · ")}</p>
           </section>
@@ -3966,7 +4076,7 @@
         saveGame();
       }
       renderStats();
-      renderCasino();
+      updateVisibleCasinoTables();
     }, 1000);
   </script>
 </body>
