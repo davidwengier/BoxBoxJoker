@@ -2426,7 +2426,7 @@
         image: "https://wengier.com/InfiniteGummies/Dug.png",
         rarity: "Secret",
         packable: false,
-        effect: "Double your current cash on unlock, gain 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, double income, and a chance for The Dug to visit as a customer.",
+        effect: "Gain $10,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, double income, and a chance for The Dug to visit and double all your cash.",
         effects: [
           { effectType: "flushFamily", amount: 2500 },
           { effectType: "multiplier", amount: 1 }
@@ -3019,10 +3019,9 @@
       wildcardCollection.dug = Math.max(1, wildcardLevel("dug"));
       discoveredWildcards.dug = true;
       if (!dugBonusClaimed) {
-        const cashBeforeDug = cash;
-        cash *= 2;
+        cash += 10000;
         dugBonusClaimed = true;
-        message += ` Your ${formatMoney(cashBeforeDug)} doubled to ${formatMoney(cash)}.`;
+        message += " You received $10,000.";
       }
       saveGame();
       render();
@@ -3307,15 +3306,14 @@
         renderSecretShop();
       }
       earnings = Math.floor(earnings * multiplier);
-      if (isDugCustomer) {
-        earnings *= 2;
-      }
-
       cash += earnings;
+      if (isDugCustomer) {
+        cash *= 2;
+      }
       reputation += 1 + result.tier;
       tableState.lastHand = hand;
       tableState.customer = customer;
-      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${isDugCustomer ? " · 🌟 The Dug paid double!" : ""}${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
+      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${isDugCustomer ? ` · 🌟 The Dug doubled all cash to ${formatMoney(cash)}!` : ""}${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
     }
 
     function unlockTable(index) {
@@ -3908,7 +3906,7 @@
         <article class="dug-upgrade">
           <div class="eyebrow">Special customer</div>
           <h3>Golden Dug Visit</h3>
-          <p>The Dug currently has a ${customerChance} chance to visit and double the entire hand payout.${dugCustomerLevel < 10 ? ` The next level raises it to ${nextCustomerChance}.` : ""}</p>
+          <p>The Dug currently has a ${customerChance} chance to visit and double your entire cash balance.${dugCustomerLevel < 10 ? ` The next level raises it to ${nextCustomerChance}.` : ""}</p>
           <button class="primary" data-dug-customer-upgrade ${dugCustomerLevel >= 10 ? "disabled" : ""}>
             ${dugCustomerLevel >= 10 ? "Maximum level" : `Level ${dugCustomerLevel} · Upgrade for ${dugCustomerUpgradeCost()} Dug Coins`}
           </button>
