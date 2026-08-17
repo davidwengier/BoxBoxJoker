@@ -371,6 +371,23 @@
       background: #172033;
     }
 
+    .customer-avatar.dug-customer {
+      border-color: #facc15;
+      border-radius: 0.9rem;
+      background:
+        radial-gradient(circle at 35% 25%, #fef08a, transparent 30%),
+        linear-gradient(145deg, #facc15, #a16207);
+      box-shadow:
+        0 0 1rem rgb(250 204 21 / 45%),
+        inset 0 0 0.8rem rgb(255 255 255 / 12%);
+    }
+
+    .customer-avatar.dug-customer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .person-head {
       position: absolute;
       top: 0.65rem;
@@ -1878,7 +1895,7 @@
         <div>
           <div class="eyebrow">Secret shop unlocked</div>
           <h2>The Dug's Hand Lab</h2>
-          <p>Equip The Dug to gain 300% Flush luck. Every Flush earns a Dug Coin and a huge cash bonus. Spend those coins here on permanent hand upgrades.</p>
+          <p>Equip The Dug to gain 300% Flush luck. Every Flush earns a Dug Coin and a huge cash bonus. Dug Coins also improve the chance of The Dug visiting as a double-paying customer.</p>
           <div class="stat" style="display:inline-block"><small>Dug Coins</small><strong id="dugCoins">0</strong></div>
         </div>
       </div>
@@ -2409,7 +2426,7 @@
         image: "https://wengier.com/InfiniteGummies/Dug.png",
         rarity: "Secret",
         packable: false,
-        effect: "Gain $10,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, and double income.",
+        effect: "Gain $10,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, double income, and a chance for The Dug to visit as a customer.",
         effects: [
           { effectType: "flushFamily", amount: 2500 },
           { effectType: "multiplier", amount: 1 }
@@ -2643,6 +2660,12 @@
       { name: "Kit", skin: "#f0c9a9", hair: "#d97706", jacket: "#475569" },
       { name: "Sam", skin: "#a86f4c", hair: "#09090b", jacket: "#b45309" }
     ];
+    const dugCustomerProfile = {
+      name: "The Dug",
+      image: "https://wengier.com/InfiniteGummies/Dug.png",
+      special: "dug"
+    };
+    const dugCustomerBaseChance = 0.000015;
     const baseHandOdds = {
       "High Card": 50.1177,
       "Pair": 42.2569,
@@ -2701,6 +2724,7 @@
     let dugCoins = 0;
     let dugBonusClaimed = false;
     let dugUpgrades = {};
+    let dugCustomerLevel = 0;
     let autoSellEnabled = false;
     let activeFloor = 0;
     let activeTableSets = [0, 0, 0];
@@ -3253,6 +3277,10 @@
         .map(id => wildcards.find(wildcard => wildcard.id === id))
         .filter(Boolean);
       const hasDug = equippedWildcards.some(wildcard => wildcard.id === "dug");
+      const isDugCustomer = wildcardLevel("dug") > 0 && Math.random() < dugCustomerChance();
+      const customer = isDugCustomer
+        ? dugCustomerProfile
+        : customerProfiles[Math.floor(Math.random() * customerProfiles.length)];
       const hand = dealHand(equippedWildcards);
       const result = evaluateHand(hand);
 
@@ -3278,12 +3306,15 @@
         renderSecretShop();
       }
       earnings = Math.floor(earnings * multiplier);
+      if (isDugCustomer) {
+        earnings *= 2;
+      }
 
       cash += earnings;
       reputation += 1 + result.tier;
       tableState.lastHand = hand;
-      tableState.customer = customerProfiles[Math.floor(Math.random() * customerProfiles.length)];
-      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
+      tableState.customer = customer;
+      tableState.lastResult = `${result.name} · <strong>+${formatMoney(earnings)}</strong>${isDugCustomer ? " · 🌟 The Dug paid double!" : ""}${hasDug && result.name.includes("Flush") ? " · 🐶 +1 Dug Coin" : ""}`;
     }
 
     function unlockTable(index) {
@@ -3425,6 +3456,13 @@
     function renderPerson(customer) {
       if (!customer) {
         return '<div class="customer-avatar" style="--skin:#64748b;--hair:#334155;--jacket:#1e293b"><div class="person-head"></div><div class="person-hair"></div><div class="person-eyes"></div><div class="person-body"></div><div class="person-shirt"></div></div>';
+      }
+      if (customer.special === "dug") {
+        return `
+          <div class="customer-avatar dug-customer">
+            <img src="${customer.image}" alt="${customer.name}">
+          </div>
+        `;
       }
       return `
         <div class="customer-avatar" style="--skin:${customer.skin};--hair:${customer.hair};--jacket:${customer.jacket}">
@@ -3805,6 +3843,35 @@
       return upgrade.baseCost * (level + 1);
     }
 
+    function dugCustomerChance() {
+      return dugCustomerBaseChance * Math.pow(2, dugCustomerLevel);
+    }
+
+    function formatDugCustomerChance(chance = dugCustomerChance()) {
+      const percentage = chance * 100;
+      return `${percentage < 0.01 ? percentage.toFixed(4) : percentage.toFixed(3)}%`;
+    }
+
+    function dugCustomerUpgradeCost() {
+      return 100 * (dugCustomerLevel + 1);
+    }
+
+    function buyDugCustomerUpgrade() {
+      if (dugCustomerLevel >= 10) {
+        return;
+      }
+      const cost = dugCustomerUpgradeCost();
+      if (dugCoins < cost) {
+        showToast(`You need ${cost - dugCoins} more Dug Coins.`);
+        return;
+      }
+      dugCoins -= cost;
+      dugCustomerLevel += 1;
+      saveGame();
+      renderSecretShop();
+      showToast(`The Dug customer chance is now ${formatDugCustomerChance()}.`);
+    }
+
     function buyDugUpgrade(id) {
       const upgrade = dugUpgradeDefinitions.find(item => item.id === id);
       const level = dugUpgrades[id] || 0;
@@ -3834,7 +3901,19 @@
       }
 
       dugCoinsDisplay.textContent = dugCoins.toLocaleString();
-      dugUpgradeGrid.innerHTML = dugUpgradeDefinitions.map(upgrade => {
+      const customerChance = formatDugCustomerChance();
+      const nextCustomerChance = formatDugCustomerChance(dugCustomerChance() * 2);
+      const customerUpgradeMarkup = `
+        <article class="dug-upgrade">
+          <div class="eyebrow">Special customer</div>
+          <h3>Golden Dug Visit</h3>
+          <p>The Dug currently has a ${customerChance} chance to visit and double the entire hand payout.${dugCustomerLevel < 10 ? ` The next level raises it to ${nextCustomerChance}.` : ""}</p>
+          <button class="primary" data-dug-customer-upgrade ${dugCustomerLevel >= 10 ? "disabled" : ""}>
+            ${dugCustomerLevel >= 10 ? "Maximum level" : `Level ${dugCustomerLevel} · Upgrade for ${dugCustomerUpgradeCost()} Dug Coins`}
+          </button>
+        </article>
+      `;
+      dugUpgradeGrid.innerHTML = customerUpgradeMarkup + dugUpgradeDefinitions.map(upgrade => {
         const level = dugUpgrades[upgrade.id] || 0;
         const cost = dugUpgradeCost(upgrade);
         return `
@@ -3852,6 +3931,10 @@
       dugUpgradeGrid.querySelectorAll("[data-dug-upgrade]").forEach(button => {
         button.addEventListener("click", () => buyDugUpgrade(button.dataset.dugUpgrade));
       });
+      dugUpgradeGrid.querySelector("[data-dug-customer-upgrade]")?.addEventListener(
+        "click",
+        buyDugCustomerUpgrade
+      );
     }
 
     function renderStats() {
@@ -3895,6 +3978,7 @@
         dugCoins,
         dugBonusClaimed,
         dugUpgrades,
+        dugCustomerLevel,
         autoSellEnabled,
         autoSellRarities,
         activeFloor,
@@ -3969,6 +4053,7 @@
               : 0
           ))
         ]));
+        dugCustomerLevel = Math.min(10, normalizedCount(state.dugCustomerLevel));
         autoSellEnabled = Boolean(state.autoSellEnabled);
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
