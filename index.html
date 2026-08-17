@@ -3323,13 +3323,12 @@
     }
 
     function renderCollection() {
-      wildcardGrid.innerHTML = wildcards.map(wildcard => {
+      const collectionJokers = wildcards.filter(wildcard => wildcard.packable !== false);
+      wildcardGrid.innerHTML = collectionJokers.map(wildcard => {
         const level = wildcardLevel(wildcard.id);
         const discovered = Boolean(discoveredWildcards[wildcard.id]) || level > 0;
         const packNames = jokerPackNames(wildcard.id);
-        const missingText = wildcard.packable === false
-          ? "Complete every ordinary card and pack Joker to unlock this Secret."
-          : `Needed for collection · Find in ${packNames.join(" or ")}.`;
+        const missingText = `Needed for collection · Find in ${packNames.join(" or ")}.`;
         return `
           <article class="wildcard-card ${discovered ? "" : "locked"} ${wildcard.rarity === "Limited" && discovered ? "rarity-limited" : ""} ${wildcard.rarity === "Secret" && discovered ? "rarity-secret" : ""}" style="--rarity:${rarityInfo[wildcard.rarity].color}">
             ${discovered ? '<span class="collection-check">✓</span>' : ""}
@@ -3344,7 +3343,9 @@
 
       const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
-      const wildcardsDiscovered = wildcards.filter(wildcard => discoveredWildcards[wildcard.id] || wildcardLevel(wildcard.id) > 0).length;
+      const wildcardsDiscovered = collectionJokers
+        .filter(wildcard => discoveredWildcards[wildcard.id] || wildcardLevel(wildcard.id) > 0)
+        .length;
 
       ordinaryGrid.innerHTML = allOrdinaryCards.map(card => {
         const owned = Boolean(discoveredNormalCards[card.id]);
@@ -3352,12 +3353,12 @@
         return `
           <div class="album-card ${owned ? "owned" : ""} ${red ? "red" : ""}" title="${owned ? `${card.label}${card.suit} collected` : `${card.label}${card.suit} missing`}">
             ${owned ? '<span class="collection-check">✓</span>' : ""}
-            ${owned ? `${card.label}${card.suit}` : "?"}
+            ${card.label}${card.suit}
           </div>
         `;
       }).join("");
 
-      collectionTotalDisplay.textContent = `${ordinaryDiscovered + wildcardsDiscovered} / ${allOrdinaryCards.length + wildcards.length}`;
+      collectionTotalDisplay.textContent = `${ordinaryDiscovered + wildcardsDiscovered} / ${allOrdinaryCards.length + collectionJokers.length}`;
       normalAlbumDisplay.textContent = `${ordinaryDiscovered} / ${allOrdinaryCards.length}`;
       normalPulledDisplay.textContent = normalCardsPulled.toLocaleString();
     }
