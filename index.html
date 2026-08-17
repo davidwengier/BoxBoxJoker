@@ -3011,12 +3011,12 @@
             cash += card.autoSold;
           } else {
             const copies = wildcardCopies(id);
-            if (copies.length < unlockedTableCount()) {
+            if (copies.length === 0) {
               copies.push(1);
-              card.collectionResult = `Copy ${copies.length} added · Level 1`;
+              card.collectionResult = "First copy added · Level 1";
             } else {
               copies[0] += 1;
-              card.collectionResult = `Oldest copy upgraded · Level ${copies[0]}`;
+              card.collectionResult = `First copy upgraded · Level ${copies[0]}`;
             }
             wildcardCollection[id] = copies;
           }
