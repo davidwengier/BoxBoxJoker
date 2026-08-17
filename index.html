@@ -1491,12 +1491,12 @@
     <header>
       <h1 class="logo"><img class="logo-image" src="logo.svg" alt="Box Box Jokers"></h1>
       <div class="header-side">
+        <button id="reset" class="danger header-reset">Reset game</button>
         <div class="stats">
           <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
           <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
           <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
         </div>
-        <button id="reset" class="danger header-reset">Reset game</button>
       </div>
     </header>
 
@@ -3335,9 +3335,11 @@
 
     function renderCollection() {
       const collectionJokers = wildcards.filter(wildcard => wildcard.packable !== false);
-      const collectionMarkup = collectionJokers.map(wildcard => {
+      const jokerDiscovered = wildcard =>
+        Boolean(discoveredWildcards[wildcard.id]) || wildcardLevel(wildcard.id) > 0;
+      const renderCollectionJoker = wildcard => {
         const level = wildcardLevel(wildcard.id);
-        const discovered = Boolean(discoveredWildcards[wildcard.id]) || level > 0;
+        const discovered = jokerDiscovered(wildcard);
         const packNames = jokerPackNames(wildcard.id);
         const missingText = `Needed for collection · Find in ${packNames.join(" or ")}.`;
         return `
@@ -3350,7 +3352,15 @@
             <div class="level">${discovered ? level > 0 ? `Level ${level}` : "Auto-sold" : ""}</div>
           </article>
         `;
-      }).join("");
+      };
+      const ownedJokerMarkup = collectionJokers
+        .filter(jokerDiscovered)
+        .map(renderCollectionJoker)
+        .join("");
+      const missingJokerMarkup = collectionJokers
+        .filter(wildcard => !jokerDiscovered(wildcard))
+        .map(renderCollectionJoker)
+        .join("");
       const secretJoker = wildcards.find(wildcard => wildcard.id === "dug");
       const secretDiscovered = wildcardLevel(secretJoker.id) > 0;
       const secretMarkup = `
@@ -3367,7 +3377,9 @@
           <div class="level">${secretDiscovered ? `Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
         </article>
       `;
-      wildcardGrid.innerHTML = collectionMarkup + secretMarkup;
+      wildcardGrid.innerHTML = secretDiscovered
+        ? ownedJokerMarkup + secretMarkup + missingJokerMarkup
+        : ownedJokerMarkup + missingJokerMarkup + secretMarkup;
 
       const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
@@ -3375,7 +3387,10 @@
         .filter(wildcard => discoveredWildcards[wildcard.id] || wildcardLevel(wildcard.id) > 0)
         .length;
 
-      ordinaryGrid.innerHTML = allOrdinaryCards.map(card => {
+      const sortedOrdinaryCards = [...allOrdinaryCards].sort((left, right) =>
+        Number(Boolean(discoveredNormalCards[right.id])) - Number(Boolean(discoveredNormalCards[left.id]))
+      );
+      ordinaryGrid.innerHTML = sortedOrdinaryCards.map(card => {
         const owned = Boolean(discoveredNormalCards[card.id]);
         const red = card.suit === "♥" || card.suit === "♦";
         return `
