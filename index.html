@@ -2869,6 +2869,26 @@
         effectiveRarityWeight(rarity, rarityInfo[rarity]) / totalWeight * remainingPercent
       ]));
       if (hasLimited) {
+        const higherRarities = ["Legendary", "Mythic"].filter(rarity => rarity in odds);
+        const minimumHigherOdds = {
+          Legendary: limitedPercent * 1.5,
+          Mythic: limitedPercent * 1.1
+        };
+        const neededOdds = higherRarities.reduce(
+          (total, rarity) => total + Math.max(0, minimumHigherOdds[rarity] - odds[rarity]),
+          0
+        );
+        const donorRarities = nonLimited.filter(rarity => !higherRarities.includes(rarity));
+        const donorTotal = donorRarities.reduce((total, rarity) => total + odds[rarity], 0);
+        if (neededOdds > 0 && donorTotal >= neededOdds) {
+          const donorScale = (donorTotal - neededOdds) / donorTotal;
+          donorRarities.forEach(rarity => {
+            odds[rarity] *= donorScale;
+          });
+          higherRarities.forEach(rarity => {
+            odds[rarity] = Math.max(odds[rarity], minimumHigherOdds[rarity]);
+          });
+        }
         odds.Limited = limitedPercent;
       }
       return odds;
