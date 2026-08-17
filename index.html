@@ -1537,7 +1537,7 @@
       <div class="luck-panel">
         <div>
           <h3>🍀 Luck level <span id="luckLevel">0</span></h3>
-          <p>Raises Rare, Epic, Legendary, and Mythic odds. Ordinary, Common, Uncommon, and Limited odds never change.</p>
+          <p>Boosts Epic, Legendary, and Mythic rarity weights. Ordinary, Common, Uncommon, Rare, and Limited receive no direct boost.</p>
         </div>
         <button id="luckUpgrade" class="primary">Upgrade luck</button>
       </div>
@@ -2430,6 +2430,12 @@
     let toastTimer;
 
     function formatMoney(value) {
+      if (value >= 1_000_000_000_000_000) {
+        return `$${(value / 1_000_000_000_000_000).toFixed(2)}Q`;
+      }
+      if (value >= 1_000_000_000_000) {
+        return `$${(value / 1_000_000_000_000).toFixed(2)}T`;
+      }
       if (value >= 1_000_000_000) {
         return `$${(value / 1_000_000_000).toFixed(2)}B`;
       }
@@ -2447,7 +2453,7 @@
     }
 
     function effectiveRarityWeight(rarity, info) {
-      const luckBoosted = ["Rare", "Epic", "Legendary", "Mythic"].includes(rarity);
+      const luckBoosted = ["Epic", "Legendary", "Mythic"].includes(rarity);
       return info.weight * (luckBoosted ? 1 + luckLevel * 0.35 : 1);
     }
 
@@ -3526,12 +3532,16 @@
         guestsServed = Number.isFinite(state.guestsServed) ? Math.max(0, Math.floor(state.guestsServed)) : guestsServed;
         const knownWildcardIds = new Set(wildcards.map(wildcard => wildcard.id));
         const knownNormalIds = new Set(ordinaryCardCatalog().map(card => card.id));
+        const normalizedCount = value => {
+          const number = Number(value);
+          return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : 0;
+        };
         wildcardCollection = Object.fromEntries(
           Object.entries(state.wildcardCollection && typeof state.wildcardCollection === "object"
             ? state.wildcardCollection
             : {})
             .filter(([id]) => knownWildcardIds.has(id))
-            .map(([id, count]) => [id, Math.max(0, Math.floor(Number(count) || 0))])
+            .map(([id, count]) => [id, normalizedCount(count)])
             .filter(([, count]) => count > 0)
         );
         normalCollection = Object.fromEntries(
@@ -3539,7 +3549,7 @@
             ? state.normalCollection
             : {})
             .filter(([id]) => knownNormalIds.has(id))
-            .map(([id, count]) => [id, Math.max(0, Math.floor(Number(count) || 0))])
+            .map(([id, count]) => [id, normalizedCount(count)])
             .filter(([, count]) => count > 0)
         );
         discoveredWildcards = state.discoveredWildcards && typeof state.discoveredWildcards === "object"
@@ -3558,14 +3568,19 @@
             discoveredNormalCards[id] = true;
           }
         });
-        normalCardsPulled = Number.isFinite(state.normalCardsPulled) ? state.normalCardsPulled : 0;
+        normalCardsPulled = normalizedCount(state.normalCardsPulled);
         starterOpened = Boolean(state.starterOpened);
         luckLevel = Number.isFinite(state.luckLevel) ? Math.max(0, Math.floor(state.luckLevel)) : 0;
         dugCoins = Number.isFinite(state.dugCoins) ? Math.max(0, Math.floor(state.dugCoins)) : 0;
         dugBonusClaimed = Boolean(state.dugBonusClaimed);
-        dugUpgrades = state.dugUpgrades && typeof state.dugUpgrades === "object"
-          ? state.dugUpgrades
-          : {};
+        dugUpgrades = Object.fromEntries(dugUpgradeDefinitions.map(upgrade => [
+          upgrade.id,
+          Math.min(5, normalizedCount(
+            state.dugUpgrades && typeof state.dugUpgrades === "object"
+              ? state.dugUpgrades[upgrade.id]
+              : 0
+          ))
+        ]));
         autoSellEnabled = Boolean(state.autoSellEnabled);
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
