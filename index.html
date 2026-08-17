@@ -818,8 +818,7 @@
 
     .wildcard-card.locked {
       border-color: #30313c;
-      filter: grayscale(1);
-      opacity: 0.55;
+      opacity: 0.68;
     }
 
     .rarity-limited {
@@ -3317,17 +3316,27 @@
       packInfoModal.classList.add("open");
     }
 
+    function jokerPackNames(jokerId) {
+      return packDefinitions
+        .filter(pack => pack.jokerIds.includes(jokerId))
+        .map(pack => pack.name);
+    }
+
     function renderCollection() {
       wildcardGrid.innerHTML = wildcards.map(wildcard => {
         const level = wildcardLevel(wildcard.id);
         const discovered = Boolean(discoveredWildcards[wildcard.id]) || level > 0;
+        const packNames = jokerPackNames(wildcard.id);
+        const missingText = wildcard.packable === false
+          ? "Complete every ordinary card and pack Joker to unlock this Secret."
+          : `Needed for collection · Find in ${packNames.join(" or ")}.`;
         return `
-          <article class="wildcard-card ${discovered ? "" : "locked"} ${wildcard.rarity === "Limited" && discovered ? "rarity-limited" : ""} ${wildcard.rarity === "Secret" && discovered ? "rarity-secret" : ""}" style="--rarity:${discovered ? rarityInfo[wildcard.rarity].color : "#3f3f46"}">
+          <article class="wildcard-card ${discovered ? "" : "locked"} ${wildcard.rarity === "Limited" && discovered ? "rarity-limited" : ""} ${wildcard.rarity === "Secret" && discovered ? "rarity-secret" : ""}" style="--rarity:${rarityInfo[wildcard.rarity].color}">
             ${discovered ? '<span class="collection-check">✓</span>' : ""}
-            <div class="rarity-label">${discovered ? wildcard.rarity : wildcard.packable === false ? "Secret" : "Undiscovered"}</div>
-            ${discovered ? wildcardArt(wildcard) : '<div class="wild-art">?</div>'}
-            <h3>${discovered ? wildcard.name : wildcard.packable === false ? "Collection Reward" : "Unknown Joker"}</h3>
-            <p>${discovered ? wildcard.effect : wildcard.packable === false ? "Complete every other card to unlock this secret." : "Find this card inside a pack."}</p>
+            <div class="rarity-label">${wildcard.rarity}</div>
+            ${wildcardArt(wildcard)}
+            <h3>${wildcard.name}</h3>
+            <p>${discovered ? wildcard.effect : missingText}</p>
             <div class="level">${discovered ? level > 0 ? `Level ${level}` : "Auto-sold" : ""}</div>
           </article>
         `;
