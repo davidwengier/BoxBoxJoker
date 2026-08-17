@@ -59,6 +59,13 @@
       height: auto;
     }
 
+    .logo-side {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
     .logo span {
       color: #e879f9;
     }
@@ -1766,9 +1773,11 @@
 <body>
   <div class="app">
     <header>
-      <h1 class="logo"><img class="logo-image" src="logo.svg" alt="Box Box Jokers"></h1>
-      <div class="header-side">
+      <div class="logo-side">
+        <h1 class="logo"><img class="logo-image" src="logo.svg" alt="Box Box Jokers"></h1>
         <button id="reset" class="danger header-reset">Reset game</button>
+      </div>
+      <div class="header-side">
         <div class="stats">
           <div class="stat"><small>Cash</small><strong id="cash">$300</strong></div>
           <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
