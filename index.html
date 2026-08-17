@@ -2931,6 +2931,39 @@
       return wildcard.effects || [wildcard];
     }
 
+    function formatEffectValue(value) {
+      return Number(value.toFixed(2)).toLocaleString();
+    }
+
+    function wildcardEffectDescription(wildcard, level = wildcard.level || wildcardLevel(wildcard.id)) {
+      let description = wildcard.effect;
+      wildcardEffects(wildcard).forEach(effect => {
+        if (Number.isFinite(effect.amount)) {
+          const scaled = effect.amount * (1 + Math.max(0, level - 1) * 0.25);
+          if (effect.effectType === "multiplier") {
+            const baseMultiplier = formatEffectValue(1 + effect.amount);
+            const scaledMultiplier = formatEffectValue(1 + scaled);
+            if (description.includes(`by ${baseMultiplier}`)) {
+              description = description.replace(`by ${baseMultiplier}`, `by ${scaledMultiplier}`);
+            } else if (description === "Multiplies all table income.") {
+              description = `Multiplies all table income by ${scaledMultiplier}.`;
+            }
+          } else {
+            const baseAmount = `$${effect.amount.toLocaleString()}`;
+            description = description.replace(baseAmount, `$${formatEffectValue(scaled)}`);
+          }
+        }
+        if (Number.isFinite(effect.chance)) {
+          const baseChance = formatEffectValue(effect.chance * 100);
+          const scaledChance = formatEffectValue(
+            Math.min(0.75, effect.chance * (1 + Math.max(0, level - 1) * 0.25)) * 100
+          );
+          description = description.replace(`${baseChance}%`, `${scaledChance}%`);
+        }
+      });
+      return description;
+    }
+
     function wildcardArt(wildcard, className = "wild-art") {
       if (wildcard.image) {
         return `<div class="${className}"><img src="${wildcard.image}" alt="${wildcard.name}"></div>`;
@@ -3117,7 +3150,7 @@
               <div class="rarity-label">${wildcard.rarity}</div>
               ${wildcardArt(wildcard)}
               <h3>${wildcard.name}</h3>
-              <p>${wildcard.effect}</p>
+              <p>${wildcardEffectDescription(wildcard)}</p>
               <p>${card.autoSold ? `Auto-sold for ${formatMoney(card.autoSold)} and checked off.` : card.collectionResult}</p>
             </div>
           </div>
@@ -3482,7 +3515,7 @@
           >
             <small class="equip-rarity">${wildcard.rarity}</small>
             <strong>${wildcard.image ? `<img src="${wildcard.image}" alt="">` : wildcard.icon} ${wildcard.name} · Copy ${wildcard.copyIndex + 1}</strong>
-            <small>${wildcard.effect}</small>
+            <small>${wildcardEffectDescription(wildcard, wildcard.level)}</small>
             <small>Level ${wildcard.level}</small>
           </button>
         `;
@@ -3839,7 +3872,7 @@
             <div class="rarity-label">${wildcard.rarity}</div>
             ${wildcardArt(wildcard)}
             <h3>${wildcard.name}</h3>
-            <p>${discovered ? `${wildcard.effect}<br><strong>${sourceText}</strong>` : `Needed for collection · ${sourceText}`}</p>
+            <p>${discovered ? `${wildcardEffectDescription(wildcard)}<br><strong>${sourceText}</strong>` : `Needed for collection · ${sourceText}`}</p>
             <div class="level">${discovered ? copyText : ""}</div>
           </article>
         `;
