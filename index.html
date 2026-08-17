@@ -1861,9 +1861,12 @@
         <div class="auto-sell-head">
           <div>
             <h3>Auto-sell cards</h3>
-            <p>Selected rarities sell immediately, including the first copy, while still being checked off in Collection.</p>
+            <p>Selected rarities sell immediately, including the first copy. Duplicate mode sells any Joker you already own.</p>
           </div>
-          <button id="autoSellToggle" class="primary auto-sell-toggle">Auto-sell: Off</button>
+          <div>
+            <button id="autoSellDuplicatesToggle" class="primary auto-sell-toggle">Duplicates: Off</button>
+            <button id="autoSellToggle" class="primary auto-sell-toggle">Auto-sell: Off</button>
+          </div>
         </div>
         <div id="autoSellOptions" class="auto-options"></div>
       </div>
@@ -2691,6 +2694,7 @@
     const collectionTotalDisplay = document.querySelector("#collectionTotal");
     const ordinaryGrid = document.querySelector("#ordinaryGrid");
     const autoSellToggle = document.querySelector("#autoSellToggle");
+    const autoSellDuplicatesToggle = document.querySelector("#autoSellDuplicatesToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
@@ -2726,6 +2730,7 @@
     let dugUpgrades = {};
     let dugCustomerLevel = 0;
     let autoSellEnabled = false;
+    let autoSellDuplicates = false;
     let activeFloor = 0;
     let activeTableSets = [0, 0, 0];
     let autoSellRarities = {
@@ -2888,12 +2893,37 @@
       return oddsBlock(`Average per card after no-duplicate rules (${cardCount} slots)`, regularSlotOdds(pack));
     }
 
+    function wildcardCopies(id) {
+      return Array.isArray(wildcardCollection[id]) ? wildcardCollection[id] : [];
+    }
+
+    function wildcardCount(id) {
+      return wildcardCopies(id).length;
+    }
+
     function wildcardLevel(id) {
-      return wildcardCollection[id] || 0;
+      return wildcardCopies(id)[0] || 0;
+    }
+
+    function unlockedTableCount() {
+      return tables.filter(table => table.unlocked).length;
+    }
+
+    function equipmentKey(id, copyIndex) {
+      return `${id}::${copyIndex}`;
+    }
+
+    function equipmentDetails(key) {
+      const separator = key.lastIndexOf("::");
+      const id = separator >= 0 ? key.slice(0, separator) : key;
+      const copyIndex = separator >= 0 ? Number(key.slice(separator + 2)) : 0;
+      const definition = wildcards.find(wildcard => wildcard.id === id);
+      const level = wildcardCopies(id)[copyIndex] || 0;
+      return definition && level > 0 ? { ...definition, copyIndex, level, equipmentKey: key } : null;
     }
 
     function scaledAmount(wildcard, effect = wildcard) {
-      const level = wildcardLevel(wildcard.id);
+      const level = wildcard.level || wildcardLevel(wildcard.id);
       return effect.amount * (1 + Math.max(0, level - 1) * 0.25);
     }
 
@@ -2973,11 +3003,22 @@
           const id = card.wildcard.id;
           const rarity = card.wildcard.rarity;
           discoveredWildcards[id] = true;
-          if (autoSellEnabled && autoSellRarities[rarity]) {
+          if (
+            autoSellEnabled &&
+            (autoSellRarities[rarity] || (autoSellDuplicates && wildcardCount(id) > 0))
+          ) {
             card.autoSold = saleValues[rarity];
             cash += card.autoSold;
           } else {
-            wildcardCollection[id] = wildcardLevel(id) + 1;
+            const copies = wildcardCopies(id);
+            if (copies.length < unlockedTableCount()) {
+              copies.push(1);
+              card.collectionResult = `Copy ${copies.length} added · Level 1`;
+            } else {
+              copies[0] += 1;
+              card.collectionResult = `Oldest copy upgraded · Level ${copies[0]}`;
+            }
+            wildcardCollection[id] = copies;
           }
         } else {
           normalCardsPulled += 1;
@@ -3016,7 +3057,7 @@
     }
 
     function grantTheDug(message = "The Dug has joined your casino.") {
-      wildcardCollection.dug = Math.max(1, wildcardLevel("dug"));
+      wildcardCollection.dug = wildcardCount("dug") > 0 ? wildcardCopies("dug") : [1];
       discoveredWildcards.dug = true;
       if (!dugBonusClaimed) {
         cash += 900000;
@@ -3077,7 +3118,7 @@
               ${wildcardArt(wildcard)}
               <h3>${wildcard.name}</h3>
               <p>${wildcard.effect}</p>
-              <p>${card.autoSold ? `Auto-sold for ${formatMoney(card.autoSold)} and checked off.` : `Level ${wildcardLevel(wildcard.id)}`}</p>
+              <p>${card.autoSold ? `Auto-sold for ${formatMoney(card.autoSold)} and checked off.` : card.collectionResult}</p>
             </div>
           </div>
         `;
@@ -3183,7 +3224,8 @@
     }
 
     function scaledHandChance(joker, effect) {
-      return Math.min(0.75, effect.chance * (1 + Math.max(0, wildcardLevel(joker.id) - 1) * 0.25));
+      const level = joker.level || wildcardLevel(joker.id);
+      return Math.min(0.75, effect.chance * (1 + Math.max(0, level - 1) * 0.25));
     }
 
     function dealHand(equippedJokers = []) {
@@ -3274,7 +3316,7 @@
       const tableState = tables[tableIndex];
       const definition = tableDefinitions[tableIndex];
       const equippedWildcards = tableState.equipped
-        .map(id => wildcards.find(wildcard => wildcard.id === id))
+        .map(equipmentDetails)
         .filter(Boolean);
       const hasDug = equippedWildcards.some(wildcard => wildcard.id === "dug");
       const isDugCustomer = wildcardLevel("dug") > 0 && Math.random() < dugCustomerChance();
@@ -3363,13 +3405,10 @@
       showToast(`${tableDefinitions[index].name} now deals every ${tableRoundTime(index)} seconds.`);
     }
 
-    function wildcardUsage(id, excludingTable = -1) {
-      return tables.reduce((total, table, index) => {
-        if (index === excludingTable) {
-          return total;
-        }
-        return total + table.equipped.filter(equippedId => equippedId === id).length;
-      }, 0);
+    function wildcardUsage(key, excludingTable = -1) {
+      return tables.some((table, index) =>
+        index !== excludingTable && table.equipped.includes(key)
+      );
     }
 
     function openEquipModal(index) {
@@ -3379,10 +3418,11 @@
       equipModal.classList.add("open");
     }
 
-    function toggleWildcard(id) {
+    function toggleWildcard(key) {
       const table = tables[activeEquipTable];
       const definition = tableDefinitions[activeEquipTable];
-      const existingIndex = table.equipped.indexOf(id);
+      const existingIndex = table.equipped.indexOf(key);
+      const selected = equipmentDetails(key);
 
       if (existingIndex >= 0) {
         table.equipped.splice(existingIndex, 1);
@@ -3391,11 +3431,15 @@
           showToast("Every Joker slot is full.");
           return;
         }
-        if (wildcardUsage(id, activeEquipTable) >= wildcardLevel(id)) {
-          showToast("That Joker is already being used at another table.");
+        if (!selected || wildcardUsage(key, activeEquipTable)) {
+          showToast("That Joker copy is already being used at another table.");
           return;
         }
-        table.equipped.push(id);
+        if (table.equipped.some(equippedKey => equipmentDetails(equippedKey)?.id === selected.id)) {
+          showToast("A table can only use one copy of the same Joker.");
+          return;
+        }
+        table.equipped.push(key);
       }
 
       saveGame();
@@ -3406,7 +3450,14 @@
     function renderEquipOptions() {
       const table = tables[activeEquipTable];
       const definition = tableDefinitions[activeEquipTable];
-      const owned = wildcards.filter(wildcard => wildcardLevel(wildcard.id) > 0);
+      const owned = wildcards.flatMap(wildcard =>
+        wildcardCopies(wildcard.id).map((level, copyIndex) => ({
+          ...wildcard,
+          level,
+          copyIndex,
+          equipmentKey: equipmentKey(wildcard.id, copyIndex)
+        }))
+      );
       equipStatus.textContent = `${table.equipped.length} / ${definition.slots} slots used`;
 
       if (owned.length === 0) {
@@ -3415,8 +3466,9 @@
       }
 
       equipGrid.innerHTML = owned.map(wildcard => {
-        const active = table.equipped.includes(wildcard.id);
-        const unavailable = !active && wildcardUsage(wildcard.id, activeEquipTable) >= wildcardLevel(wildcard.id);
+        const active = table.equipped.includes(wildcard.equipmentKey);
+        const sameJokerActive = table.equipped.some(key => equipmentDetails(key)?.id === wildcard.id);
+        const unavailable = !active && (wildcardUsage(wildcard.equipmentKey, activeEquipTable) || sameJokerActive);
         const rarityClass = wildcard.rarity === "Limited"
           ? "rarity-limited"
           : wildcard.rarity === "Secret"
@@ -3425,13 +3477,13 @@
         return `
           <button
             class="equip-option ${active ? "active" : ""} ${unavailable ? "unavailable" : ""} ${rarityClass}"
-            data-equip="${wildcard.id}"
+            data-equip="${wildcard.equipmentKey}"
             style="--rarity:${rarityInfo[wildcard.rarity].color}"
           >
             <small class="equip-rarity">${wildcard.rarity}</small>
-            <strong>${wildcard.image ? `<img src="${wildcard.image}" alt="">` : wildcard.icon} ${wildcard.name}</strong>
+            <strong>${wildcard.image ? `<img src="${wildcard.image}" alt="">` : wildcard.icon} ${wildcard.name} · Copy ${wildcard.copyIndex + 1}</strong>
             <small>${wildcard.effect}</small>
-            <small>Level ${wildcardLevel(wildcard.id)}</small>
+            <small>Level ${wildcard.level}</small>
           </button>
         `;
       }).join("");
@@ -3477,7 +3529,7 @@
     function tableHandOdds(table) {
       const odds = Object.fromEntries(Object.keys(baseHandOdds).map(hand => [hand, 0]));
       const equippedJokers = table.equipped
-        .map(id => wildcards.find(joker => joker.id === id))
+        .map(equipmentDetails)
         .filter(Boolean);
       let remainingChance = 1;
 
@@ -3583,13 +3635,16 @@
           `;
         }
 
-        const equipped = table.equipped.map(id => {
-          const wildcard = wildcards.find(item => item.id === id);
+        const equipped = table.equipped.map(key => {
+          const wildcard = equipmentDetails(key);
+          if (!wildcard) {
+            return "";
+          }
           const art = wildcard.image
             ? `<img src="${wildcard.image}" alt="${wildcard.name}">`
             : wildcard.icon;
           const rarityClass = wildcard.rarity === "Limited" ? "rarity-limited" : "";
-          return `<div class="wild-mini ${rarityClass}" title="${wildcard.name}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${art}</div>`;
+          return `<div class="wild-mini ${rarityClass}" title="${wildcard.name} · Copy ${wildcard.copyIndex + 1} · Level ${wildcard.level}" style="--rarity:${rarityInfo[wildcard.rarity].color}">${art}</div>`;
         }).join("");
         const emptySlots = Array.from(
           { length: definition.slots - table.equipped.length },
@@ -3658,6 +3713,8 @@
     function renderAutoSell() {
       autoSellToggle.textContent = `Auto-sell: ${autoSellEnabled ? "On" : "Off"}`;
       autoSellToggle.classList.toggle("on", autoSellEnabled);
+      autoSellDuplicatesToggle.textContent = `Duplicates: ${autoSellDuplicates ? "On" : "Off"}`;
+      autoSellDuplicatesToggle.classList.toggle("on", autoSellDuplicates);
       autoSellOptions.innerHTML = Object.entries(saleValues).map(([rarity, value]) => `
         <button
           class="auto-option ${autoSellRarities[rarity] ? "active" : ""}"
@@ -3769,18 +3826,21 @@
       const jokerDiscovered = wildcard =>
         Boolean(discoveredWildcards[wildcard.id]) || wildcardLevel(wildcard.id) > 0;
       const renderCollectionJoker = wildcard => {
-        const level = wildcardLevel(wildcard.id);
+        const copies = wildcardCopies(wildcard.id);
         const discovered = jokerDiscovered(wildcard);
         const packNames = jokerPackNames(wildcard.id);
-        const missingText = `Needed for collection · Find in ${packNames.join(" or ")}.`;
+        const sourceText = `Find in ${packNames.join(" or ")}.`;
+        const copyText = copies.length > 0
+          ? `${copies.length} ${copies.length === 1 ? "copy" : "copies"} · ${copies.map((level, index) => `#${index + 1} Level ${level}`).join(" · ")}`
+          : "Auto-sold";
         return `
           <article class="wildcard-card ${discovered ? "" : "locked"} ${wildcard.rarity === "Limited" && discovered ? "rarity-limited" : ""} ${wildcard.rarity === "Secret" && discovered ? "rarity-secret" : ""}" style="--rarity:${rarityInfo[wildcard.rarity].color}">
             ${discovered ? '<span class="collection-check">✓</span>' : ""}
             <div class="rarity-label">${wildcard.rarity}</div>
             ${wildcardArt(wildcard)}
             <h3>${wildcard.name}</h3>
-            <p>${discovered ? wildcard.effect : missingText}</p>
-            <div class="level">${discovered ? level > 0 ? `Level ${level}` : "Auto-sold" : ""}</div>
+            <p>${discovered ? `${wildcard.effect}<br><strong>${sourceText}</strong>` : `Needed for collection · ${sourceText}`}</p>
+            <div class="level">${discovered ? copyText : ""}</div>
           </article>
         `;
       };
@@ -3805,7 +3865,7 @@
           <p>${secretDiscovered
             ? secretJoker.effect
             : "Complete every required ordinary card and pack Joker to reveal this reward."}</p>
-          <div class="level">${secretDiscovered ? `Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
+          <div class="level">${secretDiscovered ? `1 copy · Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
         </article>
       `;
       wildcardGrid.innerHTML = secretDiscovered
@@ -3979,6 +4039,7 @@
         dugUpgrades,
         dugCustomerLevel,
         autoSellEnabled,
+        autoSellDuplicates,
         autoSellRarities,
         activeFloor,
         activeTableSets,
@@ -4012,8 +4073,20 @@
             ? state.wildcardCollection
             : {})
             .filter(([id]) => knownWildcardIds.has(id))
-            .map(([id, count]) => [id, normalizedCount(count)])
-            .filter(([, count]) => count > 0)
+            .map(([id, savedCopies]) => {
+              if (Array.isArray(savedCopies)) {
+                return [id, savedCopies.map(normalizedCount).filter(level => level > 0).slice(0, 27)];
+              }
+              const legacyLevel = normalizedCount(savedCopies);
+              return [
+                id,
+                Array.from(
+                  { length: Math.min(legacyLevel, 27) },
+                  (_, index) => index === 0 ? legacyLevel : 1
+                )
+              ];
+            })
+            .filter(([, copies]) => copies.length > 0)
         );
         normalCollection = Object.fromEntries(
           Object.entries(state.normalCollection && typeof state.normalCollection === "object"
@@ -4029,8 +4102,8 @@
         discoveredNormalCards = state.discoveredNormalCards && typeof state.discoveredNormalCards === "object"
           ? state.discoveredNormalCards
           : Object.fromEntries(Object.keys(normalCollection).map(id => [id, true]));
-        Object.entries(wildcardCollection).forEach(([id, count]) => {
-          if (Number(count) > 0) {
+        Object.keys(wildcardCollection).forEach(id => {
+          if (wildcardCount(id) > 0) {
             discoveredWildcards[id] = true;
           }
         });
@@ -4054,6 +4127,7 @@
         ]));
         dugCustomerLevel = Math.min(10, normalizedCount(state.dugCustomerLevel));
         autoSellEnabled = Boolean(state.autoSellEnabled);
+        autoSellDuplicates = Boolean(state.autoSellDuplicates);
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
           : 0;
@@ -4076,7 +4150,14 @@
             tables[index].unlocked = Boolean(savedTable.unlocked);
             tables[index].equipped = Array.isArray(savedTable.equipped)
               ? savedTable.equipped
-                .filter(id => knownWildcardIds.has(id))
+                .filter(key => {
+                  if (typeof key !== "string") {
+                    return false;
+                  }
+                  const separator = key.lastIndexOf("::");
+                  const id = separator >= 0 ? key.slice(0, separator) : key;
+                  return knownWildcardIds.has(id);
+                })
                 .slice(0, tableDefinitions[index].slots)
               : [];
             tables[index].speedLevel = Number.isFinite(savedTable.speedLevel)
@@ -4086,15 +4167,40 @@
           });
           tables[0].unlocked = true;
         }
-        const equippedUsage = {};
+        const copyLimit = unlockedTableCount();
+        Object.keys(wildcardCollection).forEach(id => {
+          wildcardCollection[id] = wildcardCopies(id).slice(0, copyLimit);
+        });
+        const equippedUsage = new Set();
+        const nextLegacyCopy = {};
         tables.forEach(table => {
-          table.equipped = table.equipped.filter(id => {
-            const used = equippedUsage[id] || 0;
-            if (used >= wildcardLevel(id)) {
-              return false;
+          const tableWildcardIds = new Set();
+          table.equipped = table.equipped.flatMap(savedKey => {
+            const separator = savedKey.lastIndexOf("::");
+            const id = separator >= 0 ? savedKey.slice(0, separator) : savedKey;
+            let copyIndex;
+            if (separator >= 0) {
+              copyIndex = Number(savedKey.slice(separator + 2));
+            } else {
+              copyIndex = nextLegacyCopy[id] || 0;
+              while (equippedUsage.has(equipmentKey(id, copyIndex))) {
+                copyIndex += 1;
+              }
+              nextLegacyCopy[id] = copyIndex + 1;
             }
-            equippedUsage[id] = used + 1;
-            return true;
+            const key = equipmentKey(id, copyIndex);
+            if (
+              !Number.isInteger(copyIndex) ||
+              copyIndex < 0 ||
+              copyIndex >= wildcardCount(id) ||
+              equippedUsage.has(key) ||
+              tableWildcardIds.has(id)
+            ) {
+              return [];
+            }
+            equippedUsage.add(key);
+            tableWildcardIds.add(id);
+            return [key];
           });
         });
       } catch {
@@ -4110,6 +4216,12 @@
       saveGame();
       renderAutoSell();
       showToast(`Card auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
+    });
+    autoSellDuplicatesToggle.addEventListener("click", () => {
+      autoSellDuplicates = !autoSellDuplicates;
+      saveGame();
+      renderAutoSell();
+      showToast(`Duplicate Joker auto-sell turned ${autoSellDuplicates ? "on" : "off"}.`);
     });
     luckUpgradeButton.addEventListener("click", () => {
       const cost = luckUpgradeCost();
