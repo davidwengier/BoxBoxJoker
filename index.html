@@ -1533,7 +1533,6 @@
 
     .floor-tab,
     .table-set-tab,
-    .table-card,
     .pack,
     .wildcard-card,
     .auto-sell,
@@ -1564,7 +1563,6 @@
 
     .floor-tab:hover,
     .table-set-tab:hover,
-    .table-card:not(.locked):hover,
     .pack:hover,
     .wildcard-card:hover {
       transform: translateY(-4px);
@@ -1591,13 +1589,8 @@
       border-radius: inherit;
       background: linear-gradient(120deg, transparent 20%, rgb(255 255 255 / 5%) 45%, transparent 65%);
       content: "";
-      opacity: 0;
+      opacity: 0.35;
       pointer-events: none;
-      transition: opacity 180ms ease;
-    }
-
-    .table-card:hover::after {
-      opacity: 1;
     }
 
     .mini-card {
@@ -1659,7 +1652,6 @@
 
       .floor-tab,
       .table-set-tab,
-      .table-card,
       .pack,
       .wildcard-card,
       .album-card,
