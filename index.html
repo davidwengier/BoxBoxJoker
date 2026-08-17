@@ -2426,7 +2426,7 @@
         image: "https://wengier.com/InfiniteGummies/Dug.png",
         rarity: "Secret",
         packable: false,
-        effect: "Gain $10,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, double income, and a chance for The Dug to visit and double all your cash.",
+        effect: "Gain $900,000 on unlock, 300% Flush luck, a Dug Coin per Flush, bonus Flush cash, double income, and a chance for The Dug to visit and double all your cash.",
         effects: [
           { effectType: "flushFamily", amount: 2500 },
           { effectType: "multiplier", amount: 1 }
@@ -3019,9 +3019,9 @@
       wildcardCollection.dug = Math.max(1, wildcardLevel("dug"));
       discoveredWildcards.dug = true;
       if (!dugBonusClaimed) {
-        cash += 10000;
+        cash += 900000;
         dugBonusClaimed = true;
-        message += " You received $10,000.";
+        message += " You received $900,000.";
       }
       saveGame();
       render();
