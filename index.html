@@ -90,9 +90,15 @@
 
     .header-side {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
+      flex-direction: column;
       justify-content: flex-end;
       gap: 0.6rem;
+    }
+
+    .header-help {
+      width: 9rem;
+      padding: 0.65rem 0.8rem;
     }
 
     .header-reset {
@@ -125,7 +131,6 @@
 
     nav {
       display: flex;
-      flex-wrap: wrap;
       gap: 0.4rem;
       margin-bottom: 1rem;
       padding: 0.4rem;
@@ -1095,6 +1100,21 @@
       color: #f4f4f5;
     }
 
+    .help-card[hidden] {
+      display: none;
+    }
+
+    .help-modal-box {
+      width: min(80rem, 100%);
+      text-align: left;
+    }
+
+    .help-modal-box > h2,
+    .help-modal-box > .help-intro {
+      margin-inline: auto;
+      text-align: center;
+    }
+
     .ordinary-grid {
       display: grid;
       grid-template-columns: repeat(13, minmax(0, 1fr));
@@ -1801,6 +1821,10 @@
         justify-content: flex-start;
       }
 
+      .header-help {
+        width: 100%;
+      }
+
       .casino-floor,
       .pack-grid,
       .wildcard-grid,
@@ -1808,10 +1832,6 @@
       .pack-reveals,
       .equip-grid {
         grid-template-columns: 1fr;
-      }
-
-      nav button {
-        flex-basis: calc(50% - 0.4rem);
       }
 
       .floor-tabs {
@@ -1871,6 +1891,7 @@
           <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
           <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
         </div>
+        <button id="helpOpen" class="secondary header-help">Help</button>
       </div>
     </header>
 
@@ -1879,7 +1900,6 @@
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
       <button id="dugShopNav" data-screen="dugShop" hidden>Dug Shop</button>
-      <button data-screen="help">Help</button>
     </nav>
 
     <section id="casino" class="screen active">
@@ -1963,13 +1983,11 @@
       <div id="dugUpgradeGrid" class="secret-shop"></div>
     </section>
 
-    <section id="help" class="screen">
-      <div class="section-head">
-        <div>
-          <h2>How to play</h2>
-          <p>A complete guide to building your casino and collection.</p>
-        </div>
-      </div>
+  </div>
+
+  <div id="helpModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modal-box help-modal-box">
+      <h2 id="helpTitle">How to play</h2>
       <p class="help-intro">Box Box Jokers runs automatically while the page is open. Build up cash and reputation at your tables, open packs to find Jokers, and equip those Jokers to make every hand more valuable.</p>
       <div class="help-grid">
         <article class="help-card">
@@ -2033,7 +2051,7 @@
           </ul>
         </article>
 
-        <article class="help-card">
+        <article id="helpDugCard" class="help-card" hidden>
           <h3>The Dug and secret shop</h3>
           <ul>
             <li>Completing the collection unlocks <strong>The Dug</strong>, a cash reward, and the hidden Dug Shop.</li>
@@ -2052,7 +2070,8 @@
           </ul>
         </article>
       </div>
-    </section>
+      <button id="helpClose" class="primary modal-action">Close</button>
+    </div>
   </div>
 
   <div id="packModal" class="modal">
@@ -2847,6 +2866,9 @@
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
     const dugShopNav = document.querySelector("#dugShopNav");
+    const helpOpenButton = document.querySelector("#helpOpen");
+    const helpModal = document.querySelector("#helpModal");
+    const helpDugCard = document.querySelector("#helpDugCard");
     const dugCoinsDisplay = document.querySelector("#dugCoins");
     const dugUpgradeGrid = document.querySelector("#dugUpgradeGrid");
     const packModal = document.querySelector("#packModal");
@@ -4147,6 +4169,7 @@
     function renderSecretShop() {
       const unlocked = wildcardLevel("dug") > 0;
       dugShopNav.hidden = !unlocked;
+      helpDugCard.hidden = !unlocked;
       if (!unlocked) {
         if (document.querySelector("#dugShop").classList.contains("active")) {
           showScreen("collection");
@@ -4403,6 +4426,13 @@
 
     document.querySelectorAll("nav button").forEach(button => {
       button.addEventListener("click", () => showScreen(button.dataset.screen));
+    });
+    helpOpenButton.addEventListener("click", () => {
+      helpModal.classList.add("open");
+    });
+    document.querySelector("#helpClose").addEventListener("click", () => {
+      helpModal.classList.remove("open");
+      helpOpenButton.focus();
     });
     autoSellToggle.addEventListener("click", () => {
       autoSellEnabled = !autoSellEnabled;
