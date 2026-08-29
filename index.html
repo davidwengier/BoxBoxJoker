@@ -4193,7 +4193,7 @@
           copyIndex,
           equipmentKey: equipmentKey(wildcard.id, copyIndex)
         }))
-      );
+      ).sort((left, right) => rarityRank(left.rarity) - rarityRank(right.rarity));
       equipStatus.textContent = `${table.equipped.length} / ${definition.slots} slots used`;
 
       if (owned.length === 0) {
