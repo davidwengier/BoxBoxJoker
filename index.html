@@ -210,6 +210,56 @@
       margin-top: 0.8rem;
     }
 
+    .dashboard-summary,
+    .dashboard-table-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .dashboard-metric,
+    .dashboard-table {
+      padding: 1rem;
+      border: 1px solid #3f3f46;
+      border-radius: 0.8rem;
+      background: linear-gradient(145deg, #15131d, #101118);
+      box-shadow:
+        0 0.8rem 2rem rgb(0 0 0 / 20%),
+        inset 0 1px rgb(255 255 255 / 5%);
+    }
+
+    .dashboard-metric small,
+    .dashboard-table small {
+      display: block;
+      color: #9290a2;
+      font-size: 0.68rem;
+      font-weight: 850;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .dashboard-metric strong {
+      display: block;
+      margin-top: 0.35rem;
+      color: #facc15;
+      font-size: 1.35rem;
+    }
+
+    .dashboard-metric span,
+    .dashboard-table span {
+      display: block;
+      margin-top: 0.35rem;
+      color: #aaa6b4;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .dashboard-table h3 {
+      margin: 0.3rem 0 0;
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+    }
+
     .stat small {
       display: block;
       color: #9290a2;
@@ -2063,7 +2113,9 @@
       .pack-grid,
       .wildcard-grid,
       .help-grid,
-      .goal-grid {
+      .goal-grid,
+      .dashboard-summary,
+      .dashboard-table-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
@@ -2125,6 +2177,8 @@
       .wildcard-grid,
       .help-grid,
       .goal-grid,
+      .dashboard-summary,
+      .dashboard-table-grid,
       .pack-reveals,
       .equip-grid {
         grid-template-columns: 1fr;
@@ -2193,6 +2247,7 @@
 
     <nav>
       <button class="active" data-screen="casino">Casino</button>
+      <button data-screen="dashboard">Dashboard</button>
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
       <button data-screen="goals">Goals</button>
@@ -2254,6 +2309,23 @@
         <div id="autoSellOptions" class="auto-options"></div>
       </div>
       <div id="packStore" class="pack-grid"></div>
+    </section>
+
+    <section id="dashboard" class="screen">
+      <div class="section-head">
+        <div>
+          <h2>Earnings dashboard</h2>
+          <p>Track casino income, table performance, hands, and your strongest Joker.</p>
+        </div>
+      </div>
+      <div id="dashboardSummary" class="dashboard-summary"></div>
+      <div class="section-head">
+        <div>
+          <h2>Table earnings</h2>
+          <p>Saved performance totals for every unlocked table.</p>
+        </div>
+      </div>
+      <div id="dashboardTables" class="dashboard-table-grid"></div>
     </section>
 
     <section id="collection" class="screen">
@@ -2383,6 +2455,16 @@
             <li>Completed goals move to the front so their one-time cash rewards are easy to claim.</li>
             <li>Claimed goals become achievements and remain recorded in your save.</li>
             <li>Goal rewards are cash only; they do not award luck or exclusive Jokers.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Earnings dashboard</h3>
+          <ul>
+            <li>The Dashboard shows rolling casino income per second and lifetime cash earned.</li>
+            <li>See total table income, your strongest owned Joker, and the hand that has earned the most cash.</li>
+            <li>Each unlocked table records its total hands, lifetime earnings, and average income per hand.</li>
+            <li>Dashboard history is saved automatically and continues building as your casino plays.</li>
           </ul>
         </article>
 
@@ -3245,6 +3327,8 @@
     const tableSetTabs = document.querySelector("#tableSetTabs");
     const casinoFloor = document.querySelector("#casinoFloor");
     const progressionGuide = document.querySelector("#progressionGuide");
+    const dashboardSummary = document.querySelector("#dashboardSummary");
+    const dashboardTables = document.querySelector("#dashboardTables");
     const packStore = document.querySelector("#packStore");
     const wildcardGrid = document.querySelector("#wildcardGrid");
     const normalAlbumDisplay = document.querySelector("#normalAlbum");
@@ -3308,6 +3392,9 @@
     let tutorialComplete = false;
     let tutorialStep = 0;
     let claimedGoals = {};
+    let lifetimeCashEarned = 0;
+    let handStats = {};
+    let recentTableIncome = [];
     let activeFloor = 0;
     let activeTableSets = [0, 0, 0];
     let autoSellRarities = {
@@ -3325,6 +3412,8 @@
       equipped: [],
       timer: table.roundTime,
       speedLevel: 0,
+      lifetimeEarnings: 0,
+      handsPlayed: 0,
       customer: null,
       lastHand: [],
       lastResult: "Waiting for the first guest..."
@@ -3334,6 +3423,7 @@
     let revealReadyTimer;
     let activeEquipTable = null;
     let toastTimer;
+    const dashboardTrackingStartedAt = Date.now();
     const packOddsCache = new Map();
     const tutorialSteps = [
       {
@@ -3624,6 +3714,11 @@
       return `$${Math.floor(value).toLocaleString()}`;
     }
 
+    function earnCash(amount) {
+      cash += amount;
+      lifetimeCashEarned += amount;
+    }
+
     function rarityRank(rarity) {
       return Object.keys(rarityInfo).indexOf(rarity);
     }
@@ -3904,7 +3999,7 @@
           discoveredWildcards[id] = true;
           if (autoSellEnabled && autoSellRarities[rarity]) {
             card.autoSold = saleValues[rarity];
-            cash += card.autoSold;
+            earnCash(card.autoSold);
           } else {
             const copies = wildcardCopies(id);
             if (copies.length === 0) {
@@ -3921,7 +4016,7 @@
           discoveredNormalCards[card.id] = true;
           if (autoSellEnabled && autoSellRarities.Ordinary) {
             card.autoSold = saleValues.Ordinary;
-            cash += card.autoSold;
+            earnCash(card.autoSold);
           } else {
             normalCollection[card.id] = (normalCollection[card.id] || 0) + 1;
           }
@@ -3956,7 +4051,7 @@
       wildcardCollection.dug = wildcardCount("dug") > 0 ? wildcardCopies("dug") : [1];
       discoveredWildcards.dug = true;
       if (!dugBonusClaimed) {
-        cash += 900000;
+        earnCash(900000);
         dugBonusClaimed = true;
         message += " You received $900,000.";
       }
@@ -4244,9 +4339,16 @@
         renderSecretShop();
       }
       earnings = Math.floor(earnings * multiplier);
-      cash += earnings;
+      earnCash(earnings);
+      tableState.lifetimeEarnings += earnings;
+      tableState.handsPlayed += 1;
+      recentTableIncome.push({ timestamp: Date.now(), amount: earnings });
+      const handStat = handStats[result.name] || { count: 0, earnings: 0 };
+      handStat.count += 1;
+      handStat.earnings += earnings;
+      handStats[result.name] = handStat;
       if (isDugCustomer) {
-        cash *= 2;
+        earnCash(cash);
       }
       reputation += 1 + result.tier;
       tableState.lastHand = hand;
@@ -4965,7 +5067,7 @@
         return;
       }
       claimedGoals[id] = true;
-      cash += goal.reward;
+      earnCash(goal.reward);
       saveGame();
       renderStats();
       renderProgressionGuide();
@@ -5135,6 +5237,81 @@
       });
     }
 
+    function renderDashboard() {
+      const now = Date.now();
+      recentTableIncome = recentTableIncome.filter(event => event.timestamp >= now - 60000);
+      const trackedSeconds = Math.min(
+        60,
+        Math.max(1, (now - dashboardTrackingStartedAt) / 1000)
+      );
+      const recentIncome = recentTableIncome.reduce((total, event) => total + event.amount, 0);
+      const incomePerSecond = recentIncome / trackedSeconds;
+      const totalTableIncome = tables.reduce(
+        (total, table) => total + table.lifetimeEarnings,
+        0
+      );
+      const strongestJoker = wildcards
+        .map(wildcard => ({ ...wildcard, level: wildcardLevel(wildcard.id) }))
+        .filter(wildcard => wildcard.level > 0)
+        .sort((left, right) =>
+          right.level - left.level || rarityRank(right.rarity) - rarityRank(left.rarity)
+        )[0];
+      const bestHand = Object.entries(handStats)
+        .map(([name, stats]) => ({ name, ...stats }))
+        .sort((left, right) => right.earnings - left.earnings)[0];
+
+      dashboardSummary.innerHTML = `
+        <article class="dashboard-metric">
+          <small>Casino income</small>
+          <strong>${formatMoney(incomePerSecond)} / sec</strong>
+          <span>Rolling table income from the last 60 seconds.</span>
+        </article>
+        <article class="dashboard-metric">
+          <small>Lifetime cash earned</small>
+          <strong>${formatMoney(lifetimeCashEarned)}</strong>
+          <span>Table income, sales, bonuses, and claimed rewards.</span>
+        </article>
+        <article class="dashboard-metric">
+          <small>Total table income</small>
+          <strong>${formatMoney(totalTableIncome)}</strong>
+          <span>Income produced directly by poker hands.</span>
+        </article>
+        <article class="dashboard-metric">
+          <small>Strongest Joker</small>
+          <strong>${strongestJoker ? strongestJoker.name : "None owned"}</strong>
+          <span>${strongestJoker
+            ? `${strongestJoker.rarity} · Level ${strongestJoker.level}`
+            : "Open card packs to find your first Joker."}</span>
+        </article>
+        <article class="dashboard-metric">
+          <small>Best-performing hand</small>
+          <strong>${bestHand ? bestHand.name : "No hands yet"}</strong>
+          <span>${bestHand
+            ? `${formatMoney(bestHand.earnings)} from ${bestHand.count.toLocaleString()} ${bestHand.count === 1 ? "hand" : "hands"}`
+            : "Hand performance will appear after guests play."}</span>
+        </article>
+        <article class="dashboard-metric">
+          <small>Total hands played</small>
+          <strong>${tables.reduce((total, table) => total + table.handsPlayed, 0).toLocaleString()}</strong>
+          <span>Saved hands recorded across all casino tables.</span>
+        </article>
+      `;
+
+      const unlockedTables = tables
+        .map((table, index) => ({ table, definition: tableDefinitions[index] }))
+        .filter(item => item.table.unlocked);
+      dashboardTables.innerHTML = unlockedTables.map(({ table, definition }) => `
+        <article class="dashboard-table">
+          <small>${casinoFloors[definition.floor].name}</small>
+          <h3>${definition.name}</h3>
+          <span><strong>${formatMoney(table.lifetimeEarnings)}</strong> total earnings</span>
+          <span>${table.handsPlayed.toLocaleString()} hands · ${formatMoney(
+            table.handsPlayed > 0 ? table.lifetimeEarnings / table.handsPlayed : 0
+          )} average</span>
+        </article>
+      `).join("");
+    }
+
     function renderStats() {
       cashDisplay.textContent = formatMoney(cash);
       reputationDisplay.textContent = Math.floor(reputation).toLocaleString();
@@ -5145,6 +5322,7 @@
       renderStats();
       renderProgressionGuide();
       renderGoals();
+      renderDashboard();
       renderCasino();
       renderLuck();
       renderAutoSell();
@@ -5211,13 +5389,17 @@
         autoSellEnabled,
         tutorialComplete,
         claimedGoals,
+        lifetimeCashEarned,
+        handStats,
         autoSellRarities,
         activeFloor,
         activeTableSets,
         tables: tables.map(table => ({
           unlocked: table.unlocked,
           equipped: table.equipped,
-          speedLevel: table.speedLevel
+          speedLevel: table.speedLevel,
+          lifetimeEarnings: table.lifetimeEarnings,
+          handsPlayed: table.handsPlayed
         }))
       }));
     }
@@ -5239,6 +5421,20 @@
           const number = Number(value);
           return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : 0;
         };
+        lifetimeCashEarned = normalizedCount(state.lifetimeCashEarned);
+        const knownHands = new Set(Object.keys(baseHandOdds));
+        handStats = Object.fromEntries(
+          Object.entries(state.handStats && typeof state.handStats === "object"
+            ? state.handStats
+            : {})
+            .filter(([name, stats]) =>
+              knownHands.has(name) && stats && typeof stats === "object"
+            )
+            .map(([name, stats]) => [name, {
+              count: normalizedCount(stats.count),
+              earnings: normalizedCount(stats.earnings)
+            }])
+        );
         wildcardCollection = Object.fromEntries(
           Object.entries(state.wildcardCollection && typeof state.wildcardCollection === "object"
             ? state.wildcardCollection
@@ -5343,6 +5539,8 @@
             tables[index].speedLevel = Number.isFinite(savedTable.speedLevel)
               ? Math.min(tableDefinitions[index].roundTime - 1, Math.max(0, Math.floor(savedTable.speedLevel)))
               : 0;
+            tables[index].lifetimeEarnings = normalizedCount(savedTable.lifetimeEarnings);
+            tables[index].handsPlayed = normalizedCount(savedTable.handsPlayed);
             tables[index].timer = tableRoundTime(index);
           });
           tables[0].unlocked = true;
@@ -5496,6 +5694,7 @@
         renderGoals();
       }
       renderStats();
+      renderDashboard();
       updateVisibleCasinoTables();
     }, 1000);
   </script>
