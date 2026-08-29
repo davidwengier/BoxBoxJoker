@@ -997,6 +997,68 @@
       color: #f4f4f5;
     }
 
+    .collection-filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 0.7rem;
+      margin-bottom: 0.8rem;
+      padding: 1rem;
+      border: 1px solid #34343f;
+      border-radius: 0.75rem;
+      background: #111218;
+    }
+
+    .collection-filter {
+      display: grid;
+      gap: 0.35rem;
+      color: #a1a1aa;
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .collection-filter input,
+    .collection-filter select {
+      width: 100%;
+      min-height: 2.65rem;
+      padding: 0.6rem 0.7rem;
+      border: 1px solid #45424f;
+      border-radius: 0.5rem;
+      outline: none;
+      background: #181820;
+      color: #f4f4f5;
+      font: inherit;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .collection-filter input:focus,
+    .collection-filter select:focus {
+      border-color: #c026d3;
+      box-shadow: 0 0 0 0.15rem rgb(192 38 211 / 20%);
+    }
+
+    .collection-filter-clear {
+      align-self: end;
+      min-height: 2.65rem;
+    }
+
+    .collection-filter-count {
+      margin: 0 0 1rem;
+      color: #a1a1aa;
+      font-size: 0.82rem;
+    }
+
+    .collection-empty {
+      grid-column: 1 / -1;
+      padding: 2rem;
+      border: 1px dashed #45424f;
+      border-radius: 0.75rem;
+      color: #a1a1aa;
+      text-align: center;
+    }
+
     .secret-shop {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2024,9 +2086,53 @@
           <p>Discover every ordinary card and Joker available in packs.</p>
         </div>
       </div>
+      <div class="collection-filters">
+        <label class="collection-filter">
+          Search Jokers
+          <input id="collectionNameFilter" type="search" placeholder="Joker name">
+        </label>
+        <label class="collection-filter">
+          Ownership
+          <select id="collectionOwnershipFilter">
+            <option value="all">Owned and missing</option>
+            <option value="owned">Owned only</option>
+            <option value="missing">Missing only</option>
+          </select>
+        </label>
+        <label class="collection-filter">
+          Rarity
+          <select id="collectionRarityFilter">
+            <option value="all">All rarities</option>
+            <option value="Common">Common</option>
+            <option value="Uncommon">Uncommon</option>
+            <option value="Rare">Rare</option>
+            <option value="Epic">Epic</option>
+            <option value="Legendary">Legendary</option>
+            <option value="Mythic">Mythic</option>
+            <option value="Limited">Limited</option>
+          </select>
+        </label>
+        <label class="collection-filter">
+          Pack
+          <select id="collectionPackFilter">
+            <option value="all">All packs</option>
+          </select>
+        </label>
+        <label class="collection-filter">
+          Effect
+          <select id="collectionEffectFilter">
+            <option value="all">All effects</option>
+            <option value="cash">Cash bonus</option>
+            <option value="multiplier">Income multiplier</option>
+            <option value="handChance">Hand chance</option>
+          </select>
+        </label>
+        <button id="collectionFilterClear" class="secondary collection-filter-clear">Clear filters</button>
+      </div>
       <div class="collection-progress">
         Total collection: <strong id="collectionTotal">0 / 0</strong>
       </div>
+      <p id="collectionFilterCount" class="collection-filter-count"></p>
       <h3>Jokers</h3>
       <div id="wildcardGrid" class="wildcard-grid"></div>
       <div class="album-summary">
@@ -2113,6 +2219,7 @@
           <ul>
             <li>The Collection page tracks every pack Joker and all 52 ordinary playing cards.</li>
             <li>Ordinary cards do not provide bonuses, but they count toward collection completion.</li>
+            <li>Filter Jokers by name, ownership, rarity, pack, or effect. Owned results always appear first.</li>
             <li>Each Joker shows its effect, level, and the packs where it can be found after discovery.</li>
             <li>Complete every ordinary card and pack Joker to unlock the secret collection reward.</li>
           </ul>
@@ -2941,6 +3048,12 @@
     const normalPulledDisplay = document.querySelector("#normalPulled");
     const collectionTotalDisplay = document.querySelector("#collectionTotal");
     const ordinaryGrid = document.querySelector("#ordinaryGrid");
+    const collectionNameFilter = document.querySelector("#collectionNameFilter");
+    const collectionOwnershipFilter = document.querySelector("#collectionOwnershipFilter");
+    const collectionRarityFilter = document.querySelector("#collectionRarityFilter");
+    const collectionPackFilter = document.querySelector("#collectionPackFilter");
+    const collectionEffectFilter = document.querySelector("#collectionEffectFilter");
+    const collectionFilterCount = document.querySelector("#collectionFilterCount");
     const autoSellToggle = document.querySelector("#autoSellToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
@@ -4153,12 +4266,43 @@
         .map(pack => pack.name);
     }
 
+    function jokerEffectCategories(wildcard) {
+      return new Set(wildcardEffects(wildcard).map(effect => {
+        if (effect.effectType === "handChance") {
+          return "handChance";
+        }
+        if (effect.effectType === "multiplier") {
+          return "multiplier";
+        }
+        return "cash";
+      }));
+    }
+
     function renderCollection() {
       const collectionJokers = wildcards
         .filter(wildcard => wildcard.packable !== false)
         .sort((left, right) => rarityRank(left.rarity) - rarityRank(right.rarity));
       const jokerDiscovered = wildcard =>
         Boolean(discoveredWildcards[wildcard.id]) || wildcardLevel(wildcard.id) > 0;
+      const nameFilter = collectionNameFilter.value.trim().toLowerCase();
+      const ownershipFilter = collectionOwnershipFilter.value;
+      const rarityFilter = collectionRarityFilter.value;
+      const packFilter = collectionPackFilter.value;
+      const effectFilter = collectionEffectFilter.value;
+      const filteredJokers = collectionJokers.filter(wildcard => {
+        const discovered = jokerDiscovered(wildcard);
+        return (
+          (!nameFilter || wildcard.name.toLowerCase().includes(nameFilter)) &&
+          (ownershipFilter === "all" ||
+            (ownershipFilter === "owned" ? discovered : !discovered)) &&
+          (rarityFilter === "all" || wildcard.rarity === rarityFilter) &&
+          (packFilter === "all" ||
+            packDefinitions.some(pack =>
+              pack.id === packFilter && pack.jokerIds.includes(wildcard.id)
+            )) &&
+          (effectFilter === "all" || jokerEffectCategories(wildcard).has(effectFilter))
+        );
+      });
       const renderCollectionJoker = wildcard => {
         const copies = wildcardCopies(wildcard.id);
         const discovered = jokerDiscovered(wildcard);
@@ -4178,16 +4322,25 @@
           </article>
         `;
       };
-      const ownedJokerMarkup = collectionJokers
+      const ownedJokerMarkup = filteredJokers
         .filter(jokerDiscovered)
         .map(renderCollectionJoker)
         .join("");
-      const missingJokerMarkup = collectionJokers
+      const missingJokerMarkup = filteredJokers
         .filter(wildcard => !jokerDiscovered(wildcard))
         .map(renderCollectionJoker)
         .join("");
       const secretJoker = wildcards.find(wildcard => wildcard.id === "dug");
       const secretDiscovered = wildcardLevel(secretJoker.id) > 0;
+      const secretName = secretDiscovered ? secretJoker.name : "Secret Collection Reward";
+      const showSecret = (
+        rarityFilter === "all" &&
+        packFilter === "all" &&
+        effectFilter === "all" &&
+        (!nameFilter || secretName.toLowerCase().includes(nameFilter)) &&
+        (ownershipFilter === "all" ||
+          (ownershipFilter === "owned" ? secretDiscovered : !secretDiscovered))
+      );
       const secretMarkup = `
         <article class="wildcard-card ${secretDiscovered ? "rarity-secret" : "locked"}" style="--rarity:${rarityInfo.Secret.color}">
           ${secretDiscovered ? '<span class="collection-check">✓</span>' : ""}
@@ -4202,9 +4355,14 @@
           <div class="level">${secretDiscovered ? `1 copy · Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
         </article>
       `;
-      wildcardGrid.innerHTML = secretDiscovered
-        ? ownedJokerMarkup + secretMarkup + missingJokerMarkup
-        : ownedJokerMarkup + missingJokerMarkup + secretMarkup;
+      const visibleSecretMarkup = showSecret ? secretMarkup : "";
+      const wildcardMarkup = secretDiscovered
+        ? ownedJokerMarkup + visibleSecretMarkup + missingJokerMarkup
+        : ownedJokerMarkup + missingJokerMarkup + visibleSecretMarkup;
+      wildcardGrid.innerHTML = wildcardMarkup ||
+        '<p class="collection-empty">No Jokers match these filters.</p>';
+      collectionFilterCount.textContent =
+        `${filteredJokers.length} of ${collectionJokers.length} pack Jokers shown`;
 
       const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
@@ -4576,6 +4734,25 @@
 
     document.querySelectorAll("nav button").forEach(button => {
       button.addEventListener("click", () => showScreen(button.dataset.screen));
+    });
+    collectionPackFilter.insertAdjacentHTML(
+      "beforeend",
+      packDefinitions.map(pack => `<option value="${pack.id}">${pack.name}</option>`).join("")
+    );
+    [
+      collectionOwnershipFilter,
+      collectionRarityFilter,
+      collectionPackFilter,
+      collectionEffectFilter
+    ].forEach(filter => filter.addEventListener("change", renderCollection));
+    collectionNameFilter.addEventListener("input", renderCollection);
+    document.querySelector("#collectionFilterClear").addEventListener("click", () => {
+      collectionNameFilter.value = "";
+      collectionOwnershipFilter.value = "all";
+      collectionRarityFilter.value = "all";
+      collectionPackFilter.value = "all";
+      collectionEffectFilter.value = "all";
+      renderCollection();
     });
     helpOpenButton.addEventListener("click", () => {
       helpModal.classList.add("open");
