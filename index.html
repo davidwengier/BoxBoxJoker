@@ -234,6 +234,72 @@
       color: #9895a5;
     }
 
+    .progression-guide {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .progression-card {
+      padding: 1rem;
+      border: 1px solid #3d3948;
+      border-radius: 0.8rem;
+      background: linear-gradient(145deg, #15131d, #101118);
+      box-shadow:
+        0 0.8rem 2rem rgb(0 0 0 / 20%),
+        inset 0 1px rgb(255 255 255 / 5%);
+    }
+
+    .progression-card h3 {
+      margin: 0.2rem 0 0.5rem;
+      color: #f4f4f5;
+      font-family: Georgia, serif;
+      font-size: 1.2rem;
+    }
+
+    .progression-card p {
+      min-height: 3rem;
+      margin: 0;
+      color: #aaa6b4;
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .progression-card .eyebrow {
+      font-size: 0.68rem;
+    }
+
+    .progression-status {
+      display: block;
+      margin-top: 0.65rem;
+      color: #facc15;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .progression-status.ready {
+      color: #4ade80;
+    }
+
+    .progression-bar {
+      height: 0.55rem;
+      overflow: hidden;
+      margin-top: 0.8rem;
+      border-radius: 999px;
+      background: #292733;
+    }
+
+    .progression-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #a21caf, #e879f9);
+    }
+
+    .progression-card button {
+      margin-top: 0.8rem;
+    }
+
     .casino-floor,
     .pack-grid,
     .wildcard-grid {
@@ -1904,6 +1970,10 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .progression-guide {
+        grid-template-columns: 1fr;
+      }
+
       .pack-reveals {
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
@@ -2041,6 +2111,14 @@
 
       <div class="section-head">
         <div>
+          <h2>Your next moves</h2>
+          <p>Live guidance based on your current casino and collection.</p>
+        </div>
+      </div>
+      <div id="progressionGuide" class="progression-guide"></div>
+
+      <div class="section-head">
+        <div>
           <h2>Casino floors</h2>
           <p>Each floor has nine tables with its own color and progression.</p>
         </div>
@@ -2169,6 +2247,7 @@
             <li>Open the free <strong>Opening Night Pack</strong> on the Card Packs page.</li>
             <li>Open a casino table and use <strong>Manage Jokers</strong> to equip what you found.</li>
             <li>Let guests play automatically to earn cash and reputation.</li>
+            <li>Check <strong>Your next moves</strong> on the Casino page for a table, collection, and pack recommendation.</li>
             <li>Buy more packs, unlock tables, and upgrade table speed as you grow.</li>
           </ol>
         </article>
@@ -3042,6 +3121,7 @@
     const floorTabs = document.querySelector("#floorTabs");
     const tableSetTabs = document.querySelector("#tableSetTabs");
     const casinoFloor = document.querySelector("#casinoFloor");
+    const progressionGuide = document.querySelector("#progressionGuide");
     const packStore = document.querySelector("#packStore");
     const wildcardGrid = document.querySelector("#wildcardGrid");
     const normalAlbumDisplay = document.querySelector("#normalAlbum");
@@ -4489,6 +4569,119 @@
       );
     }
 
+    function collectionCounts() {
+      const ordinaryCards = ordinaryCardCatalog();
+      const packJokers = wildcards.filter(wildcard => wildcard.packable !== false);
+      const ordinaryDiscovered = ordinaryCards.filter(card => discoveredNormalCards[card.id]).length;
+      const jokersDiscovered = packJokers.filter(wildcard =>
+        discoveredWildcards[wildcard.id] || wildcardLevel(wildcard.id) > 0
+      ).length;
+      return {
+        discovered: ordinaryDiscovered + jokersDiscovered,
+        total: ordinaryCards.length + packJokers.length
+      };
+    }
+
+    function renderProgressionGuide() {
+      const nextTableIndex = tables.findIndex(table => !table.unlocked);
+      const nextTable = nextTableIndex >= 0 ? tableDefinitions[nextTableIndex] : null;
+      let tableMarkup;
+      if (nextTable) {
+        const cashNeeded = Math.max(0, nextTable.unlockCost - cash);
+        const reputationNeeded = Math.max(0, nextTable.reputationNeeded - reputation);
+        const ready = cashNeeded === 0 && reputationNeeded === 0;
+        const requirements = [
+          cashNeeded > 0 ? `${formatMoney(cashNeeded)} more cash` : "",
+          reputationNeeded > 0 ? `${Math.ceil(reputationNeeded).toLocaleString()} more reputation` : ""
+        ].filter(Boolean).join(" and ");
+        tableMarkup = `
+          <article class="progression-card">
+            <div class="eyebrow">Next table · ${casinoFloors[nextTable.floor].name}</div>
+            <h3>${nextTable.name}</h3>
+            <p>Unlock for ${formatMoney(nextTable.unlockCost)} at ${nextTable.reputationNeeded.toLocaleString()} reputation.</p>
+            <span class="progression-status ${ready ? "ready" : ""}">
+              ${ready ? "Ready to unlock now" : `Still needed: ${requirements}`}
+            </span>
+          </article>
+        `;
+      } else {
+        tableMarkup = `
+          <article class="progression-card">
+            <div class="eyebrow">Table progression</div>
+            <h3>Every table unlocked</h3>
+            <p>Your casino has all 27 tables across every floor.</p>
+            <span class="progression-status ready">Casino complete</span>
+          </article>
+        `;
+      }
+
+      const collection = collectionCounts();
+      const milestones = [0.25, 0.5, 0.75, 1].map(portion => ({
+        portion,
+        target: Math.ceil(collection.total * portion)
+      }));
+      const nextMilestone = milestones.find(milestone => collection.discovered < milestone.target);
+      const collectionComplete = !nextMilestone;
+      const milestoneTarget = nextMilestone?.target || collection.total;
+      const milestonePercent = nextMilestone
+        ? Math.round(nextMilestone.portion * 100)
+        : 100;
+      const collectionPercent = Math.min(100, collection.discovered / collection.total * 100);
+      const collectionMarkup = `
+        <article class="progression-card">
+          <div class="eyebrow">Collection milestone</div>
+          <h3>${collectionComplete ? "Collection complete" : `${milestonePercent}% collected`}</h3>
+          <p>${collection.discovered} of ${collection.total} required cards discovered.${collectionComplete ? "" : ` Find ${milestoneTarget - collection.discovered} more to reach the next milestone.`}</p>
+          <div class="progression-bar"><span style="width:${collectionPercent}%"></span></div>
+          <button class="secondary" data-guide-screen="collection">View collection</button>
+        </article>
+      `;
+
+      const packCandidates = packDefinitions
+        .filter(pack => !(pack.id === "starter" && starterOpened))
+        .map(pack => ({
+          pack,
+          missing: pack.jokerIds.filter(id => !discoveredWildcards[id] && wildcardLevel(id) === 0).length
+        }))
+        .filter(candidate => candidate.missing > 0);
+      const affordablePacks = packCandidates
+        .filter(candidate => candidate.pack.cost <= cash)
+        .sort((left, right) => right.pack.cost - left.pack.cost);
+      const recommended = affordablePacks[0] || [...packCandidates]
+        .sort((left, right) => left.pack.cost - right.pack.cost)[0];
+      let packMarkup;
+      if (recommended) {
+        const affordable = recommended.pack.cost <= cash;
+        packMarkup = `
+          <article class="progression-card">
+            <div class="eyebrow">Recommended pack</div>
+            <h3>${recommended.pack.name}</h3>
+            <p>${recommended.missing} undiscovered ${recommended.missing === 1 ? "Joker is" : "Jokers are"} available here.</p>
+            <span class="progression-status ${affordable ? "ready" : ""}">
+              ${affordable
+                ? recommended.pack.cost === 0 ? "Free to open now" : `Affordable now · ${formatMoney(recommended.pack.cost)}`
+                : `Save ${formatMoney(recommended.pack.cost - cash)} more`}
+            </span>
+            <button class="secondary" data-guide-screen="packs">View card packs</button>
+          </article>
+        `;
+      } else {
+        packMarkup = `
+          <article class="progression-card">
+            <div class="eyebrow">Pack progression</div>
+            <h3>Every pack Joker found</h3>
+            <p>You have discovered every Joker available from card packs.</p>
+            <span class="progression-status ready">Pack collection complete</span>
+          </article>
+        `;
+      }
+
+      progressionGuide.innerHTML = tableMarkup + collectionMarkup + packMarkup;
+      progressionGuide.querySelectorAll("[data-guide-screen]").forEach(button => {
+        button.addEventListener("click", () => showScreen(button.dataset.guideScreen));
+      });
+    }
+
     function renderStats() {
       cashDisplay.textContent = formatMoney(cash);
       reputationDisplay.textContent = Math.floor(reputation).toLocaleString();
@@ -4497,6 +4690,7 @@
 
     function render() {
       renderStats();
+      renderProgressionGuide();
       renderCasino();
       renderLuck();
       renderAutoSell();
@@ -4836,6 +5030,7 @@
       });
       if (roundPlayed) {
         saveGame();
+        renderProgressionGuide();
       }
       renderStats();
       updateVisibleCasinoTables();
