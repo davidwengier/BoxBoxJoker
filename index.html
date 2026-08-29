@@ -96,7 +96,12 @@
       gap: 0.6rem;
     }
 
-    .header-help {
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .header-action {
       width: 9rem;
       padding: 0.65rem 0.8rem;
     }
@@ -2261,8 +2266,13 @@
         justify-content: flex-start;
       }
 
-      .header-help {
+      .header-actions {
         width: 100%;
+      }
+
+      .header-action {
+        width: auto;
+        flex: 1;
       }
 
       .tutorial-actions {
@@ -2338,13 +2348,15 @@
           <div class="stat"><small>Reputation</small><strong id="reputation">0</strong></div>
           <div class="stat"><small>Guests served</small><strong id="guests">0</strong></div>
         </div>
-        <button id="helpOpen" class="secondary header-help">Help</button>
+        <div class="header-actions">
+          <button id="dashboardOpen" class="secondary header-action">Dashboard</button>
+          <button id="helpOpen" class="secondary header-action">Help</button>
+        </div>
       </div>
     </header>
 
     <nav>
       <button class="active" data-screen="casino">Casino</button>
-      <button data-screen="dashboard">Dashboard</button>
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
       <button id="goalsNav" data-screen="goals">
@@ -3462,6 +3474,7 @@
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
     const dugShopNav = document.querySelector("#dugShopNav");
+    const dashboardOpenButton = document.querySelector("#dashboardOpen");
     const helpOpenButton = document.querySelector("#helpOpen");
     const helpModal = document.querySelector("#helpModal");
     const helpDugCard = document.querySelector("#helpDugCard");
@@ -5765,6 +5778,9 @@
     });
     helpOpenButton.addEventListener("click", () => {
       helpModal.classList.add("open");
+    });
+    dashboardOpenButton.addEventListener("click", () => {
+      showScreen("dashboard");
     });
     document.querySelector("#helpClose").addEventListener("click", () => {
       helpModal.classList.remove("open");
