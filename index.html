@@ -1861,10 +1861,9 @@
         <div class="auto-sell-head">
           <div>
             <h3>Auto-sell cards</h3>
-            <p>Selected rarities sell immediately, including the first copy. Duplicate mode sells any Joker you already own.</p>
+            <p>Selected rarities sell immediately, including the first copy. Other duplicate Jokers upgrade your first copy.</p>
           </div>
           <div>
-            <button id="autoSellDuplicatesToggle" class="primary auto-sell-toggle">Duplicates: Off</button>
             <button id="autoSellToggle" class="primary auto-sell-toggle">Auto-sell: Off</button>
           </div>
         </div>
@@ -2694,7 +2693,6 @@
     const collectionTotalDisplay = document.querySelector("#collectionTotal");
     const ordinaryGrid = document.querySelector("#ordinaryGrid");
     const autoSellToggle = document.querySelector("#autoSellToggle");
-    const autoSellDuplicatesToggle = document.querySelector("#autoSellDuplicatesToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
     const luckUpgradeButton = document.querySelector("#luckUpgrade");
@@ -2730,7 +2728,6 @@
     let dugUpgrades = {};
     let dugCustomerLevel = 0;
     let autoSellEnabled = false;
-    let autoSellDuplicates = false;
     let activeFloor = 0;
     let activeTableSets = [0, 0, 0];
     let autoSellRarities = {
@@ -3056,10 +3053,7 @@
           const id = card.wildcard.id;
           const rarity = card.wildcard.rarity;
           discoveredWildcards[id] = true;
-          if (
-            autoSellEnabled &&
-            (autoSellRarities[rarity] || (autoSellDuplicates && wildcardCount(id) > 0))
-          ) {
+          if (autoSellEnabled && autoSellRarities[rarity]) {
             card.autoSold = saleValues[rarity];
             cash += card.autoSold;
           } else {
@@ -3766,8 +3760,6 @@
     function renderAutoSell() {
       autoSellToggle.textContent = `Auto-sell: ${autoSellEnabled ? "On" : "Off"}`;
       autoSellToggle.classList.toggle("on", autoSellEnabled);
-      autoSellDuplicatesToggle.textContent = `Duplicates: ${autoSellDuplicates ? "On" : "Off"}`;
-      autoSellDuplicatesToggle.classList.toggle("on", autoSellDuplicates);
       autoSellOptions.innerHTML = Object.entries(saleValues).map(([rarity, value]) => `
         <button
           class="auto-option ${autoSellRarities[rarity] ? "active" : ""}"
@@ -4092,7 +4084,6 @@
         dugUpgrades,
         dugCustomerLevel,
         autoSellEnabled,
-        autoSellDuplicates,
         autoSellRarities,
         activeFloor,
         activeTableSets,
@@ -4180,7 +4171,6 @@
         ]));
         dugCustomerLevel = Math.min(10, normalizedCount(state.dugCustomerLevel));
         autoSellEnabled = Boolean(state.autoSellEnabled);
-        autoSellDuplicates = Boolean(state.autoSellDuplicates);
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
           : 0;
@@ -4269,12 +4259,6 @@
       saveGame();
       renderAutoSell();
       showToast(`Card auto-sell turned ${autoSellEnabled ? "on" : "off"}.`);
-    });
-    autoSellDuplicatesToggle.addEventListener("click", () => {
-      autoSellDuplicates = !autoSellDuplicates;
-      saveGame();
-      renderAutoSell();
-      showToast(`Duplicate Joker auto-sell turned ${autoSellDuplicates ? "on" : "off"}.`);
     });
     luckUpgradeButton.addEventListener("click", () => {
       const cost = luckUpgradeCost();
