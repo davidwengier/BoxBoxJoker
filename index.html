@@ -4178,7 +4178,12 @@
           </article>
         `;
       };
-      const jokerMarkup = collectionJokers
+      const ownedJokerMarkup = collectionJokers
+        .filter(jokerDiscovered)
+        .map(renderCollectionJoker)
+        .join("");
+      const missingJokerMarkup = collectionJokers
+        .filter(wildcard => !jokerDiscovered(wildcard))
         .map(renderCollectionJoker)
         .join("");
       const secretJoker = wildcards.find(wildcard => wildcard.id === "dug");
@@ -4197,7 +4202,9 @@
           <div class="level">${secretDiscovered ? `1 copy · Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
         </article>
       `;
-      wildcardGrid.innerHTML = jokerMarkup + secretMarkup;
+      wildcardGrid.innerHTML = secretDiscovered
+        ? ownedJokerMarkup + secretMarkup + missingJokerMarkup
+        : ownedJokerMarkup + missingJokerMarkup + secretMarkup;
 
       const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
