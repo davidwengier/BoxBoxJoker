@@ -125,6 +125,7 @@
 
     nav {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.4rem;
       margin-bottom: 1rem;
       padding: 0.4rem;
@@ -1043,6 +1044,57 @@
       font-size: 0.85rem;
     }
 
+    .help-intro {
+      max-width: 52rem;
+      color: #c4b5d0;
+      line-height: 1.6;
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .help-card {
+      padding: 1.1rem;
+      border: 1px solid #3f3f46;
+      border-radius: 0.8rem;
+      background: #111218;
+      box-shadow:
+        0 0.8rem 2rem rgb(0 0 0 / 20%),
+        inset 0 1px rgb(255 255 255 / 5%);
+    }
+
+    .help-card h3 {
+      margin: 0 0 0.65rem;
+      color: #f5d0fe;
+      font-family: Georgia, serif;
+      font-size: 1.25rem;
+    }
+
+    .help-card p {
+      margin: 0.45rem 0;
+      color: #b6b3c1;
+      line-height: 1.55;
+    }
+
+    .help-card ol,
+    .help-card ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: #b6b3c1;
+      line-height: 1.55;
+    }
+
+    .help-card li + li {
+      margin-top: 0.45rem;
+    }
+
+    .help-card strong {
+      color: #f4f4f5;
+    }
+
     .ordinary-grid {
       display: grid;
       grid-template-columns: repeat(13, minmax(0, 1fr));
@@ -1703,7 +1755,8 @@
     @media (max-width: 900px) {
       .casino-floor,
       .pack-grid,
-      .wildcard-grid {
+      .wildcard-grid,
+      .help-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
@@ -1751,9 +1804,14 @@
       .casino-floor,
       .pack-grid,
       .wildcard-grid,
+      .help-grid,
       .pack-reveals,
       .equip-grid {
         grid-template-columns: 1fr;
+      }
+
+      nav button {
+        flex-basis: calc(50% - 0.4rem);
       }
 
       .floor-tabs {
@@ -1821,6 +1879,7 @@
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
       <button id="dugShopNav" data-screen="dugShop" hidden>Dug Shop</button>
+      <button data-screen="help">Help</button>
     </nav>
 
     <section id="casino" class="screen active">
@@ -1902,6 +1961,97 @@
         </div>
       </div>
       <div id="dugUpgradeGrid" class="secret-shop"></div>
+    </section>
+
+    <section id="help" class="screen">
+      <div class="section-head">
+        <div>
+          <h2>How to play</h2>
+          <p>A complete guide to building your casino and collection.</p>
+        </div>
+      </div>
+      <p class="help-intro">Box Box Jokers runs automatically while the page is open. Build up cash and reputation at your tables, open packs to find Jokers, and equip those Jokers to make every hand more valuable.</p>
+      <div class="help-grid">
+        <article class="help-card">
+          <h3>Quick start</h3>
+          <ol>
+            <li>Open the free <strong>Opening Night Pack</strong> on the Card Packs page.</li>
+            <li>Open a casino table and use <strong>Manage Jokers</strong> to equip what you found.</li>
+            <li>Let guests play automatically to earn cash and reputation.</li>
+            <li>Buy more packs, unlock tables, and upgrade table speed as you grow.</li>
+          </ol>
+        </article>
+
+        <article class="help-card">
+          <h3>Casino tables</h3>
+          <ul>
+            <li>Each unlocked table automatically deals a five-card poker hand when its timer reaches zero.</li>
+            <li>Better hands pay more and award more reputation. Every hand also earns the table's base fee.</li>
+            <li>New tables require both the displayed cash and reputation, and later tables have more Joker slots.</li>
+            <li><strong>Speed upgrades</strong> shorten a table's timer, down to one second per hand.</li>
+            <li>Use the floor and table-set buttons to move between all 27 tables.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Jokers and levels</h3>
+          <ul>
+            <li>Equipped Jokers add cash, multiply income, reward certain cards or hands, or improve the chance of special hands.</li>
+            <li>A Joker can only be equipped at one table at a time, and a table cannot equip the same Joker twice.</li>
+            <li>Finding a Joker you already own upgrades its first copy instead of adding another copy.</li>
+            <li>Each extra Joker level increases its cash bonus, multiplier, or special-hand chance by 25%.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Card packs</h3>
+          <ul>
+            <li>Each pack contains ordinary cards and Jokers from its displayed pool. The free pack can only be opened once.</li>
+            <li>Use <strong>View contents</strong> to see every possible Joker and the average odds for each rarity.</li>
+            <li>Use <strong>Buy 5</strong> to open five paid packs together. The same Joker cannot appear twice inside one pack.</li>
+            <li>Themed packs contain exclusive Jokers, while free-pack Jokers can also appear in paid packs.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Luck and auto-sell</h3>
+          <ul>
+            <li><strong>Luck upgrades</strong> improve the rarity weights for Epic, Legendary, and Mythic Jokers.</li>
+            <li>Turn on <strong>Auto-sell</strong> and select rarities you want converted directly into cash.</li>
+            <li>Auto-sell applies to the first card too. A sold card is still marked as discovered in your collection.</li>
+            <li>Ordinary, Common, Uncommon, Rare, and Limited odds are not directly boosted by luck.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Collection</h3>
+          <ul>
+            <li>The Collection page tracks every pack Joker and all 52 ordinary playing cards.</li>
+            <li>Ordinary cards do not provide bonuses, but they count toward collection completion.</li>
+            <li>Each Joker shows its effect, level, and the packs where it can be found after discovery.</li>
+            <li>Complete every ordinary card and pack Joker to unlock the secret collection reward.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>The Dug and secret shop</h3>
+          <ul>
+            <li>Completing the collection unlocks <strong>The Dug</strong>, a cash reward, and the hidden Dug Shop.</li>
+            <li>Equip The Dug to improve Flush luck, multiply table income, and earn one Dug Coin from each Flush.</li>
+            <li>Spend Dug Coins on permanent bonuses for poker hands or improve the chance of a special Dug customer.</li>
+            <li>When The Dug visits as a customer, your entire current cash balance is doubled.</li>
+          </ul>
+        </article>
+
+        <article class="help-card">
+          <h3>Saving and resetting</h3>
+          <ul>
+            <li>Your casino saves automatically in this browser after purchases, upgrades, equipment changes, and completed hands.</li>
+            <li>Progress belongs to this browser and device, so clearing browser storage also clears the save.</li>
+            <li><strong>Reset game</strong> permanently deletes the local save after you confirm and starts again from $300.</li>
+          </ul>
+        </article>
+      </div>
     </section>
   </div>
 
