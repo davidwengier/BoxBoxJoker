@@ -4154,7 +4154,9 @@
     }
 
     function renderCollection() {
-      const collectionJokers = wildcards.filter(wildcard => wildcard.packable !== false);
+      const collectionJokers = wildcards
+        .filter(wildcard => wildcard.packable !== false)
+        .sort((left, right) => rarityRank(left.rarity) - rarityRank(right.rarity));
       const jokerDiscovered = wildcard =>
         Boolean(discoveredWildcards[wildcard.id]) || wildcardLevel(wildcard.id) > 0;
       const renderCollectionJoker = wildcard => {
@@ -4176,12 +4178,7 @@
           </article>
         `;
       };
-      const ownedJokerMarkup = collectionJokers
-        .filter(jokerDiscovered)
-        .map(renderCollectionJoker)
-        .join("");
-      const missingJokerMarkup = collectionJokers
-        .filter(wildcard => !jokerDiscovered(wildcard))
+      const jokerMarkup = collectionJokers
         .map(renderCollectionJoker)
         .join("");
       const secretJoker = wildcards.find(wildcard => wildcard.id === "dug");
@@ -4200,9 +4197,7 @@
           <div class="level">${secretDiscovered ? `1 copy · Level ${wildcardLevel(secretJoker.id)}` : ""}</div>
         </article>
       `;
-      wildcardGrid.innerHTML = secretDiscovered
-        ? ownedJokerMarkup + secretMarkup + missingJokerMarkup
-        : ownedJokerMarkup + missingJokerMarkup + secretMarkup;
+      wildcardGrid.innerHTML = jokerMarkup + secretMarkup;
 
       const allOrdinaryCards = ordinaryCardCatalog();
       const ordinaryDiscovered = allOrdinaryCards.filter(card => discoveredNormalCards[card.id]).length;
