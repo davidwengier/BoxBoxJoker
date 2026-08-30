@@ -935,6 +935,60 @@
       font-size: 0.86rem;
     }
 
+    .pack-collection {
+      position: relative;
+      margin: 0.75rem 0;
+      padding: 0.65rem 0.7rem;
+      border: 1px solid #3f3f46;
+      border-radius: 0.6rem;
+      background: rgb(9 9 14 / 58%);
+    }
+
+    .pack-collection.complete {
+      border-color: #22c55e;
+      background: rgb(20 83 45 / 30%);
+    }
+
+    .pack-collection-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      color: #d4d4d8;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .pack-collection.complete .pack-collection-heading strong {
+      color: #4ade80;
+    }
+
+    .pack-collection-bar {
+      height: 0.42rem;
+      margin-top: 0.45rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #27272f;
+    }
+
+    .pack-collection-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #7e22ce, #e879f9);
+    }
+
+    .pack-collection.complete .pack-collection-bar span {
+      background: linear-gradient(90deg, #16a34a, #4ade80);
+    }
+
+    .pack-collection small {
+      display: block;
+      margin-top: 0.35rem;
+      color: #a1a1aa;
+      font-size: 0.7rem;
+    }
+
     .pack-buttons {
       position: relative;
       display: grid;
@@ -4871,11 +4925,41 @@
     function renderPacks() {
       packStore.innerHTML = packDefinitions.map(pack => {
         const claimed = pack.id === "starter" && starterOpened;
+        const packJokers = possiblePackJokers(pack);
+        const collectedCount = packJokers.filter(joker =>
+          discoveredWildcards[joker.id] || wildcardLevel(joker.id) > 0
+        ).length;
+        const collectionComplete = packJokers.length > 0 && collectedCount === packJokers.length;
+        const collectionPercentage = packJokers.length > 0
+          ? collectedCount / packJokers.length * 100
+          : 0;
+        const remainingCount = packJokers.length - collectedCount;
         return `
           <article class="pack ${pack.className || ""}">
             <h3>${pack.name}</h3>
             <div class="pack-art">${pack.icon}</div>
             <p>${pack.description}</p>
+            <div class="pack-collection ${collectionComplete ? "complete" : ""}">
+              <div class="pack-collection-heading">
+                <span>Joker collection</span>
+                <strong>${collectionComplete ? "✓ Complete" : `${collectedCount} / ${packJokers.length}`}</strong>
+              </div>
+              <div
+                class="pack-collection-bar"
+                role="progressbar"
+                aria-label="${pack.name} Joker collection"
+                aria-valuemin="0"
+                aria-valuemax="${packJokers.length}"
+                aria-valuenow="${collectedCount}"
+              >
+                <span style="width:${collectionPercentage}%"></span>
+              </div>
+              <small>
+                ${collectionComplete
+                  ? `All ${packJokers.length} Jokers collected`
+                  : `${remainingCount} Joker${remainingCount === 1 ? "" : "s"} still to collect`}
+              </small>
+            </div>
             ${packOddsMarkup(pack)}
             <div class="pack-buttons">
               <button class="secondary" data-pack-info="${pack.id}">View contents</button>
