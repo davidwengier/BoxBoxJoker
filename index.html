@@ -2175,6 +2175,10 @@
     }
 
     @media (max-width: 600px) {
+      .app {
+        padding: 0.65rem;
+      }
+
       header {
         align-items: flex-start;
         flex-direction: column;
@@ -2187,7 +2191,24 @@
       }
 
       .stats {
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .stat {
+        min-width: 0;
+        padding-inline: 0.4rem;
+      }
+
+      nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      nav button {
+        min-width: 0;
+        padding-inline: 0.35rem;
+        font-size: 0.72rem;
       }
 
       .header-actions {
@@ -2203,7 +2224,6 @@
         grid-template-columns: 1fr;
       }
 
-      .casino-floor,
       .pack-grid,
       .wildcard-grid,
       .help-grid,
@@ -2215,12 +2235,41 @@
         grid-template-columns: 1fr;
       }
 
+      .casino-floor {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 0.6rem;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+      }
+
+      .casino-floor .table-card {
+        min-width: 100%;
+        scroll-snap-align: start;
+      }
+
       .floor-tabs {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .table-set-tabs {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .floor-tab,
+      .table-set-tab {
+        min-width: 0;
+        padding: 0.6rem 0.35rem;
+        text-align: center;
+      }
+
+      .floor-tab {
+        font-size: 0.78rem;
+      }
+
+      .floor-tab small,
+      .table-set-tab small {
+        font-size: 0.62rem;
       }
 
       .pack-contents {
@@ -2255,6 +2304,11 @@
 
       .dug-banner {
         grid-template-columns: 1fr;
+      }
+
+      #toast {
+        white-space: normal;
+        text-align: center;
       }
     }
   </style>
