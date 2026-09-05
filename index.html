@@ -290,6 +290,7 @@
     }
 
     nav button {
+      position: relative;
       flex: 1;
       min-width: 8rem;
       padding: 0.75rem;
@@ -309,6 +310,27 @@
 
     nav button.goal-ready {
       animation: goal-ready-pulse 1.8s ease-in-out infinite;
+    }
+
+    .goal-nav-badge {
+      position: absolute;
+      top: 0.2rem;
+      right: 0.3rem;
+      display: grid;
+      min-width: 1.35rem;
+      height: 1.35rem;
+      padding: 0 0.3rem;
+      place-items: center;
+      border-radius: 999px;
+      background: #facc15;
+      color: #18181b;
+      font-size: 0.68rem;
+      font-weight: 950;
+      box-shadow: 0 0 0.8rem rgb(250 204 21 / 45%);
+    }
+
+    .goal-nav-badge[hidden] {
+      display: none;
     }
 
     .screen {
@@ -2261,7 +2283,10 @@
       <button class="active" data-screen="casino">Casino</button>
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
-      <button id="goalsNav" data-screen="goals">Goals</button>
+      <button id="goalsNav" data-screen="goals">
+        Goals
+        <span id="goalsBadge" class="goal-nav-badge" hidden>0</span>
+      </button>
       <button id="dugShopNav" data-screen="dugShop" hidden>Dug Shop</button>
     </nav>
 
@@ -2454,7 +2479,7 @@
           <h3>Goals and achievements</h3>
           <ul>
             <li>The Goals page tracks milestones for guests, collection progress, tables, Joker levels, cash, and reputation.</li>
-            <li>Completed goals move to the front so their one-time cash rewards are easy to claim.</li>
+            <li>A badge appears when rewards are ready, and completed goals move to the front.</li>
             <li>Claimed goals become achievements and remain recorded in your save.</li>
             <li>Goal rewards are cash only; they do not award luck or exclusive Jokers.</li>
           </ul>
@@ -3346,6 +3371,7 @@
     const goalCashClaimedDisplay = document.querySelector("#goalCashClaimed");
     const goalGrid = document.querySelector("#goalGrid");
     const goalsNav = document.querySelector("#goalsNav");
+    const goalsBadge = document.querySelector("#goalsBadge");
     const autoSellToggle = document.querySelector("#autoSellToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
@@ -5134,6 +5160,8 @@
         .reduce((total, goal) => total + goal.reward, 0);
       goalsClaimedDisplay.textContent = `${claimedCount} / ${goals.length}`;
       goalCashClaimedDisplay.textContent = formatMoney(cashClaimed);
+      goalsBadge.textContent = claimableGoals.length;
+      goalsBadge.hidden = claimableGoals.length === 0;
       goalsNav.classList.toggle("goal-ready", claimableGoals.length > 0);
       goalGrid.innerHTML = goals.map(goal => {
         const displayedProgress = Math.min(goal.progress, goal.target);
