@@ -2230,9 +2230,21 @@
       .goal-grid,
       .dashboard-summary,
       .dashboard-table-grid,
-      .pack-reveals,
       .equip-grid {
         grid-template-columns: 1fr;
+      }
+
+      .pack-reveals {
+        display: flex;
+        overflow-x: auto;
+        padding: 0.25rem 0 0.6rem;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+      }
+
+      .pack-reveals .reveal-card {
+        min-width: 100%;
+        scroll-snap-align: center;
       }
 
       .casino-floor {
@@ -4197,6 +4209,7 @@
           </div>
         `;
       }).join("");
+      packReveals.scrollLeft = 0;
 
       revealButton.textContent = "Reveal all";
       revealButton.disabled = false;
