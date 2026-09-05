@@ -290,7 +290,6 @@
     }
 
     nav button {
-      position: relative;
       flex: 1;
       min-width: 8rem;
       padding: 0.75rem;
@@ -306,31 +305,6 @@
     nav button.active {
       background: #a21caf;
       color: white;
-    }
-
-    .goal-nav-badge {
-      position: absolute;
-      top: 0.2rem;
-      right: 0.3rem;
-      display: grid;
-      min-width: 1.35rem;
-      height: 1.35rem;
-      padding: 0 0.3rem;
-      place-items: center;
-      border-radius: 999px;
-      background: #facc15;
-      color: #18181b;
-      font-size: 0.68rem;
-      font-weight: 950;
-      box-shadow: 0 0 0.8rem rgb(250 204 21 / 45%);
-    }
-
-    .goal-nav-badge[hidden] {
-      display: none;
-    }
-
-    nav button.goal-ready {
-      animation: goal-ready-pulse 1.8s ease-in-out infinite;
     }
 
     .screen {
@@ -409,72 +383,6 @@
     .section-head p {
       margin: 0.25rem 0 0;
       color: #9895a5;
-    }
-
-    .progression-guide {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.85rem;
-    }
-
-    .progression-card {
-      padding: 1rem;
-      border: 1px solid #3d3948;
-      border-radius: 0.8rem;
-      background: linear-gradient(145deg, #15131d, #101118);
-      box-shadow:
-        0 0.8rem 2rem rgb(0 0 0 / 20%),
-        inset 0 1px rgb(255 255 255 / 5%);
-    }
-
-    .progression-card h3 {
-      margin: 0.2rem 0 0.5rem;
-      color: #f4f4f5;
-      font-family: Georgia, serif;
-      font-size: 1.2rem;
-    }
-
-    .progression-card p {
-      min-height: 3rem;
-      margin: 0;
-      color: #aaa6b4;
-      font-size: 0.84rem;
-      line-height: 1.5;
-    }
-
-    .progression-card .eyebrow {
-      font-size: 0.68rem;
-    }
-
-    .progression-status {
-      display: block;
-      margin-top: 0.65rem;
-      color: #facc15;
-      font-size: 0.82rem;
-      font-weight: 800;
-    }
-
-    .progression-status.ready {
-      color: #4ade80;
-    }
-
-    .progression-bar {
-      height: 0.55rem;
-      overflow: hidden;
-      margin-top: 0.8rem;
-      border-radius: 999px;
-      background: #292733;
-    }
-
-    .progression-bar span {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #a21caf, #e879f9);
-    }
-
-    .progression-card button {
-      margin-top: 0.8rem;
     }
 
     .casino-floor,
@@ -1610,66 +1518,6 @@
       font-style: italic;
     }
 
-    .achievement-celebration {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      z-index: 30;
-      display: flex;
-      width: min(30rem, calc(100% - 2rem));
-      padding: 0.9rem 1rem;
-      border: 1px solid #facc15;
-      border-radius: 0.8rem;
-      background: linear-gradient(135deg, #422006, #18120b);
-      color: white;
-      cursor: pointer;
-      opacity: 0;
-      align-items: center;
-      gap: 0.8rem;
-      box-shadow:
-        0 1.2rem 3rem rgb(0 0 0 / 55%),
-        0 0 1.5rem rgb(250 204 21 / 22%);
-      pointer-events: none;
-      transform: translate(-50%, -1rem);
-      transition: opacity 180ms ease, transform 180ms ease;
-    }
-
-    .achievement-celebration.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, 0);
-    }
-
-    .achievement-trophy {
-      font-size: 2.2rem;
-    }
-
-    .achievement-celebration small,
-    .achievement-celebration strong,
-    .achievement-celebration span {
-      display: block;
-      text-align: left;
-    }
-
-    .achievement-celebration small {
-      color: #fde68a;
-      font-size: 0.68rem;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .achievement-celebration strong {
-      margin-top: 0.1rem;
-      font-size: 1rem;
-    }
-
-    .achievement-celebration #achievementCelebrationReward {
-      margin-top: 0.15rem;
-      color: #d6d3d1;
-      font-size: 0.78rem;
-    }
-
     .pack-reveals {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2235,20 +2083,9 @@
       }
     }
 
-    @keyframes goal-ready-pulse {
-      0%,
-      100% {
-        box-shadow: none;
-      }
-      50% {
-        box-shadow: inset 0 0 0 1px #facc15, 0 0 1rem rgb(250 204 21 / 30%);
-      }
-    }
-
     @media (prefers-reduced-motion: reduce) {
       .screen.active,
-      .hero::before,
-      nav button.goal-ready {
+      .hero::before {
         animation: none;
       }
 
@@ -2273,10 +2110,6 @@
       .dashboard-summary,
       .dashboard-table-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .progression-guide {
-        grid-template-columns: 1fr;
       }
 
       .pack-reveals {
@@ -2413,10 +2246,7 @@
       <button class="active" data-screen="casino">Casino</button>
       <button data-screen="packs">Card Packs</button>
       <button data-screen="collection">Collection</button>
-      <button id="goalsNav" data-screen="goals">
-        Goals
-        <span id="goalsBadge" class="goal-nav-badge" hidden>0</span>
-      </button>
+      <button data-screen="goals">Goals</button>
       <button id="dugShopNav" data-screen="dugShop" hidden>Dug Shop</button>
     </nav>
 
@@ -2428,14 +2258,6 @@
           <p>Guests play automatically and pay for the experience. Equip collectible Jokers to change the rules, create bigger hands, and turn a quiet card room into the hottest casino in town.</p>
         </div>
       </div>
-
-      <div class="section-head">
-        <div>
-          <h2>Your next moves</h2>
-          <p>Live guidance based on your current casino and collection.</p>
-        </div>
-      </div>
-      <div id="progressionGuide" class="progression-guide"></div>
 
       <div class="section-head">
         <div>
@@ -2598,7 +2420,6 @@
             <li>Open the free <strong>Opening Night Pack</strong> on the Card Packs page.</li>
             <li>Open a casino table and use <strong>Manage Jokers</strong> to equip what you found.</li>
             <li>Let guests play automatically to earn cash and reputation.</li>
-            <li>Check <strong>Your next moves</strong> on the Casino page for a table, collection, and pack recommendation.</li>
             <li>Buy more packs, unlock tables, and upgrade table speed as you grow.</li>
           </ol>
         </article>
@@ -2618,7 +2439,7 @@
           <h3>Goals and achievements</h3>
           <ul>
             <li>The Goals page tracks milestones for guests, collection progress, tables, Joker levels, cash, and reputation.</li>
-            <li>A badge and celebration appear when rewards are ready, and completed goals move to the front.</li>
+            <li>Completed goals move to the front so their one-time cash rewards are easy to claim.</li>
             <li>Claimed goals become achievements and remain recorded in your save.</li>
             <li>Goal rewards are cash only; they do not award luck or exclusive Jokers.</li>
           </ul>
@@ -2738,14 +2559,6 @@
   </div>
 
   <div id="toast" role="status"></div>
-  <button id="achievementCelebration" class="achievement-celebration" type="button" aria-live="polite">
-    <span class="achievement-trophy">🏆</span>
-    <span>
-      <small>Goal complete</small>
-      <strong id="achievementCelebrationTitle"></strong>
-      <span id="achievementCelebrationReward"></span>
-    </span>
-  </button>
 
   <script>
     const rarityInfo = {
@@ -3500,7 +3313,6 @@
     const floorTabs = document.querySelector("#floorTabs");
     const tableSetTabs = document.querySelector("#tableSetTabs");
     const casinoFloor = document.querySelector("#casinoFloor");
-    const progressionGuide = document.querySelector("#progressionGuide");
     const dashboardSummary = document.querySelector("#dashboardSummary");
     const dashboardTables = document.querySelector("#dashboardTables");
     const packStore = document.querySelector("#packStore");
@@ -3518,11 +3330,6 @@
     const goalsClaimedDisplay = document.querySelector("#goalsClaimed");
     const goalCashClaimedDisplay = document.querySelector("#goalCashClaimed");
     const goalGrid = document.querySelector("#goalGrid");
-    const goalsNav = document.querySelector("#goalsNav");
-    const goalsBadge = document.querySelector("#goalsBadge");
-    const achievementCelebration = document.querySelector("#achievementCelebration");
-    const achievementCelebrationTitle = document.querySelector("#achievementCelebrationTitle");
-    const achievementCelebrationReward = document.querySelector("#achievementCelebrationReward");
     const autoSellToggle = document.querySelector("#autoSellToggle");
     const autoSellOptions = document.querySelector("#autoSellOptions");
     const luckLevelDisplay = document.querySelector("#luckLevel");
@@ -3572,7 +3379,6 @@
     let tutorialComplete = false;
     let tutorialStep = 0;
     let claimedGoals = {};
-    let notifiedGoals = {};
     let lifetimeCashEarned = 0;
     let handStats = {};
     let recentTableIncome = [];
@@ -3604,7 +3410,6 @@
     let revealReadyTimer;
     let activeEquipTable = null;
     let toastTimer;
-    let achievementCelebrationTimer;
     const dashboardTrackingStartedAt = Date.now();
     const packOddsCache = new Map();
     const tutorialSteps = [
@@ -5282,23 +5087,8 @@
       earnCash(goal.reward);
       saveGame();
       renderStats();
-      renderProgressionGuide();
       renderGoals();
       showToast(`${goal.title} complete! Claimed ${formatMoney(goal.reward)}.`);
-    }
-
-    function showAchievementCelebration(goals) {
-      const totalReward = goals.reduce((total, goal) => total + goal.reward, 0);
-      achievementCelebrationTitle.textContent = goals.length === 1
-        ? goals[0].title
-        : `${goals.length} goals completed`;
-      achievementCelebrationReward.textContent =
-        `Claim ${formatMoney(totalReward)} total cash on the Goals page.`;
-      achievementCelebration.classList.add("show");
-      clearTimeout(achievementCelebrationTimer);
-      achievementCelebrationTimer = setTimeout(() => {
-        achievementCelebration.classList.remove("show");
-      }, 6000);
     }
 
     function renderGoals() {
@@ -5322,15 +5112,11 @@
         });
 
       const claimedCount = goals.filter(goal => goal.claimed).length;
-      const claimableGoals = goals.filter(goal => goal.complete && !goal.claimed);
       const cashClaimed = goals
         .filter(goal => goal.claimed)
         .reduce((total, goal) => total + goal.reward, 0);
       goalsClaimedDisplay.textContent = `${claimedCount} / ${goals.length}`;
       goalCashClaimedDisplay.textContent = formatMoney(cashClaimed);
-      goalsBadge.textContent = claimableGoals.length;
-      goalsBadge.hidden = claimableGoals.length === 0;
-      goalsNav.classList.toggle("goal-ready", claimableGoals.length > 0);
       goalGrid.innerHTML = goals.map(goal => {
         const displayedProgress = Math.min(goal.progress, goal.target);
         const percentage = Math.min(100, displayedProgress / goal.target * 100);
@@ -5364,115 +5150,6 @@
 
       goalGrid.querySelectorAll("[data-claim-goal]").forEach(button => {
         button.addEventListener("click", () => claimGoal(button.dataset.claimGoal));
-      });
-
-      const newlyCompleted = claimableGoals.filter(goal => !notifiedGoals[goal.id]);
-      if (newlyCompleted.length > 0) {
-        newlyCompleted.forEach(goal => {
-          notifiedGoals[goal.id] = true;
-        });
-        saveGame();
-        showAchievementCelebration(newlyCompleted);
-      }
-    }
-
-    function renderProgressionGuide() {
-      const nextTableIndex = tables.findIndex(table => !table.unlocked);
-      const nextTable = nextTableIndex >= 0 ? tableDefinitions[nextTableIndex] : null;
-      let tableMarkup;
-      if (nextTable) {
-        const cashNeeded = Math.max(0, nextTable.unlockCost - cash);
-        const reputationNeeded = Math.max(0, nextTable.reputationNeeded - reputation);
-        const ready = cashNeeded === 0 && reputationNeeded === 0;
-        const requirements = [
-          cashNeeded > 0 ? `${formatMoney(cashNeeded)} more cash` : "",
-          reputationNeeded > 0 ? `${Math.ceil(reputationNeeded).toLocaleString()} more reputation` : ""
-        ].filter(Boolean).join(" and ");
-        tableMarkup = `
-          <article class="progression-card">
-            <div class="eyebrow">Next table · ${casinoFloors[nextTable.floor].name}</div>
-            <h3>${nextTable.name}</h3>
-            <p>Unlock for ${formatMoney(nextTable.unlockCost)} at ${nextTable.reputationNeeded.toLocaleString()} reputation.</p>
-            <span class="progression-status ${ready ? "ready" : ""}">
-              ${ready ? "Ready to unlock now" : `Still needed: ${requirements}`}
-            </span>
-          </article>
-        `;
-      } else {
-        tableMarkup = `
-          <article class="progression-card">
-            <div class="eyebrow">Table progression</div>
-            <h3>Every table unlocked</h3>
-            <p>Your casino has all 27 tables across every floor.</p>
-            <span class="progression-status ready">Casino complete</span>
-          </article>
-        `;
-      }
-
-      const collection = collectionCounts();
-      const milestones = [0.25, 0.5, 0.75, 1].map(portion => ({
-        portion,
-        target: Math.ceil(collection.total * portion)
-      }));
-      const nextMilestone = milestones.find(milestone => collection.discovered < milestone.target);
-      const collectionComplete = !nextMilestone;
-      const milestoneTarget = nextMilestone?.target || collection.total;
-      const milestonePercent = nextMilestone
-        ? Math.round(nextMilestone.portion * 100)
-        : 100;
-      const collectionPercent = Math.min(100, collection.discovered / collection.total * 100);
-      const collectionMarkup = `
-        <article class="progression-card">
-          <div class="eyebrow">Collection milestone</div>
-          <h3>${collectionComplete ? "Collection complete" : `${milestonePercent}% collected`}</h3>
-          <p>${collection.discovered} of ${collection.total} required cards discovered.${collectionComplete ? "" : ` Find ${milestoneTarget - collection.discovered} more to reach the next milestone.`}</p>
-          <div class="progression-bar"><span style="width:${collectionPercent}%"></span></div>
-          <button class="secondary" data-guide-screen="collection">View collection</button>
-        </article>
-      `;
-
-      const packCandidates = packDefinitions
-        .filter(pack => !(pack.id === "starter" && starterOpened))
-        .map(pack => ({
-          pack,
-          missing: pack.jokerIds.filter(id => !discoveredWildcards[id] && wildcardLevel(id) === 0).length
-        }))
-        .filter(candidate => candidate.missing > 0);
-      const affordablePacks = packCandidates
-        .filter(candidate => candidate.pack.cost <= cash)
-        .sort((left, right) => right.pack.cost - left.pack.cost);
-      const recommended = affordablePacks[0] || [...packCandidates]
-        .sort((left, right) => left.pack.cost - right.pack.cost)[0];
-      let packMarkup;
-      if (recommended) {
-        const affordable = recommended.pack.cost <= cash;
-        packMarkup = `
-          <article class="progression-card">
-            <div class="eyebrow">Recommended pack</div>
-            <h3>${recommended.pack.name}</h3>
-            <p>${recommended.missing} undiscovered ${recommended.missing === 1 ? "Joker is" : "Jokers are"} available here.</p>
-            <span class="progression-status ${affordable ? "ready" : ""}">
-              ${affordable
-                ? recommended.pack.cost === 0 ? "Free to open now" : `Affordable now · ${formatMoney(recommended.pack.cost)}`
-                : `Save ${formatMoney(recommended.pack.cost - cash)} more`}
-            </span>
-            <button class="secondary" data-guide-screen="packs">View card packs</button>
-          </article>
-        `;
-      } else {
-        packMarkup = `
-          <article class="progression-card">
-            <div class="eyebrow">Pack progression</div>
-            <h3>Every pack Joker found</h3>
-            <p>You have discovered every Joker available from card packs.</p>
-            <span class="progression-status ready">Pack collection complete</span>
-          </article>
-        `;
-      }
-
-      progressionGuide.innerHTML = tableMarkup + collectionMarkup + packMarkup;
-      progressionGuide.querySelectorAll("[data-guide-screen]").forEach(button => {
-        button.addEventListener("click", () => showScreen(button.dataset.guideScreen));
       });
     }
 
@@ -5559,7 +5236,6 @@
 
     function render() {
       renderStats();
-      renderProgressionGuide();
       renderGoals();
       renderDashboard();
       renderCasino();
@@ -5628,7 +5304,6 @@
         autoSellEnabled,
         tutorialComplete,
         claimedGoals,
-        notifiedGoals,
         lifetimeCashEarned,
         handStats,
         autoSellRarities,
@@ -5744,13 +5419,6 @@
             Boolean(state.claimedGoals[goal.id])
           )
           .map(goal => [goal.id, true]));
-        notifiedGoals = Object.fromEntries(goalDefinitions
-          .filter(goal =>
-            state.notifiedGoals &&
-            typeof state.notifiedGoals === "object" &&
-            Boolean(state.notifiedGoals[goal.id])
-          )
-          .map(goal => [goal.id, true]));
         activeFloor = Number.isInteger(state.activeFloor)
           ? Math.min(casinoFloors.length - 1, Math.max(0, state.activeFloor))
           : 0;
@@ -5835,11 +5503,6 @@
 
     document.querySelectorAll("nav button").forEach(button => {
       button.addEventListener("click", () => showScreen(button.dataset.screen));
-    });
-    achievementCelebration.addEventListener("click", () => {
-      clearTimeout(achievementCelebrationTimer);
-      achievementCelebration.classList.remove("show");
-      showScreen("goals");
     });
     collectionPackFilter.insertAdjacentHTML(
       "beforeend",
@@ -5945,7 +5608,6 @@
       });
       if (roundPlayed) {
         saveGame();
-        renderProgressionGuide();
         renderGoals();
       }
       renderStats();
